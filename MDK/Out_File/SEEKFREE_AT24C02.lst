@@ -1,0 +1,425 @@
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_AT24C02
+OBJECT MODULE PLACED IN .\Out_File\SEEKFREE_AT24C02.obj
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\seekfree_peripheral\SEEKFREE_AT24C02.c XSMALL INTR2
+                    - FLOAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekf
+                    -ree_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\SEEKFREE_AT24C02.lst) TABS(2) OBJECT(.\Out_Fil
+                    -e\SEEKFREE_AT24C02.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2018,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          AT24C02
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ3184284598)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC32G12K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2019-04-30
+   18           * @note        
+   19                    接线定义：
+   20                    ------------------------------------ 
+   21                    蓝牙转串口      单片机                        
+   22                    SCL             查看 SEEKFREE_AT24C02.h文件中的 AT24C02_SCL_PIN 宏定义
+   23                    SDA             查看 SEEKFREE_AT24C02.h文件中的 AT24C02_SDA_PIN 宏定义
+   24                    ------------------------------------ 
+   25           ********************************************************************************************************
+             -************/
+   26          #include "zf_delay.h"
+   27          
+   28          #include "SEEKFREE_AT24C02.h"
+   29          
+   30          
+   31          #pragma warning disable = 173
+   32          
+   33          
+   34          
+   35          #define GET_AT24C02_SDA           AT24C02_SDA_PIN
+   36          #define AT24C02_SCL_LOW()           AT24C02_SCL_PIN = 0   //IO口输出低电平
+   37          #define AT24C02_SCL_HIGH()          AT24C02_SCL_PIN = 1   //IO口输出高电平
+   38          #define AT24C02_SDA_LOW()           AT24C02_SDA_PIN = 0   //IO口输出低电平
+   39          #define AT24C02_SDA_HIGH()          AT24C02_SDA_PIN = 1   //IO口输出高电平
+   40          
+   41          
+   42          #define ack 1      //主应答
+   43          #define no_ack 0   //从应答 
+   44          
+   45          //-------------------------------------------------------------------------------------------------------
+             -------------
+   46          //  @brief      模拟IIC延时
+   47          //  @return     void            
+   48          //  @since      v1.0
+   49          //  Sample usage:       如果IIC通讯失败可以尝试增加j的值
+   50          //-------------------------------------------------------------------------------------------------------
+             -------------
+   51          static void at24c02_simiic_delay(void)
+   52          {
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 2   
+
+   53   1          uint16 j=AT24C02_SOFT_IIC_DELAY;   
+   54   1        while(j--);
+   55   1      }
+   56          
+   57          //内部使用，用户无需调用
+   58          static void at24c02_simiic_start(void)
+   59          {
+   60   1        AT24C02_SDA_HIGH();
+   61   1        AT24C02_SCL_HIGH();
+   62   1        at24c02_simiic_delay();
+   63   1        AT24C02_SDA_LOW();
+   64   1        at24c02_simiic_delay();
+   65   1        AT24C02_SCL_LOW();
+   66   1      }
+   67          
+   68          //内部使用，用户无需调用
+   69          static void at24c02_simiic_stop(void)
+   70          {
+   71   1        AT24C02_SDA_LOW();
+   72   1        AT24C02_SCL_LOW();
+   73   1        at24c02_simiic_delay();
+   74   1        AT24C02_SCL_HIGH();
+   75   1        at24c02_simiic_delay();
+   76   1        AT24C02_SDA_HIGH();
+   77   1        at24c02_simiic_delay();
+   78   1      }
+   79          
+   80          //主应答(包含ack:SDA=0和no_ack:SDA=0)
+   81          //内部使用，用户无需调用
+   82          static void at24c02_simiic_sendack(unsigned char ack_dat)
+   83          {
+   84   1          AT24C02_SCL_LOW();
+   85   1        at24c02_simiic_delay();
+   86   1        if(ack_dat) AT24C02_SDA_LOW();
+   87   1          else      AT24C02_SDA_HIGH();
+   88   1      
+   89   1          AT24C02_SCL_HIGH();
+   90   1          at24c02_simiic_delay();
+   91   1          AT24C02_SCL_LOW();
+   92   1          at24c02_simiic_delay();
+   93   1      }
+   94          
+   95          
+   96          static int at24c02_sccb_waitack(void)
+   97          {
+   98   1          AT24C02_SCL_LOW();
+   99   1      
+  100   1        at24c02_simiic_delay();
+  101   1        
+  102   1        AT24C02_SCL_HIGH();
+  103   1          at24c02_simiic_delay();
+  104   1        
+  105   1          if(GET_AT24C02_SDA)           //应答为高电平，异常，通信失败
+  106   1          {
+  107   2      
+  108   2              AT24C02_SCL_LOW();
+  109   2              return 0;
+  110   2          }
+  111   1      
+  112   1          AT24C02_SCL_LOW();
+  113   1        at24c02_simiic_delay();
+  114   1          return 1;
+  115   1      }
+  116          
+  117          //字节发送程序
+  118          //发送c(可以是数据也可是地址)，送完后接收从应答
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 3   
+
+  119          //不考虑从应答位
+  120          //内部使用，用户无需调用
+  121          static void at24c02_send_ch(uint8 c)
+  122          {
+  123   1        uint8 i = 8;
+  124   1          while(i--)
+  125   1          {
+  126   2              if(c & 0x80)  AT24C02_SDA_HIGH();//SDA 输出数据
+  127   2              else      AT24C02_SDA_LOW();
+  128   2              c <<= 1;
+  129   2              at24c02_simiic_delay();
+  130   2              AT24C02_SCL_HIGH();                //SCL 拉高，采集信号
+  131   2              at24c02_simiic_delay();
+  132   2              AT24C02_SCL_LOW();                //SCL 时钟线拉低
+  133   2          }
+  134   1        at24c02_sccb_waitack();
+  135   1      }
+  136          
+  137          
+  138          //字节接收程序
+  139          //接收器件传来的数据，此程序应配合|主应答函数|使用
+  140          //内部使用，用户无需调用
+  141          static uint8 at24c02_read_ch(uint8 ack_x)
+  142          {
+  143   1          uint8 i;
+  144   1          uint8 c;
+  145   1          c=0;
+  146   1          AT24C02_SCL_LOW();
+  147   1          at24c02_simiic_delay();
+  148   1          AT24C02_SDA_HIGH();             
+  149   1      
+  150   1          for(i=0;i<8;i++)
+  151   1          {
+  152   2              at24c02_simiic_delay();
+  153   2              AT24C02_SCL_LOW();         //置时钟线为低，准备接收数据位
+  154   2              at24c02_simiic_delay();
+  155   2              AT24C02_SCL_HIGH();         //置时钟线为高，使数据线上数据有效
+  156   2              at24c02_simiic_delay();
+  157   2              c<<=1;
+  158   2              if(GET_AT24C02_SDA) 
+  159   2              {
+  160   3                  c+=1;   //读数据位，将接收的数据存c
+  161   3              }
+  162   2          }
+  163   1      
+  164   1        AT24C02_SCL_LOW();
+  165   1        at24c02_simiic_delay();
+  166   1        at24c02_simiic_sendack(ack_x);
+  167   1        
+  168   1          return c;
+  169   1      }
+  170          
+  171          
+  172          //-------------------------------------------------------------------------------------------------------
+             -------------
+  173          //  @brief      模拟IIC写数据到设备寄存器函数
+  174          //  @param      dev_add     设备地址(低七位地址)
+  175          //  @param      reg       寄存器地址
+  176          //  @param      dat       写入的数据
+  177          //  @return     void            
+  178          //  @since      v1.0
+  179          //  Sample usage:       
+  180          //-------------------------------------------------------------------------------------------------------
+             -------------
+  181          static void at24c02_simiic_write_reg(uint8 dev_add, uint8 reg, uint8 dat)
+  182          {
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 4   
+
+  183   1        at24c02_simiic_start();
+  184   1          at24c02_send_ch( (dev_add<<1) | 0x00);   //发送器件地址加写位
+  185   1        at24c02_send_ch( reg );            //发送从机寄存器地址
+  186   1        at24c02_send_ch( dat );            //发送需要写入的数据
+  187   1        at24c02_simiic_stop();
+  188   1      }
+  189          
+  190          //-------------------------------------------------------------------------------------------------------
+             -------------
+  191          //  @brief      模拟IIC写数据到设备寄存器函数
+  192          //  @param      dev_add     设备地址(低七位地址)
+  193          //  @param      reg       寄存器地址
+  194          //  @param      dat       写入的数据
+  195          //  @return     void            
+  196          //  @since      v1.0
+  197          //  Sample usage:       
+  198          //-------------------------------------------------------------------------------------------------------
+             -------------
+  199          //static void at24c02_simiic_write_regs(uint8 dev_add, uint8 reg, uint8 *dat, uint32 len)
+  200          //{
+  201          //  uint16 i = 0;
+  202          //  at24c02_simiic_start();
+  203          //    at24c02_send_ch( (dev_add<<1) | 0x00);   //发送器件地址加写位
+  204          //  at24c02_send_ch( reg );            //发送从机寄存器地址
+  205          
+  206          //  while(len--)
+  207          //  {
+  208          //    at24c02_send_ch( *dat++ );           //发送需要写入的数据
+  209          //  }
+  210          
+  211          //  
+  212          //  at24c02_simiic_stop();
+  213          //}
+  214          //-------------------------------------------------------------------------------------------------------
+             -------------
+  215          //  @brief      模拟IIC从设备寄存器读取数据
+  216          //  @param      dev_add     设备地址(低七位地址)
+  217          //  @param      reg       寄存器地址
+  218          //  @param      type      选择通信方式是IIC  还是 SCCB
+  219          //  @return     uint8     返回寄存器的数据      
+  220          //  @since      v1.0
+  221          //  Sample usage:       
+  222          //-------------------------------------------------------------------------------------------------------
+             -------------
+  223          static uint8 at24c02_simiic_read_reg(uint8 dev_add, uint8 reg)
+  224          {
+  225   1        uint8 dat;
+  226   1        at24c02_simiic_start();
+  227   1          at24c02_send_ch( (dev_add<<1) | 0x00);  //发送器件地址加写位
+  228   1        at24c02_send_ch( reg );           //发送从机寄存器地址
+  229   1        
+  230   1        at24c02_simiic_start();
+  231   1        at24c02_send_ch( (dev_add<<1) | 0x01);  //发送器件地址加读位
+  232   1        dat = at24c02_read_ch(no_ack);          //读取数据
+  233   1        at24c02_simiic_stop();
+  234   1        
+  235   1        return dat;
+  236   1      }
+  237          
+  238          //-------------------------------------------------------------------------------------------------------
+             -------------
+  239          //  @brief      模拟IIC读取多字节数据
+  240          //  @param      dev_add     设备地址(低七位地址)
+  241          //  @param      reg       寄存器地址
+  242          //  @param      dat_add     数据保存的地址指针
+  243          //  @param      num       读取字节数量
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 5   
+
+  244          //  @param      type      选择通信方式是IIC  还是 SCCB
+  245          //  @return     uint8     返回寄存器的数据      
+  246          //  @since      v1.0
+  247          //  Sample usage:       
+  248          //-------------------------------------------------------------------------------------------------------
+             -------------
+  249          //static void at24c02_simiic_read_regs(uint8 dev_add, uint8 reg, uint8 *dat_add, uint32 num)
+  250          //{
+  251          //  at24c02_simiic_start();
+  252          //    at24c02_send_ch( (dev_add<<1) | 0x00);  //发送器件地址加写位
+  253          //  at24c02_send_ch( reg );           //发送从机寄存器地址
+  254          //  
+  255          //  at24c02_simiic_start();
+  256          //  at24c02_send_ch( (dev_add<<1) | 0x01);  //发送器件地址加读位
+  257          //    while(--num)
+  258          //    {
+  259          //        *dat_add = at24c02_read_ch(ack); //读取数据
+  260          //        dat_add++;
+  261          //    }
+  262          //    *dat_add = at24c02_read_ch(no_ack); //读取数据
+  263          //  at24c02_simiic_stop();
+  264          //}
+  265          
+  266          
+  267          
+  268          //-------------------------------------------------------------------------------------------------------
+             -------------
+  269          //  @brief      at24c02写一个字节
+  270          //  @param      byte_reg  at24c02地址(0-255)
+  271          //  @param      dat     需要写入的数据
+  272          //  @return     void          
+  273          //  @since      v1.0
+  274          //  Sample usage: 
+  275          //  @note       
+  276          //-------------------------------------------------------------------------------------------------------
+             -------------
+  277          void at24c02_write_byte(uint8 byte_reg, uint8 dat)
+  278          {
+  279   1        delay_ms(6);
+  280   1        at24c02_simiic_write_reg(AT24C02_DEV_ADDR, byte_reg, dat);
+  281   1      }
+  282          
+  283          //-------------------------------------------------------------------------------------------------------
+             -------------
+  284          //  @brief      at24c02读一个字节
+  285          //  @param      byte_reg  at24c02地址(0-255)
+  286          //  @return     uint8   返回读取到的字节数          
+  287          //  @since      v1.0
+  288          //  Sample usage: 
+  289          //  @note       
+  290          //-------------------------------------------------------------------------------------------------------
+             -------------
+  291          uint8 at24c02_read_byte(uint8 byte_reg)
+  292          {
+  293   1        delay_ms(6);
+  294   1        return at24c02_simiic_read_reg(AT24C02_DEV_ADDR, byte_reg);
+  295   1      }
+  296          
+  297          //-------------------------------------------------------------------------------------------------------
+             -------------
+  298          //  @brief      at24c02写多个字节
+  299          //  @param      byte_reg  at24c02起始地址(0-255)
+  300          //  @param      dat_add   需要写入的数据指针
+  301          //  @param      num     需要写入多少个数据
+  302          //  @return     void          
+  303          //  @since      v1.0
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 6   
+
+  304          //  Sample usage: 
+  305          //  @note       
+  306          //-------------------------------------------------------------------------------------------------------
+             -------------
+  307          void at24c02_write_bytes(uint8 byte_reg, uint8 *dat_add, uint8 num)
+  308          {
+  309   1        delay_ms(6);
+  310   1        at24c02_simiic_start();
+  311   1          at24c02_send_ch( (AT24C02_DEV_ADDR<<1) | 0x00);
+  312   1        at24c02_send_ch( byte_reg );          
+  313   1      
+  314   1          while(--num)
+  315   1          {
+  316   2          at24c02_send_ch( *dat_add++ );          
+  317   2          byte_reg++;
+  318   2          if((byte_reg % 8) == 0)
+  319   2          {
+  320   3            at24c02_simiic_stop();
+  321   3            delay_ms(6);
+  322   3            at24c02_simiic_start();
+  323   3            at24c02_send_ch( (AT24C02_DEV_ADDR<<1) | 0x00);
+  324   3            at24c02_send_ch( byte_reg );          
+  325   3          }
+  326   2          }
+  327   1        at24c02_send_ch( *dat_add++ );   
+  328   1        at24c02_simiic_stop();
+  329   1      }
+  330          
+  331          //-------------------------------------------------------------------------------------------------------
+             -------------
+  332          //  @brief      at24c02读多个字节
+  333          //  @param      byte_reg  at24c02起始地址(0-255)
+  334          //  @param      dat_add   需要读出的数据指针
+  335          //  @param      num     需要读出多少个数据
+  336          //  @return     void          
+  337          //  @since      v1.0
+  338          //  Sample usage: 
+  339          //  @note       
+  340          //-------------------------------------------------------------------------------------------------------
+             -------------
+  341          void at24c02_read_bytes(uint8 byte_reg, uint8 *dat_add, uint8 num)
+  342          {
+  343   1        delay_ms(5);
+  344   1        at24c02_simiic_start();
+  345   1          at24c02_send_ch( (AT24C02_DEV_ADDR<<1) | 0x00);  //发送器件地址加写位
+  346   1        at24c02_send_ch( byte_reg );             //发送从机寄存器地址
+  347   1        delay_ms(5);
+  348   1        at24c02_simiic_start();
+  349   1        at24c02_send_ch( (AT24C02_DEV_ADDR<<1) | 0x01);  //发送器件地址加读位
+  350   1          while(--num)
+  351   1          {
+  352   2              *dat_add++ = at24c02_read_ch(1); //读取数据
+  353   2          byte_reg++;
+  354   2          }
+  355   1        *dat_add++ = at24c02_read_ch(0); //读取数据
+  356   1        at24c02_simiic_stop();
+  357   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       750     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+C251 COMPILER V5.60.0,  SEEKFREE_AT24C02                                                   23/03/25  14:17:38  PAGE 7   
+
+  xdata-const size     =    ------     ------
+  edata size           =        29     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

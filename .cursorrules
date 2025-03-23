@@ -1,0 +1,33 @@
+{
+    "lint": {
+        "exclude": [
+            "USER/src/**/*.c",
+            "USER/src/**/*.h"
+        ],
+        "ignoreErrors": [
+            {
+                "code": "1696",
+                "message": "检测到 #include 错误*"
+            },
+            {
+                "code": "1696",
+                "message": "无法打开 源 文件*"
+            }
+        ],
+        "rules": [
+            {
+                "id": "variable-declaration-at-top",
+                "description": "所有变量必须在函数开始处声明，不能在函数中间随时声明变量",
+                "severity": "error",
+                "pattern": "(?<=\\{)[^{}]*?(?<![;\\s{}])\\s+(?:int|float|double|char|unsigned|long|short|uint\\d+|int\\d+)\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s*(?:=|;)",
+                "message": "变量必须在函数开始处声明，不能在函数中间随时声明"
+            }
+        ]
+    },
+    "copilot": {
+        "enable": true
+    },
+    "ai": {
+        "memorySize": 20
+    }
+} 

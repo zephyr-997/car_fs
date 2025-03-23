@@ -1,0 +1,46 @@
+# Keil5生成的中间文件和输出文件
+/Objects/
+/Listings/
+/Output/
+/*.axf
+/*.elf
+/*.hex
+/*.bin
+/*.lib
+/*.map
+/*.sct
+/*.lst
+/*.crf
+/*.htm
+/*.uvoptx
+/*.uvgui.*
+
+# 编译器生成的临时文件
+*.o
+*.obj
+*.bak
+*.d
+
+# IDE配置文件
+/.vscode/
+/.idea/
+/.cursor/
+
+# 日志和调试文件
+*.log
+*.tlog
+*.ilk
+*.pdb
+
+# 版本控制
+.git/
+.svn/
+
+# 临时文件
+*.swp
+*.swo
+*~
+*.tmp
+
+# 自定义排除（按需添加）
+# /project_specific/
