@@ -1,0 +1,304 @@
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           23/03/25  23:32:52  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
+OBJECT MODULE PLACED IN .\Out_File\electromagnetic_tracking.obj
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FL
+                    -OAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree
+                    -_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) TABS(2) OBJECT(.\Ou
+                    -t_File\electromagnetic_tracking.obj) 
+
+stmt  level    source
+
+    1          #include "electromagnetic_tracking.h"
+    2          
+    3          // 滤波后数据
+    4          uint16 filtered_L, filtered_LM, filtered_RM, filtered_R;
+    5          
+    6          // 归一化数据
+    7          float normalized_L, normalized_LM, normalized_RM, normalized_R;
+    8          
+    9          // 存储每个电感的最大最小值，用于动态校准
+   10          uint16 min_L = 0xFFFF, min_LM = 0xFFFF, min_RM = 0xFFFF, min_R = 0xFFFF;
+   11          uint16 max_L = 0, max_LM = 0, max_RM = 0, max_R = 0;
+   12          
+   13          // 电感位置计算相关变量
+   14          int16 position;
+   15          
+   16          // 电磁保护逻辑变量
+   17          uint8 protection_flag = 0;
+   18          
+   19          // 差比和算法中间变量
+   20          float ratio_L_R = 0;
+   21          float ratio_LM_RM = 0;
+   22          
+   23          // 初始化电磁传感器
+   24          void electromagnetic_init(void)
+   25          {
+   26   1          adc_init(ADC_L, 0);
+   27   1          adc_init(ADC_LM, 0);
+   28   1          adc_init(ADC_RM, 0);
+   29   1          adc_init(ADC_R, 0);
+   30   1      }
+   31          
+   32          // 均值滤波函数
+   33          uint16 adc_mean_filter(ADCN_enum adcn, uint8 count)
+   34          {
+   35   1          uint8 i = 0;  // 使用uint8代替uint16，因为循环次数很小
+   36   1          uint32 sum = 0;  // 使用uint32避免溢出
+   37   1          uint16 adc_value = 0;
+   38   1          
+   39   1          // 进行多次采样并累加
+   40   1          for (i = 0; i < count; i++)
+   41   1          {
+   42   2              adc_value = adc_once(adcn, ADC_10BIT);
+   43   2              sum += adc_value;  // 累加读取值
+   44   2              // 添加短暂延时可以提高采样稳定性
+   45   2              delay_us(5);
+   46   2          }
+   47   1          
+   48   1          return (uint16)(sum / count);  // 返回均值
+   49   1      }
+   50          
+   51          // 更新每个电感的最大最小值
+   52          void update_min_max_values(void)
+   53          {
+   54   1          // 更新最小值
+   55   1          if(filtered_L < min_L && filtered_L > 10) min_L = filtered_L;
+   56   1          if(filtered_LM < min_LM && filtered_LM > 10) min_LM = filtered_LM;
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           23/03/25  23:32:52  PAGE 2   
+
+   57   1          if(filtered_RM < min_RM && filtered_RM > 10) min_RM = filtered_RM;
+   58   1          if(filtered_R < min_R && filtered_R > 10) min_R = filtered_R;
+   59   1          
+   60   1          // 更新最大值
+   61   1          if(filtered_L > max_L) max_L = filtered_L;
+   62   1          if(filtered_LM > max_LM) max_LM = filtered_LM;
+   63   1          if(filtered_RM > max_RM) max_RM = filtered_RM;
+   64   1          if(filtered_R > max_R) max_R = filtered_R;
+   65   1      }
+   66          
+   67          // 归一化电感数据
+   68          void normalize_sensors(void)
+   69          {
+   70   1          // 防止除以0，确保最大值和最小值有差异
+   71   1          // 使用1000作为放大系数，避免使用浮点数
+   72   1          if(max_L > min_L) 
+   73   1              normalized_L = (float)((filtered_L - min_L) * 1000) / ((max_L - min_L) * 1000);
+   74   1          else 
+   75   1              normalized_L = 0;
+   76   1              
+   77   1          if(max_LM > min_LM) 
+   78   1              normalized_LM = (float)((filtered_LM - min_LM) * 1000) / ((max_LM - min_LM) * 1000);
+   79   1          else 
+   80   1              normalized_LM = 0;
+   81   1              
+   82   1          if(max_RM > min_RM) 
+   83   1              normalized_RM = (float)((filtered_RM - min_RM) * 1000) / ((max_RM - min_RM) * 1000);
+   84   1          else 
+   85   1              normalized_RM = 0;
+   86   1              
+   87   1          if(max_R > min_R) 
+   88   1              normalized_R = (float)((filtered_R - min_R) * 1000) / ((max_R - min_R) * 1000);
+   89   1          else 
+   90   1              normalized_R = 0;
+   91   1          
+   92   1          // 限制范围在0-1之间
+   93   1          if(normalized_L > 1.0f) normalized_L = 1.0f;
+   94   1          if(normalized_L < 0.0f) normalized_L = 0.0f;
+   95   1          
+   96   1          if(normalized_LM > 1.0f) normalized_LM = 1.0f;
+   97   1          if(normalized_LM < 0.0f) normalized_LM = 0.0f;
+   98   1          
+   99   1          if(normalized_RM > 1.0f) normalized_RM = 1.0f;
+  100   1          if(normalized_RM < 0.0f) normalized_RM = 0.0f;
+  101   1          
+  102   1          if(normalized_R > 1.0f) normalized_R = 1.0f;
+  103   1          if(normalized_R < 0.0f) normalized_R = 0.0f;
+  104   1      }
+  105          
+  106          // 计算位置（使用差比和加权平均方法）
+  107          int16 calculate_position(void)
+  108          {
+  109   1          // 在函数开始处声明所有变量
+  110   1          float weight_sum = 0;
+  111   1          float weighted_sum = 0;
+  112   1          float diff_L_R = 0;
+  113   1          float diff_LM_RM = 0;
+  114   1          float sum_L_R = 0;
+  115   1          float sum_LM_RM = 0;
+  116   1          static int16 last_pos = 0;
+  117   1          int16 pos = 0;
+  118   1          float filter_param = 0.7f; // 滤波系数，可调
+  119   1          
+  120   1          // 计算水平电感的差值和和值
+  121   1          diff_L_R = normalized_L - normalized_R;
+  122   1          sum_L_R = normalized_L + normalized_R;
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           23/03/25  23:32:52  PAGE 3   
+
+  123   1          
+  124   1          // 计算垂直电感的差值和和值
+  125   1          diff_LM_RM = normalized_LM - normalized_RM;
+  126   1          sum_LM_RM = normalized_LM + normalized_RM;
+  127   1          
+  128   1          // 计算差比和，避免除以0
+  129   1          if(sum_L_R > 0.01f)
+  130   1              ratio_L_R = diff_L_R / sum_L_R;
+  131   1          else
+  132   1              ratio_L_R = 0;
+  133   1              
+  134   1          if(sum_LM_RM > 0.01f)
+  135   1              ratio_LM_RM = diff_LM_RM / sum_LM_RM;
+  136   1          else
+  137   1              ratio_LM_RM = 0;
+  138   1          
+  139   1          // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
+  140   1          if(sum_L_R < 0.1f && sum_LM_RM < 0.1f)
+  141   1          {
+  142   2              // 保持上一次的位置值
+  143   2              return last_pos;
+  144   2          }
+  145   1          
+  146   1          // 十字路口特征：中间电感值大，两侧电感值小
+  147   1          if(normalized_LM > 0.6f && normalized_RM > 0.6f && 
+  148   1             normalized_L < 0.3f && normalized_R < 0.3f)
+  149   1          {
+  150   2              // 十字路口处理逻辑，保持直行
+  151   2              return 0;
+  152   2          }
+  153   1          
+  154   1          // 差比和加权，水平电感权重大，垂直电感权重小
+  155   1          weighted_sum = ratio_L_R * 100 * 0.7f + ratio_LM_RM * 100 * 0.3f;
+  156   1          
+  157   1          // 限制范围在-100到100之间
+  158   1          if(weighted_sum > 100) weighted_sum = 100;
+  159   1          if(weighted_sum < -100) weighted_sum = -100;
+  160   1          
+  161   1          pos = (int16)weighted_sum;
+  162   1          
+  163   1          // 添加低通滤波，减少抖动
+  164   1          pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
+  165   1          last_pos = pos;
+  166   1          
+  167   1          return pos;
+  168   1      }
+  169          
+  170          // 电磁保护逻辑函数实现
+  171          uint8 check_electromagnetic_protection(void)
+  172          {
+  173   1          // 在函数开始处声明所有变量
+  174   1          uint8 is_out_of_track = 0;
+  175   1          uint16 sum_value = 0;
+  176   1          uint16 threshold = 100;  // 阈值，需要根据实际情况调整
+  177   1          static uint8 out_of_track_count = 0;
+  178   1          static uint8 protection_triggered = 0;
+  179   1          
+  180   1          // 计算所有电感的和值
+  181   1          sum_value = filtered_L + filtered_LM + filtered_RM + filtered_R;
+  182   1          
+  183   1          // 判断是否脱离赛道的条件
+  184   1          // 1. 所有电感值总和过小，说明可能脱离赛道
+  185   1          if(sum_value < threshold)
+  186   1          {
+  187   2              is_out_of_track = 1;
+  188   2          }
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           23/03/25  23:32:52  PAGE 4   
+
+  189   1          
+  190   1          // 2. 归一化后的值都很小，说明可能脱离赛道
+  191   1          if(normalized_L < 0.05f && normalized_LM < 0.05f && 
+  192   1             normalized_RM < 0.05f && normalized_R < 0.05f)
+  193   1          {
+  194   2              is_out_of_track = 1;
+  195   2          }
+  196   1          
+  197   1          // 3. 位置偏差过大，说明可能偏离赛道太多
+  198   1          if(position < -90 || position > 90)
+  199   1          {
+  200   2              // 只有当电感值总和也较小时才判断为出赛道
+  201   2              if(sum_value < threshold * 2)
+  202   2              {
+  203   3                  is_out_of_track = 1;
+  204   3              }
+  205   2          }
+  206   1          
+  207   1          // 连续检测逻辑，防止偶然的低值导致误判
+  208   1          if(is_out_of_track)
+  209   1          {
+  210   2              out_of_track_count++;
+  211   2              if(out_of_track_count >= 5)  // 连续5次检测到脱离赛道才触发保护
+  212   2              {
+  213   3                  protection_triggered = 1;
+  214   3              }
+  215   2          }
+  216   1          else
+  217   1          {
+  218   2              // 如果检测正常，则计数器减少但不低于0
+  219   2              if(out_of_track_count > 0)
+  220   2                  out_of_track_count--;
+  221   2          }
+  222   1          
+  223   1          return protection_triggered;
+  224   1      }
+  225          
+  226          // 显示电磁传感器数据
+  227          void display_electromagnetic_data(void)
+  228          {
+  229   1          // 显示原始滤波数据和归一化数据
+  230   1          ips114_showstr(0,0,"L:");   
+  231   1          ips114_showuint16(3*8, 0, filtered_L);
+  232   1          ips114_showstr(9*8,0,"N:");
+  233   1          ips114_showfloat(11*8, 0, normalized_L, 2, 2);
+  234   1          
+  235   1          ips114_showstr(0,1,"LM:");  
+  236   1          ips114_showuint16(3*8, 1, filtered_LM);
+  237   1          ips114_showstr(9*8,1,"N:");
+  238   1          ips114_showfloat(11*8, 1, normalized_LM, 2, 2);
+  239   1          
+  240   1          ips114_showstr(0,2,"RM:");  
+  241   1          ips114_showuint16(3*8, 2, filtered_RM);
+  242   1          ips114_showstr(9*8,2,"N:");
+  243   1          ips114_showfloat(11*8, 2, normalized_RM, 2, 2);
+  244   1          
+  245   1          ips114_showstr(0,3,"R:");   
+  246   1          ips114_showuint16(3*8, 3, filtered_R);
+  247   1          ips114_showstr(9*8,3,"N:");
+  248   1          ips114_showfloat(11*8, 3, normalized_R, 2, 2);
+  249   1          
+  250   1          // 显示位置和差比和数据
+  251   1          ips114_showstr(0,4,"Pos:");
+  252   1          ips114_showint16(5*8, 4, position);
+  253   1          
+  254   1          // 显示差比和数据
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           23/03/25  23:32:52  PAGE 5   
+
+  255   1          ips114_showstr(0,5,"L-R:");
+  256   1          ips114_showfloat(5*8, 5, ratio_L_R, 2, 2);
+  257   1          
+  258   1          ips114_showstr(0,6,"LM-RM:");
+  259   1          ips114_showfloat(6*8, 6, ratio_LM_RM, 2, 2);
+  260   1      } 
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1994     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =       100     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       119     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

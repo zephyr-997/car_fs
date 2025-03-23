@@ -1,5 +1,6 @@
 ".\Out_File\isr.obj",
 ".\Out_File\main.obj",
+".\Out_File\electromagnetic_tracking.obj",
 ".\Out_File\board.obj",
 ".\Out_File\common.obj",
 ".\Out_File\seekfree_assistant.obj",

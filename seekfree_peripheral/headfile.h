@@ -2,18 +2,16 @@
 #define __HEADFILE_H_
 
 
-
-
 #include "isr.h"
 #include <string.h>
 #include <stdio.h>
 #include "intrins.h"
-//------STC32G SDKµÈ
+//------STC32G SDKï¿½ï¿½
 #include "STC32Gxx.h"
 #include "board.h"
 #include "common.h"
 
-//------Öð·É¿Æ¼¼µ¥Æ¬»úÍâÉèÇý¶¯Í·ÎÄ¼þ
+//------ï¿½ï¿½É¿Æ¼ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½
 #include "zf_uart.h"
 #include "zf_gpio.h"
 #include "zf_iic.h"
@@ -27,7 +25,7 @@
 #include "zf_eeprom.h"
 #include "zf_fifo.h"
 
-//------Öð·É¿Æ¼¼²úÆ·Çý¶¯Í·ÎÄ¼þ
+//------ï¿½ï¿½É¿Æ¼ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ä¼ï¿½
 #include "SEEKFREE_FONT.h"
 #include "SEEKFREE_18TFT.h"
 
@@ -51,7 +49,17 @@
 #include "SEEKFREE_BLE6A20.h"
 #include "SEEKFREE_GPS_TAU1201.h"
 
-//------Öð·É¿Æ¼¼²úÆ·×é¼þ²ãÎÄ¼þ
+//------ï¿½ï¿½É¿Æ¼ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 #include "seekfree_assistant.h"
+
+
+//------ç”¨æˆ·å®šä¹‰æ–‡ä»¶
+#include "electromagnetic_tracking.h"
+
+
+
+
+
+
 
 #endif
