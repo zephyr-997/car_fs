@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "headfile.h": "c",
+        "seekfree_18tft.h": "c",
+        "common.h": "c"
+    }
+}
