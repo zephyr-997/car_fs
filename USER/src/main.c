@@ -1,17 +1,38 @@
 #include "headfile.h"
 
-
 void main()
 {
 	board_init();			
 	electromagnetic_init();  // 初始化电磁传感器
-	ips114_init();						
-	
-	
+	ips114_init();					
+	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
+	pit_timer_ms(TIM_2, 10);
+	motor_init();
+	encoder_init();
+	imu963ra_init();
+	Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
 	
     while(1)
 	{
 		
+		//串口接收
+		if(g_RxPointer != 0)
+		{
+			int temp = g_RxPointer;
+			delay_ms(4);
+			if(temp == g_RxPointer)
+			{
+				uart4_interrupt_callback();
+			}
+		}
+		if (flag == 1)
+		{
+			flag = 0;
+		}		
+
+		sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_EncoderRight);
+		uart_putstr(UART_4, g_TxData);
+
 		// 获取滤波后的ADC数据
 		filtered_L  = adc_mean_filter(ADC_L, 5);  
 		filtered_LM = adc_mean_filter(ADC_LM, 5); 	  

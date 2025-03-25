@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               23/03/25  23:31:41  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               25/03/25  21:58:04  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -11,78 +11,100 @@ stmt  level    source
 
     1          #include "headfile.h"
     2          
-    3          
-    4          void main()
-    5          {
-    6   1        board_init();     
-    7   1        electromagnetic_init();  // 初始化电磁传感器
-    8   1        ips114_init();            
-    9   1        
-   10   1        
-   11   1        
-   12   1          while(1)
-   13   1        {
-   14   2          
-   15   2          // 获取滤波后的ADC数据
-   16   2          filtered_L  = adc_mean_filter(ADC_L, 5);  
-   17   2          filtered_LM = adc_mean_filter(ADC_LM, 5);     
-   18   2          filtered_RM = adc_mean_filter(ADC_RM, 5);   
-   19   2          filtered_R  = adc_mean_filter(ADC_R, 5);  
-   20   2      
-   21   2          // 更新最大最小值
-   22   2          update_min_max_values();
-   23   2          
-   24   2          // 归一化电感数据
-   25   2          normalize_sensors();
-   26   2          
-   27   2          // 计算位置偏差
-   28   2          position = calculate_position();
-   29   2          
-   30   2          // 检查电磁保护
-   31   2          protection_flag = check_electromagnetic_protection();
-   32   2          
-   33   2          if(protection_flag)
-   34   2          {
-   35   3            // 触发保护，停车
-   36   3            // 这里需要添加控制电机停止的代码，例如：
-   37   3            // motor_set(MOTOR_L, 0);
-   38   3            // motor_set(MOTOR_R, 0);
-   39   3            
-   40   3            // 显示保护触发信息
-   41   3            ips114_showstr(0, 7, "Protection: Out of Track!");
-   42   3            
-   43   3            // 永久停止或等待重置
-   44   3            while(1)
-   45   3            {
-   46   4              // 可以添加重置逻辑，例如按键检测
-   47   4              // 如果需要重新启动，可以在这里添加条件
-   48   4              delay_ms(100);
-   49   4            }
-   50   3          }
-   51   2          
-   52   2          // 显示电磁传感器数据
-   53   2          display_electromagnetic_data();
-   54   2          
-   55   2          delay_ms(100);
-   56   2        } 
-   57   1      }
-C251 COMPILER V5.60.0,  main                                                               23/03/25  23:31:41  PAGE 2   
+    3          void main()
+    4          {
+    5   1        board_init();     
+    6   1        electromagnetic_init();  // 初始化电磁传感器
+    7   1        ips114_init();          
+    8   1        uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
+    9   1        pit_timer_ms(TIM_2, 10);
+   10   1        motor_init();
+   11   1        encoder_init();
+   12   1        imu963ra_init();
+   13   1        Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+   14   1        
+   15   1          while(1)
+   16   1        {
+   17   2          
+   18   2          //串口接收
+   19   2          if(g_RxPointer != 0)
+   20   2          {
+   21   3            int temp = g_RxPointer;
+   22   3            delay_ms(4);
+   23   3            if(temp == g_RxPointer)
+   24   3            {
+   25   4              uart4_interrupt_callback();
+   26   4            }
+   27   3          }
+   28   2          if (flag == 1)
+   29   2          {
+   30   3            flag = 0;
+   31   3          }   
+   32   2      
+   33   2          sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_EncoderRig
+             -ht);
+   34   2          uart_putstr(UART_4, g_TxData);
+   35   2      
+   36   2          // 获取滤波后的ADC数据
+   37   2          filtered_L  = adc_mean_filter(ADC_L, 5);  
+   38   2          filtered_LM = adc_mean_filter(ADC_LM, 5);     
+   39   2          filtered_RM = adc_mean_filter(ADC_RM, 5);   
+   40   2          filtered_R  = adc_mean_filter(ADC_R, 5);  
+   41   2      
+   42   2          // 更新最大最小值
+   43   2          update_min_max_values();
+   44   2          
+   45   2          // 归一化电感数据
+   46   2          normalize_sensors();
+   47   2          
+   48   2          // 计算位置偏差
+   49   2          position = calculate_position();
+   50   2          
+   51   2          // 检查电磁保护
+   52   2          protection_flag = check_electromagnetic_protection();
+   53   2          
+   54   2          if(protection_flag)
+   55   2          {
+   56   3            // 触发保护，停车
+C251 COMPILER V5.60.0,  main                                                               25/03/25  21:58:04  PAGE 2   
 
-   58          
-   59          
-   60          
+   57   3            // 这里需要添加控制电机停止的代码，例如：
+   58   3            // motor_set(MOTOR_L, 0);
+   59   3            // motor_set(MOTOR_R, 0);
+   60   3            
+   61   3            // 显示保护触发信息
+   62   3            ips114_showstr(0, 7, "Protection: Out of Track!");
+   63   3            
+   64   3            // 永久停止或等待重置
+   65   3            while(1)
+   66   3            {
+   67   4              // 可以添加重置逻辑，例如按键检测
+   68   4              // 如果需要重新启动，可以在这里添加条件
+   69   4              delay_ms(100);
+   70   4            }
+   71   3          }
+   72   2          
+   73   2          // 显示电磁传感器数据
+   74   2          display_electromagnetic_data();
+   75   2          
+   76   2          delay_ms(100);
+   77   2        } 
+   78   1      }
+   79          
+   80          
+   81          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       125     ------
+  code size            =       396     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =    ------     ------
+  edata size           =         2     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
@@ -90,7 +112,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        26     ------
+  hconst size          =        42     ------
 End of Module Information.
 
 

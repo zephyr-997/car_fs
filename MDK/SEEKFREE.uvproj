@@ -339,6 +339,26 @@
               <FileType>1</FileType>
               <FilePath>..\USER\src\electromagnetic_tracking.c</FilePath>
             </File>
+            <File>
+              <FileName>encoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\encoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\pid.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -354,15 +374,25 @@
               <FileType>5</FileType>
               <FilePath>..\USER\inc\electromagnetic_tracking.h</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>code</GroupName>
-          <Files>
             <File>
-              <FileName>readme.txt</FileName>
+              <FileName>encoder.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\CODE\readme.txt</FilePath>
+              <FilePath>..\USER\inc\encoder.h</FilePath>
+            </File>
+            <File>
+              <FileName>filter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\inc\filter.h</FilePath>
+            </File>
+            <File>
+              <FileName>motor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\inc\motor.h</FilePath>
+            </File>
+            <File>
+              <FileName>pid.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\inc\pid.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -378,21 +408,6 @@
               <FileName>common.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\common.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>seekfree_components</GroupName>
-          <Files>
-            <File>
-              <FileName>seekfree_assistant.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_components\seekfree_assistant.c</FilePath>
-            </File>
-            <File>
-              <FileName>seekfree_assistant_inface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_components\seekfree_assistant_inface.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -475,61 +490,6 @@
           <GroupName>seekfree_peripheral</GroupName>
           <Files>
             <File>
-              <FileName>SEEKFREE_18TFT.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_18TFT.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_ABSOLUTE_ENCODER.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_ABSOLUTE_ENCODER.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_AT24C02.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_AT24C02.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_BLE6A20.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_BLE6A20.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_BLUETOOTH_CH9141.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_BLUETOOTH_CH9141.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_DL1A.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_DL1A.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_DL1B.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_DL1B.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_FONT.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_FONT.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_GPS_TAU1201.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_GPS_TAU1201.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_ICM20602.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_ICM20602.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_IMU660RA.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_IMU660RA.c</FilePath>
-            </File>
-            <File>
               <FileName>SEEKFREE_IMU963RA.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\seekfree_peripheral\SEEKFREE_IMU963RA.c</FilePath>
@@ -555,34 +515,14 @@
               <FilePath>..\seekfree_peripheral\SEEKFREE_PRINTF.c</FilePath>
             </File>
             <File>
-              <FileName>SEEKFREE_TSL1401.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_TSL1401.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_VIRSCO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_VIRSCO.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_WIRELESS.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_WIRELESS.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEEKFREE_WIRELESS_CH573.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_WIRELESS_CH573.c</FilePath>
-            </File>
-            <File>
               <FileName>headfile.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\seekfree_peripheral\headfile.h</FilePath>
             </File>
             <File>
-              <FileName>SEEKFREE_CONFIG.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\seekfree_peripheral\SEEKFREE_CONFIG.h</FilePath>
+              <FileName>SEEKFREE_FONT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\seekfree_peripheral\SEEKFREE_FONT.c</FilePath>
             </File>
           </Files>
         </Group>

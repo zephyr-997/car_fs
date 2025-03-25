@@ -1,16 +1,16 @@
 /*********************************************************************************************************************
  * COPYRIGHT NOTICE
- * Copyright (c) 2020,Öð·É¿Æ¼¼
+ * Copyright (c) 2020,é€é£žç§‘æŠ€
  * All rights reserved.
- * ¼¼ÊõÌÖÂÛQQÈº£ºÒ»Èº£º179029047(ÒÑÂú)  ¶þÈº£º244861897(ÒÑÂú)  ÈýÈº£º824575535
+ * æŠ€æœ¯è®¨è®ºQQç¾¤ï¼šä¸€ç¾¤ï¼š179029047(å·²æ»¡)  äºŒç¾¤ï¼š244861897(å·²æ»¡)  ä¸‰ç¾¤ï¼š824575535
  *
- * ÒÔÏÂËùÓÐÄÚÈÝ°æÈ¨¾ùÊôÖð·É¿Æ¼¼ËùÓÐ£¬Î´¾­ÔÊÐí²»µÃÓÃÓÚÉÌÒµÓÃÍ¾£¬
- * »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌÐò£¬ÐÞ¸ÄÄÚÈÝÊ±±ØÐë±£ÁôÖð·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷¡£
+ * ä»¥ä¸‹æ‰€æœ‰å†…å®¹ç‰ˆæƒå‡å±žé€é£žç§‘æŠ€æ‰€æœ‰ï¼Œæœªç»å…è®¸ä¸å¾—ç”¨äºŽå•†ä¸šç”¨é€”ï¼Œ
+ * æ¬¢è¿Žå„ä½ä½¿ç”¨å¹¶ä¼ æ’­æœ¬ç¨‹åºï¼Œä¿®æ”¹å†…å®¹æ—¶å¿…é¡»ä¿ç•™é€é£žç§‘æŠ€çš„ç‰ˆæƒå£°æ˜Žã€‚
  *
  * @file       		uart
- * @company	   		³É¶¼Öð·É¿Æ¼¼ÓÐÏÞ¹«Ë¾
- * @author     		Öð·É¿Æ¼¼(QQ790875685)
- * @version    		²é¿´docÄÚversionÎÄ¼þ °æ±¾ËµÃ÷
+ * @company	   		æˆéƒ½é€é£žç§‘æŠ€æœ‰é™å…¬å¸
+ * @author     		é€é£žç§‘æŠ€(QQ790875685)
+ * @version    		æŸ¥çœ‹docå†…versionæ–‡ä»¶ ç‰ˆæœ¬è¯´æ˜Ž
  * @Software 		MDK FOR C251 V5.60
  * @Target core		STC32G12K128
  * @Taobao   		https://seekfree.taobao.com/
@@ -20,24 +20,30 @@
 #include "zf_uart.h"
 #include "board.h"
    
-uint8 busy[5];				 //½ÓÊÕÃ¦±êÖ¾Î»
+uint8 busy[5];		//æŽ¥æ”¶å¿™æ ‡å¿—ä½
+
+//ä¸²å£æ”¶å‘ç›¸å…³æ•°æ®
+uint8_t g_TxData[UART_TX_LENGTH] = {0};
+uint8_t g_RxData[UART_RX_LENGTH] = {0};
+uint8_t g_RxPointer = 0, g_RxDat = 0;
+
 
 //-------------------------------------------------------------------------------------------------------------------
-//  @brief      ´®¿Ú³õÊ¼»¯
-//  @param      uart_n          ´®¿ÚÄ£¿éºÅ(USART_1,USART_2,USART_3,USART_4)
-//  @param      uart_rx_pin     ´®¿Ú½ÓÊÕÒý½Å
-//  @param      uart_tx_pin     ´®¿Ú·¢ËÍÒý½Å
-//  @param      baud      		´®¿Ú²¨ÌØÂÊ
-//  @param      tim_n      		Ê¹ÓÃtim_n×÷Îª´®¿Ú²¨ÌØÂÊ·¢ÉúÆ÷(TIM1-TIM4)
+//  @brief      ä¸²å£åˆå§‹åŒ–
+//  @param      uart_n          ä¸²å£æ¨¡å—å·(USART_1,USART_2,USART_3,USART_4)
+//  @param      uart_rx_pin     ä¸²å£æŽ¥æ”¶å¼•è„š
+//  @param      uart_tx_pin     ä¸²å£å‘é€å¼•è„š
+//  @param      baud      		ä¸²å£æ³¢ç‰¹çŽ‡
+//  @param      tim_n      		ä½¿ç”¨tim_nä½œä¸ºä¸²å£æ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨(TIM1-TIM4)
 //  @return     NULL          	
-//  Sample usage:               uart_init(UART_1, UART1_RX_P30, UART1_TX_P31, 115200, TIM_2);        //³õÊ¼»¯´®¿Ú1 ²¨ÌØÂÊ115200 ·¢ËÍÒý½ÅÊ¹ÓÃP31 ½ÓÊÕÒý½ÅÊ¹ÓÃP30 ,Ê¹ÓÃ¶¨Ê±Æ÷2×÷Îª²¨ÌØÂÊ·¢ÉúÆ÷
-//  @note                       ´®¿Ú1Ê¹ÓÃ ¶¨Ê±Æ÷1»òÕß¶¨Ê±Æ÷2 ×÷Îª²¨ÌØÂÊ·¢ÉúÆ÷¡£
-//								´®¿Ú2Ê¹ÓÃ ¶¨Ê±Æ÷2 			 ×÷Îª²¨ÌØÂÊ·¢ÉúÆ÷¡£
-//								´®¿Ú3Ê¹ÓÃ ¶¨Ê±Æ÷3»òÕß¶¨Ê±Æ÷2 ×÷Îª²¨ÌØÂÊ·¢ÉúÆ÷¡£
-//								´®¿Ú4Ê¹ÓÃ ¶¨Ê±Æ÷4»òÕß¶¨Ê±Æ÷2 ×÷Îª²¨ÌØÂÊ·¢ÉúÆ÷¡£
-//                              STC32G½öÓÐ ¶¨Ê±Æ÷0-¶¨Ê±Æ÷4£¬Õâ5¸ö¶¨Ê±Æ÷¡£
-//								±àÂëÆ÷²É¼¯Êý¾ÝÒ²ÐèÒª¶¨Ê±Æ÷×÷ÎªÍâ²¿¼ÆÊý¡£
-//								Èç¹û²»Í¬µÄ´®¿Ú£¬Ê¹ÓÃÍ¬Ò»¸ö¶¨Ê±Æ÷£¬´®¿ÚµÄ²¨ÌØÂÊÒÔ×îºóÒ»¸ö³õÊ¼»¯Îª×¼
+//  Sample usage:               uart_init(UART_1, UART1_RX_P30, UART1_TX_P31, 115200, TIM_2);        //åˆå§‹åŒ–ä¸²å£1 æ³¢ç‰¹çŽ‡115200 å‘é€å¼•è„šä½¿ç”¨P31 æŽ¥æ”¶å¼•è„šä½¿ç”¨P30 ,ä½¿ç”¨å®šæ—¶å™¨2ä½œä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨
+//  @note                       ä¸²å£1ä½¿ç”¨ å®šæ—¶å™¨1æˆ–è€…å®šæ—¶å™¨2 ä½œä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨ã€‚
+//								ä¸²å£2ä½¿ç”¨ å®šæ—¶å™¨2 			 ä½œä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨ã€‚
+//								ä¸²å£3ä½¿ç”¨ å®šæ—¶å™¨3æˆ–è€…å®šæ—¶å™¨2 ä½œä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨ã€‚
+//								ä¸²å£4ä½¿ç”¨ å®šæ—¶å™¨4æˆ–è€…å®šæ—¶å™¨2 ä½œä¸ºæ³¢ç‰¹çŽ‡å‘ç”Ÿå™¨ã€‚
+//                              STC32Gä»…æœ‰ å®šæ—¶å™¨0-å®šæ—¶å™¨4ï¼Œè¿™5ä¸ªå®šæ—¶å™¨ã€‚
+//								ç¼–ç å™¨é‡‡é›†æ•°æ®ä¹Ÿéœ€è¦å®šæ—¶å™¨ä½œä¸ºå¤–éƒ¨è®¡æ•°ã€‚
+//								å¦‚æžœä¸åŒçš„ä¸²å£ï¼Œä½¿ç”¨åŒä¸€ä¸ªå®šæ—¶å™¨ï¼Œä¸²å£çš„æ³¢ç‰¹çŽ‡ä»¥æœ€åŽä¸€ä¸ªåˆå§‹åŒ–ä¸ºå‡†
 //-------------------------------------------------------------------------------------------------------------------
 void uart_init(UARTN_enum uart_n, UARTPIN_enum uart_rx_pin, UARTPIN_enum uart_tx_pin, uint32 baud, TIMN_enum tim_n)
 {
@@ -246,4 +252,86 @@ void uart_putstr(UARTN_enum uart_n,uint8 *str)
     {
         uart_putchar(uart_n, *str++);
     }
+}
+
+
+void uart4_interrupt_callback(void)
+{
+	if(g_RxPointer > 0)
+	{
+		if (strncmp(g_RxData, "left_kp", 7) == 0)
+		{
+			sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
+			
+//			sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "left_ki", 7) == 0)
+		{
+			sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
+			
+//			sprintf(g_TxData, "left_ki:%f\n", LeftPID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "left_kd", 7) == 0)
+		{
+			sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
+			
+//			sprintf(g_TxData, "left_kd:%f\n", LeftPID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "right_kp", 8) == 0)
+		{
+			sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
+			
+//			sprintf(g_TxData, "right_kp:%f\n", LeftPID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "right_ki", 8) == 0)
+		{
+			sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
+			
+//			sprintf(g_TxData, "right_ki:%f\n", LeftPID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "right_kd", 8) == 0)
+		{
+			sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
+			
+//			sprintf(g_TxData, "right_kd:%f\n", LeftPID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "imu_kp:", 7) == 0)
+		{
+			sscanf(g_RxData, "imu_kp:%f", &IMU693PID.kp);
+			
+//			sprintf(g_TxData, "imu_kp:%f\n", IMU693PID.kp);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "imu_ki:", 7) == 0)
+		{
+			sscanf(g_RxData, "imu_ki:%f", &IMU693PID.ki);
+			
+//			sprintf(g_TxData, "imu_ki:%f\n", IMU693PID.ki);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "imu_kd:", 7) == 0)
+		{
+			sscanf(g_RxData, "imu_kd:%f", &IMU693PID.kd);
+			
+//			sprintf(g_TxData, "imu_kd:%f\n", IMU693PID.kd);
+//			uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "gyroz:", 6) == 0)
+		{
+			sscanf(g_RxData, "gyroz:%f", &g_IMU693Point);
+			
+//			sprintf(g_TxData, "imu_kd:%f\n", IMU693PID.kd);
+//			uart_putstr(UART_4, g_TxData);
+		}
+	}
+	
+	g_RxPointer = 0;
+	memset(g_RxData, 0, UART_RX_LENGTH);
+	memset(g_TxData, 0, UART_TX_LENGTH);
 }

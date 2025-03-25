@@ -1,5 +1,6 @@
 #include "electromagnetic_tracking.h"
 
+
 // 滤波后数据
 uint16 filtered_L, filtered_LM, filtered_RM, filtered_R;
 

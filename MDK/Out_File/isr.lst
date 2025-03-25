@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  isr                                                                23/03/25  23:31:41  PAGE 1   
+C251 COMPILER V5.60.0,  isr                                                                25/03/25  21:58:04  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE isr
@@ -12,17 +12,17 @@ stmt  level    source
     1          ///******************************************************************************************************
              -***************
     2          // * COPYRIGHT NOTICE
-    3          // * Copyright (c) 2020,��ɿƼ�
+    3          // * Copyright (c) 2020,逐飞科技
     4          // * All rights reserved.
-    5          // * ��������QQȺ��һȺ��179029047(����)  ��Ⱥ��244861897(����)  ��Ⱥ��824575535
+    5          // * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
     6          // *
-    7          // * �����������ݰ�Ȩ������ɿƼ����У�δ����������������ҵ��;��
-    8          // * ��ӭ��λʹ�ò������������޸�����ʱ���뱣����ɿƼ��İ�Ȩ������
+    7          // * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8          // * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
     9          // *
    10          // * @file          isr
-   11          // * @company       �ɶ���ɿƼ����޹�˾
-   12          // * @author        ��ɿƼ�(QQ790875685)
-   13          // * @version       �鿴doc��version�ļ� �汾˵��
+   11          // * @company       成都逐飞科技有限公司
+   12          // * @author        逐飞科技(QQ790875685)
+   13          // * @version       查看doc内version文件 版本说明
    14          // * @Software      MDK FOR C251 V5.60
    15          // * @Target core   STC32G12K128
    16          // * @Taobao        https://seekfree.taobao.com/
@@ -30,188 +30,294 @@ stmt  level    source
    18          // ******************************************************************************************************
              -**************/
    19          #include "headfile.h"
-   20          
-   21          //UART1�ж�
-   22          void UART1_Isr() interrupt 4
-   23          {
-   24   1          uint8 res;
-   25   1        static uint8 dwon_count;
-   26   1          if(UART1_GET_TX_FLAG)
-   27   1          {
-   28   2              UART1_CLEAR_TX_FLAG;
-   29   2              busy[1] = 0;
-   30   2          }
-   31   1          if(UART1_GET_RX_FLAG)
+   20          #include "encoder.h"
+   21          #include "filter.h"
+   22          #include "motor.h"
+   23          #include "pid.h"
+   24          #include "isr.h"
+   25          
+   26          //UART1中断
+   27          void UART1_Isr() interrupt 4
+   28          {
+   29   1      //    uint8 res;
+   30   1      //  static uint8 dwon_count;
+   31   1          if(UART1_GET_TX_FLAG)
    32   1          {
-   33   2              UART1_CLEAR_RX_FLAG;
-   34   2              res = SBUF;
-   35   2              //�����Զ�����
-   36   2              if(res == 0x7F)
-   37   2              {
-   38   3                  if(dwon_count++ > 20)
-   39   3                      IAP_CONTR = 0x60;
-   40   3              }
-   41   2              else
-   42   2              {
-   43   3                  dwon_count = 0;
-   44   3              }
-   45   2          }
-   46   1      }
-   47          
-   48          //UART2�ж�
-   49          void UART2_Isr() interrupt 8
-   50          {
-   51   1          if(UART2_GET_TX_FLAG)
-   52   1        {
-   53   2              UART2_CLEAR_TX_FLAG;
-   54   2          busy[2] = 0;
-   55   2        }
-C251 COMPILER V5.60.0,  isr                                                                23/03/25  23:31:41  PAGE 2   
+   33   2              UART1_CLEAR_TX_FLAG;
+   34   2              busy[1] = 0;
+   35   2          }
+   36   1          if(UART1_GET_RX_FLAG)
+   37   1          {
+   38   2              UART1_CLEAR_RX_FLAG;
+   39   2      //        res = SBUF;
+   40   2      //        //程序自动下载
+   41   2      //        if(res == 0x7F)
+   42   2      //        {
+   43   2      //            if(dwon_count++ > 20)
+   44   2      //                IAP_CONTR = 0x60;
+   45   2      //        }
+   46   2      //        else
+   47   2      //        {
+   48   2      //            dwon_count = 0;
+   49   2      //        }
+   50   2          }
+   51   1      }
+   52          
+   53          
+   54          
+   55          //UART2中断
+C251 COMPILER V5.60.0,  isr                                                                25/03/25  21:58:04  PAGE 2   
 
-   56   1          if(UART2_GET_RX_FLAG)
-   57   1        {
-   58   2              UART2_CLEAR_RX_FLAG;
-   59   2          //�������ݼĴ���Ϊ��S2BUF
-   60   2      
-   61   2        }
-   62   1      }
-   63          
-   64          
-   65          //UART3�ж�
-   66          void UART3_Isr() interrupt 17
-   67          {
-   68   1          if(UART3_GET_TX_FLAG)
-   69   1        {
-   70   2              UART3_CLEAR_TX_FLAG;
-   71   2          busy[3] = 0;
-   72   2        }
-   73   1          if(UART3_GET_RX_FLAG)
-   74   1        {
-   75   2              UART3_CLEAR_RX_FLAG;
-   76   2          //�������ݼĴ���Ϊ��S3BUF
-   77   2      
-   78   2        }
-   79   1      }
-   80          
-   81          
-   82          //UART4�ж�
-   83          void UART4_Isr() interrupt 18
-   84          {
-   85   1          if(UART4_GET_TX_FLAG)
-   86   1        {
-   87   2              UART4_CLEAR_TX_FLAG;
-   88   2          busy[4] = 0;
-   89   2        }
-   90   1          if(UART4_GET_RX_FLAG)
-   91   1        {
-   92   2              UART4_CLEAR_RX_FLAG;
-   93   2      
-   94   2          //�������ݼĴ���Ϊ��S4BUF;
-   95   2          if(wireless_module_uart_handler != NULL)
-   96   2          {
-   97   3            // �ú���Ϊ����ָ��
-   98   3            // �ٳ�ʼ������ģ���ʱ�����øú�����ַ
-   99   3            wireless_module_uart_handler(S4BUF);
-  100   3          }
-  101   2        }
-  102   1      }
-  103          
-  104          #define LED P52
-  105          void INT0_Isr() interrupt 0
-  106          {
-  107   1        LED = 0;  //����LED
-  108   1      }
-  109          void INT1_Isr() interrupt 2
-  110          {
-  111   1      
-  112   1      }
-  113          void INT2_Isr() interrupt 10
-  114          {
-  115   1        INT2_CLEAR_FLAG;  //����жϱ�־
-  116   1      }
-  117          void INT3_Isr() interrupt 11
-  118          {
-  119   1        INT3_CLEAR_FLAG;  //����жϱ�־
-  120   1      }
-  121          
-C251 COMPILER V5.60.0,  isr                                                                23/03/25  23:31:41  PAGE 3   
+   56          void UART2_Isr() interrupt 8
+   57          {
+   58   1          if(UART2_GET_TX_FLAG)
+   59   1        {
+   60   2              UART2_CLEAR_TX_FLAG;
+   61   2          busy[2] = 0;
+   62   2        }
+   63   1          if(UART2_GET_RX_FLAG)
+   64   1        {
+   65   2              UART2_CLEAR_RX_FLAG;
+   66   2          //接收数据寄存器为：S2BUF
+   67   2      
+   68   2      
+   69   2        }
+   70   1      }
+   71          
+   72          
+   73          //UART3中断
+   74          void UART3_Isr() interrupt 17
+   75          {
+   76   1          if(UART3_GET_TX_FLAG)
+   77   1        {
+   78   2              UART3_CLEAR_TX_FLAG;
+   79   2          busy[3] = 0;
+   80   2        }
+   81   1          if(UART3_GET_RX_FLAG)
+   82   1        {
+   83   2              UART3_CLEAR_RX_FLAG;
+   84   2          //接收数据寄存器为：S3BUF
+   85   2      
+   86   2        }
+   87   1      }
+   88          
+   89          
+   90          
+   91          //UART4中断
+   92          void UART4_Isr() interrupt 18
+   93          {
+   94   1          if(UART4_GET_TX_FLAG)
+   95   1        {
+   96   2              UART4_CLEAR_TX_FLAG;
+   97   2          busy[4] = 0;
+   98   2        }
+   99   1          if(UART4_GET_RX_FLAG)
+  100   1        {
+  101   2              UART4_CLEAR_RX_FLAG;
+  102   2          //接收数据寄存器为：S4BUF;
+  103   2      
+  104   2          g_RxDat = S4BUF;
+  105   2          g_RxData[g_RxPointer++] = g_RxDat;
+  106   2        }
+  107   1      }
+  108          
+  109          
+  110          
+  111          //外部中断0
+  112          void INT0_Isr() interrupt 0
+  113          {
+  114   1      
+  115   1      }
+  116          
+  117          
+  118          
+  119          //外部中断1
+  120          void INT1_Isr() interrupt 2
+  121          {
+C251 COMPILER V5.60.0,  isr                                                                25/03/25  21:58:04  PAGE 3   
 
-  122          void INT4_Isr() interrupt 16
-  123          {
-  124   1        INT4_CLEAR_FLAG;  //����жϱ�־
-  125   1      }
+  122   1      
+  123   1      }
+  124          
+  125          
   126          
-  127          void TM0_Isr() interrupt 1
-  128          {
-  129   1      
-  130   1      }
-  131          void TM1_Isr() interrupt 3
-  132          {
-  133   1      
-  134   1      }
-  135          void TM2_Isr() interrupt 12
-  136          {
-  137   1        TIM2_CLEAR_FLAG;  //����жϱ�־
-  138   1        
-  139   1      }
-  140          void TM3_Isr() interrupt 19
-  141          {
-  142   1        TIM3_CLEAR_FLAG; //����жϱ�־
-  143   1        
-  144   1      }
-  145          
-  146          void TM4_Isr() interrupt 20
+  127          //外部中断2
+  128          void INT2_Isr() interrupt 10
+  129          {
+  130   1        INT2_CLEAR_FLAG;  //清除中断标志
+  131   1        
+  132   1      }
+  133          
+  134          
+  135          
+  136          //外部中断3
+  137          void INT3_Isr() interrupt 11
+  138          {
+  139   1        INT3_CLEAR_FLAG;  //清除中断标志
+  140   1        
+  141   1      }
+  142          
+  143          
+  144          
+  145          //外部中断4
+  146          void INT4_Isr() interrupt 16
   147          {
-  148   1        TIM4_CLEAR_FLAG; //����жϱ�־
-  149   1      //  ccd_collect();   //CCD�ɼ�����
-  150   1      
-  151   1      }
+  148   1        INT4_CLEAR_FLAG;  //清除中断标志
+  149   1        
+  150   1      }
+  151          
   152          
-  153          //void  INT0_Isr()  interrupt 0;
-  154          //void  TM0_Isr()   interrupt 1;
-  155          //void  INT1_Isr()  interrupt 2;
-  156          //void  TM1_Isr()   interrupt 3;
-  157          //void  UART1_Isr() interrupt 4;
-  158          //void  ADC_Isr()   interrupt 5;
-  159          //void  LVD_Isr()   interrupt 6;
-  160          //void  PCA_Isr()   interrupt 7;
-  161          //void  UART2_Isr() interrupt 8;
-  162          //void  SPI_Isr()   interrupt 9;
-  163          //void  INT2_Isr()  interrupt 10;
-  164          //void  INT3_Isr()  interrupt 11;
-  165          //void  TM2_Isr()   interrupt 12;
-  166          //void  INT4_Isr()  interrupt 16;
-  167          //void  UART3_Isr() interrupt 17;
-  168          //void  UART4_Isr() interrupt 18;
-  169          //void  TM3_Isr()   interrupt 19;
-  170          //void  TM4_Isr()   interrupt 20;
-  171          //void  CMP_Isr()   interrupt 21;
-  172          //void  I2C_Isr()   interrupt 24;
-  173          //void  USB_Isr()   interrupt 25;
-  174          //void  PWM1_Isr()  interrupt 26;
-  175          //void  PWM2_Isr()  interrupt 27;
+  153          
+  154          //定时器0中断
+  155          void TM0_Isr() interrupt 1
+  156          {
+  157   1        
+  158   1      }
+  159          
+  160          
+  161          
+  162          //定时器1中断
+  163          void TM1_Isr() interrupt 3
+  164          {
+  165   1      
+  166   1        
+  167   1      }
+  168          
+  169          
+  170          float left_pid = 0, right_pid = 0;               //速度环pid的增量，还需转化再赋给电机
+  171          float pidtopwm_left = 0, pidtopwm_right = 0;     //速度环pid的转化值
+  172          int g_DutyLeft = 0, g_DutyRight = 0;             //最后真正要给电机的PWM值
+  173          
+  174          float imu693_pid = 0;                            //陀螺仪pid的值
+  175          float Gyro_Z = 0, filtered_GyroZ = 0;            //陀螺仪角速度的原始值和卡尔曼滤波之后
+             -的值
+  176          
+  177          int g_LeftPoint = 50;                            //左轮目标速度                  
+  178          int g_RightPoint = 50;                           //右轮目标速度       
+  179          float g_IMU693Point = 0.0;                       //陀螺仪目标角速度       
+  180          
+  181          int count = 0, flag = 0;
+  182          
+  183          
+  184          //定时器2中断
+  185          void TM2_Isr() interrupt 12
+  186          {
+C251 COMPILER V5.60.0,  isr                                                                25/03/25  21:58:04  PAGE 4   
+
+  187   1        TIM2_CLEAR_FLAG;  //清除中断标志
+  188   1        
+  189   1        count++;
+  190   1        if (count >= 300)
+  191   1        {
+  192   2          flag = 1;
+  193   2          count = 0;
+  194   2        }
+  195   1        
+  196   1        //读取并清除编码器的值
+  197   1        g_EncoderLeft = get_left_encoder();
+  198   1        g_EncoderRight = get_right_encoder();
+  199   1        
+  200   1        /*
+  201   1          读取角速度并转化为实际物理数据
+  202   1          当突然左转，Gyro_Z为正值；突然右转，Gyro_Z为负值
+  203   1        */
+  204   1        imu963ra_get_gyro();
+  205   1        Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
+  206   1        
+  207   1        //对Gyro_Z进行卡尔曼滤波
+  208   1        filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
+  209   1        
+  210   1        //计算陀螺仪角速度pid
+  211   1        imu693_pid = pid_poisitional(&IMU693PID, filtered_GyroZ, g_IMU693Point);
+  212   1        
+  213   1        //更新卡尔曼滤波的值
+  214   1        Kalman_Predict(&imu693_kf, imu693_pid);
+  215   1        
+  216   1        //计算速度环pid
+  217   1        left_pid = pid_increment(&LeftPID, g_EncoderLeft, g_LeftPoint);
+  218   1        right_pid = pid_increment(&RightPID, g_EncoderRight, g_RightPoint);
+  219   1        
+  220   1        /*
+  221   1          把速度环pid的值转化成PWM的增值
+  222   1          因为left_pid和right_pid的值很小，大概在零点几左右，所以我就把他放大了一点
+  223   1          所以也不是严格的转化成pwm的数量级
+  224   1        */
+  225   1        pidtopwm_left = 40.0 * left_pid;
+  226   1        pidtopwm_right = 40.0 * right_pid;
+  227   1        
+  228   1        //并级pid累加
+  229   1        g_DutyLeft += pidtopwm_left - imu693_pid;
+  230   1        g_DutyRight += pidtopwm_right + imu693_pid;
+  231   1        
+  232   1      //  set_pwm_left(g_DutyLeft);
+  233   1      //  set_pwm_right(g_DutyRight);
+  234   1      }
+  235          
+  236          
+  237          
+  238          //定时器3中断
+  239          void TM3_Isr() interrupt 19
+  240          {
+  241   1        TIM3_CLEAR_FLAG; //清除中断标志
+  242   1        
+  243   1      }
+  244          
+  245          
+  246          
+  247          //定时器4中断
+  248          void TM4_Isr() interrupt 20
+  249          {
+  250   1        TIM4_CLEAR_FLAG; //清除中断标志
+  251   1      
+  252   1      
+C251 COMPILER V5.60.0,  isr                                                                25/03/25  21:58:04  PAGE 5   
+
+  253   1      }
+  254          
+  255          
+  256          //void  INT0_Isr()  interrupt 0;
+  257          //void  TM0_Isr()   interrupt 1;
+  258          //void  INT1_Isr()  interrupt 2;
+  259          //void  TM1_Isr()   interrupt 3;
+  260          //void  UART1_Isr() interrupt 4;
+  261          //void  ADC_Isr()   interrupt 5;
+  262          //void  LVD_Isr()   interrupt 6;
+  263          //void  PCA_Isr()   interrupt 7;
+  264          //void  UART2_Isr() interrupt 8;
+  265          //void  SPI_Isr()   interrupt 9;
+  266          //void  INT2_Isr()  interrupt 10;
+  267          //void  INT3_Isr()  interrupt 11;
+  268          //void  TM2_Isr()   interrupt 12;
+  269          //void  INT4_Isr()  interrupt 16;
+  270          //void  UART3_Isr() interrupt 17;
+  271          //void  UART4_Isr() interrupt 18;
+  272          //void  TM3_Isr()   interrupt 19;
+  273          //void  TM4_Isr()   interrupt 20;
+  274          //void  CMP_Isr()   interrupt 21;
+  275          //void  I2C_Isr()   interrupt 24;
+  276          //void  USB_Isr()   interrupt 25;
+  277          //void  PWM1_Isr()  interrupt 26;
+  278          //void  PWM2_Isr()  interrupt 27;
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       315     ------
+  code size            =       569     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =         2     ------
+  edata size           =        44     ------
   bit size             =    ------     ------
-C251 COMPILER V5.60.0,  isr                                                                23/03/25  23:31:41  PAGE 4   
-
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =    ------     ------
+  hconst size          =       100     ------
 End of Module Information.
 
 

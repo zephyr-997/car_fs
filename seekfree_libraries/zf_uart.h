@@ -1,16 +1,16 @@
 /*********************************************************************************************************************
  * COPYRIGHT NOTICE
- * Copyright (c) 2020,Öğ·É¿Æ¼¼
+ * Copyright (c) 2020,é€é£ç§‘æŠ€
  * All rights reserved.
- * ¼¼ÊõÌÖÂÛQQÈº£ºÒ»Èº£º179029047(ÒÑÂú)  ¶şÈº£º244861897(ÒÑÂú)  ÈıÈº£º824575535
+ * æŠ€æœ¯è®¨è®ºQQç¾¤ï¼šä¸€ç¾¤ï¼š179029047(å·²æ»¡)  äºŒç¾¤ï¼š244861897(å·²æ»¡)  ä¸‰ç¾¤ï¼š824575535
  *
- * ÒÔÏÂËùÓĞÄÚÈİ°æÈ¨¾ùÊôÖğ·É¿Æ¼¼ËùÓĞ£¬Î´¾­ÔÊĞí²»µÃÓÃÓÚÉÌÒµÓÃÍ¾£¬
- * »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌĞò£¬ĞŞ¸ÄÄÚÈİÊ±±ØĞë±£ÁôÖğ·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷¡£
+ * ä»¥ä¸‹æ‰€æœ‰å†…å®¹ç‰ˆæƒå‡å±é€é£ç§‘æŠ€æ‰€æœ‰ï¼Œæœªç»å…è®¸ä¸å¾—ç”¨äºå•†ä¸šç”¨é€”ï¼Œ
+ * æ¬¢è¿å„ä½ä½¿ç”¨å¹¶ä¼ æ’­æœ¬ç¨‹åºï¼Œä¿®æ”¹å†…å®¹æ—¶å¿…é¡»ä¿ç•™é€é£ç§‘æŠ€çš„ç‰ˆæƒå£°æ˜ã€‚
  *
  * @file       		uart
- * @company	   		³É¶¼Öğ·É¿Æ¼¼ÓĞÏŞ¹«Ë¾
- * @author     		Öğ·É¿Æ¼¼(QQ790875685)
- * @version    		²é¿´docÄÚversionÎÄ¼ş °æ±¾ËµÃ÷
+ * @company	   		æˆéƒ½é€é£ç§‘æŠ€æœ‰é™å…¬å¸
+ * @author     		é€é£ç§‘æŠ€(QQ790875685)
+ * @version    		æŸ¥çœ‹docå†…versionæ–‡ä»¶ ç‰ˆæœ¬è¯´æ˜
  * @Software 		MDK FOR C251 V5.60
  * @Target core		STC32G12K128
  * @Taobao   		https://seekfree.taobao.com/
@@ -23,8 +23,8 @@
 
 #include "common.h"
 #include "zf_tim.h"
-
-
+#include "isr.h"
+#include "headfile.h"
 
 
 #define	UART1_CLEAR_RX_FLAG (SCON  &= ~0x01)
@@ -49,8 +49,13 @@
 #define UART4_GET_TX_FLAG   (S4CON & 0x02)
 
 
-//´ËÃ¶¾Ù¶¨Òå²»ÔÊĞíÓÃ»§ĞŞ¸Ä
-typedef enum //Ã¶¾Ù´®¿ÚºÅ
+//è‡ªå®šä¹‰æ•°æ®
+#define UART_TX_LENGTH   100
+#define UART_RX_LENGTH   100
+
+
+//æ­¤æšä¸¾å®šä¹‰ä¸å…è®¸ç”¨æˆ·ä¿®æ”¹
+typedef enum //æšä¸¾ä¸²å£å·
 {
     UART_1,
     UART_2,
@@ -59,11 +64,11 @@ typedef enum //Ã¶¾Ù´®¿ÚºÅ
 }UARTN_enum;
 
 		
-//´ËÃ¶¾Ù¶¨Òå²»ÔÊĞíÓÃ»§ĞŞ¸Ä
-typedef enum //Ã¶¾Ù´®¿ÚÒı½Å
+//æ­¤æšä¸¾å®šä¹‰ä¸å…è®¸ç”¨æˆ·ä¿®æ”¹
+typedef enum //æšä¸¾ä¸²å£å¼•è„š
 {
-	UART1_RX_P30, UART1_TX_P31,		//Ö»ÄÜÊ¹ÓÃÍ¬Ò»ĞĞµÄRXºÍTXÒı½ÅºÅ¡£²»ÔÊĞí»ìÓÃ
-	UART1_RX_P36, UART1_TX_P37,		//ÀıÈç:UART1_RX_P30,UART1_TX_P37¡£ÕâÑù²»ĞĞ¡£
+	UART1_RX_P30, UART1_TX_P31,		//åªèƒ½ä½¿ç”¨åŒä¸€è¡Œçš„RXå’ŒTXå¼•è„šå·ã€‚ä¸å…è®¸æ··ç”¨
+	UART1_RX_P36, UART1_TX_P37,		//ä¾‹å¦‚:UART1_RX_P30,UART1_TX_P37ã€‚è¿™æ ·ä¸è¡Œã€‚
 	UART1_RX_P16, UART1_TX_P17,
 	UART1_RX_P43, UART1_TX_P44,
 	
@@ -84,10 +89,19 @@ typedef enum //Ã¶¾Ù´®¿ÚÒı½Å
 
 extern uint8 busy[5];
 
+//å£°æ˜
+extern uint8_t g_TxData[UART_TX_LENGTH];
+extern uint8_t g_RxData[UART_RX_LENGTH];
+extern uint8_t g_RxPointer, g_RxDat;
+
+
 
 void uart_init(UARTN_enum uart_n, UARTPIN_enum uart_rx_pin, UARTPIN_enum uart_tx_pin, uint32 baud,TIMN_enum tim_n);
 void uart_putchar(UARTN_enum uart_n,uint8 dat);
 void uart_putstr(UARTN_enum uart_n,uint8 *str);
 void uart_putbuff(UARTN_enum uart_n,uint8 *p,uint32 len);
+
+//å‡½æ•°
+void uart4_interrupt_callback(void);
 
 #endif

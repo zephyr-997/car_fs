@@ -44,6 +44,15 @@ typedef volatile uint8  vuint8 ;	//  8 bits
 typedef volatile uint16 vuint16;	// 16 bits 
 typedef volatile uint32 vuint32;	// 32 bits 
 
+typedef uint8 uint8_t;
+typedef int8 int8_t;
+typedef uint16 uint16_t;
+typedef int16 int16_t;
+typedef uint32 uint32_t;
+typedef int32 int32_t;
+
+
+
 
 
 typedef enum //ÎŞÏßÄ£¿é
