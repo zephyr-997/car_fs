@@ -2,6 +2,7 @@
     "files.associations": {
         "headfile.h": "c",
         "seekfree_18tft.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "seekfree_absolute_encoder.h": "c"
     }
 }
