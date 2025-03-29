@@ -229,8 +229,8 @@ void TM2_Isr() interrupt 12
 	g_DutyLeft += pidtopwm_left - imu693_pid;
 	g_DutyRight += pidtopwm_right + imu693_pid;
 	
-//	set_pwm_left(g_DutyLeft);
-//	set_pwm_right(g_DutyRight);
+	// set_motor_pwm(g_DutyLeft, g_DutyRight);
+
 }
 
 

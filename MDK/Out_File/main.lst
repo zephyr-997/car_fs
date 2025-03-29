@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               25/03/25  21:58:04  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               29/03/25  12:22:57  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -20,8 +20,8 @@ stmt  level    source
     9   1        pit_timer_ms(TIM_2, 10);
    10   1        motor_init();
    11   1        encoder_init();
-   12   1        imu963ra_init();
-   13   1        Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+   12   1        // imu963ra_init();
+   13   1        // Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
    14   1        
    15   1          while(1)
    16   1        {
@@ -45,59 +45,58 @@ stmt  level    source
              -ht);
    34   2          uart_putstr(UART_4, g_TxData);
    35   2      
-   36   2          // 获取滤波后的ADC数据
-   37   2          filtered_L  = adc_mean_filter(ADC_L, 5);  
-   38   2          filtered_LM = adc_mean_filter(ADC_LM, 5);     
-   39   2          filtered_RM = adc_mean_filter(ADC_RM, 5);   
-   40   2          filtered_R  = adc_mean_filter(ADC_R, 5);  
-   41   2      
-   42   2          // 更新最大最小值
-   43   2          update_min_max_values();
-   44   2          
-   45   2          // 归一化电感数据
-   46   2          normalize_sensors();
-   47   2          
-   48   2          // 计算位置偏差
-   49   2          position = calculate_position();
-   50   2          
-   51   2          // 检查电磁保护
-   52   2          protection_flag = check_electromagnetic_protection();
-   53   2          
-   54   2          if(protection_flag)
-   55   2          {
-   56   3            // 触发保护，停车
-C251 COMPILER V5.60.0,  main                                                               25/03/25  21:58:04  PAGE 2   
+   36   2      
+   37   2          // 获取滤波后的ADC数据
+   38   2          filtered_L  = adc_mean_filter(ADC_L, 5);  
+   39   2          filtered_LM = adc_mean_filter(ADC_LM, 5);     
+   40   2          filtered_RM = adc_mean_filter(ADC_RM, 5);   
+   41   2          filtered_R  = adc_mean_filter(ADC_R, 5);  
+   42   2      
+   43   2          // 更新最大最小值
+   44   2          update_min_max_values();
+   45   2          
+   46   2          // 归一化电感数据
+   47   2          normalize_sensors();
+   48   2          
+   49   2          // 计算位置偏差
+   50   2          position = calculate_position();
+   51   2          
+   52   2          // 检查电磁保护
+   53   2          // protection_flag = check_electromagnetic_protection();
+   54   2          
+   55   2          // if(protection_flag)
+   56   2          // {
+C251 COMPILER V5.60.0,  main                                                               29/03/25  12:22:57  PAGE 2   
 
-   57   3            // 这里需要添加控制电机停止的代码，例如：
-   58   3            // motor_set(MOTOR_L, 0);
-   59   3            // motor_set(MOTOR_R, 0);
-   60   3            
-   61   3            // 显示保护触发信息
-   62   3            ips114_showstr(0, 7, "Protection: Out of Track!");
-   63   3            
-   64   3            // 永久停止或等待重置
-   65   3            while(1)
-   66   3            {
-   67   4              // 可以添加重置逻辑，例如按键检测
-   68   4              // 如果需要重新启动，可以在这里添加条件
-   69   4              delay_ms(100);
-   70   4            }
-   71   3          }
-   72   2          
-   73   2          // 显示电磁传感器数据
-   74   2          display_electromagnetic_data();
-   75   2          
-   76   2          delay_ms(100);
-   77   2        } 
-   78   1      }
+   57   2          //  // 触发保护，停车
+   58   2          //  // 这里需要添加控制电机停止的代码
+   59   2            
+   60   2          //  // 显示保护触发信息
+   61   2          //  ips114_showstr(0, 7, "Protection: Out of Track!");
+   62   2            
+   63   2          //  // 永久停止或等待重置
+   64   2          //  while(1)
+   65   2          //  {
+   66   2          //    // 可以添加重置逻辑，例如按键检测
+   67   2          //    // 如果需要重新启动，可以在这里添加条件
+   68   2          //    delay_ms(100);
+   69   2          //  }
+   70   2          // }
+   71   2          
+   72   2          // 显示电磁传感器数据
+   73   2          display_electromagnetic_data();
+   74   2          
+   75   2          delay_ms(100);
+   76   2        } 
+   77   1      }
+   78          
    79          
    80          
-   81          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       396     ------
+  code size            =       284     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -112,7 +111,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        42     ------
+  hconst size          =        16     ------
 End of Module Information.
 
 

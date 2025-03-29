@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_uart                                                            25/03/25  21:58:06  PAGE 1   
+C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  12:22:59  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_uart
@@ -66,7 +66,7 @@ stmt  level    source
              -num tim_n)
    49          {
    50   1          uint16 brt;
-C251 COMPILER V5.60.0,  zf_uart                                                            25/03/25  21:58:06  PAGE 2   
+C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  12:22:59  PAGE 2   
 
    51   1      
    52   1        brt = (uint16)(65536 - (sys_clk/baud/4));
@@ -134,7 +134,7 @@ stmt  level    source
   114   3            {
   115   4              P_SW2 |= 0x01;
   116   4            }
-C251 COMPILER V5.60.0,  zf_uart                                                            25/03/25  21:58:06  PAGE 3   
+C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  12:22:59  PAGE 3   
 
   117   3            
   118   3            IE2 |= 0x01 << 0; //允许串行口2中断
@@ -202,7 +202,7 @@ stmt  level    source
   180   4              P5M1 = 0x01<<2;//P5.2 需要设置为高阻
   181   4              P_SW2 |= 0x04;
   182   4            }
-C251 COMPILER V5.60.0,  zf_uart                                                            25/03/25  21:58:06  PAGE 4   
+C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  12:22:59  PAGE 4   
 
   183   3            IE2 |= 0x01<<4; //允许串行口4中断
   184   3            busy[4] = 0;
@@ -270,7 +270,7 @@ stmt  level    source
   242          //-------------------------------------------------------------------------------------------------------
              -------------
   243          //  @brief      串口发送字符串
-C251 COMPILER V5.60.0,  zf_uart                                                            25/03/25  21:58:06  PAGE 5   
+C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  12:22:59  PAGE 5   
 
   244          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
   245          //  @param      *str            要发送的字符串地址
@@ -338,7 +338,7 @@ stmt  level    source
   306   3            sscanf(g_RxData, "imu_kp:%f", &IMU693PID.kp);
   307   3            
   308   3      //      sprintf(g_TxData, "imu_kp:%f\n", IMU693PID.kp);
-C251 COMPILER V5.60.0,  zf_uart                                                            25/03/25  21:58:06  PAGE 6   
+C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  12:22:59  PAGE 6   
 
   309   3      //      uart_putstr(UART_4, g_TxData);
   310   3          }

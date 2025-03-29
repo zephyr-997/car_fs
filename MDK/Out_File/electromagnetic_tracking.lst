@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/03/25  21:58:05  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
@@ -66,7 +66,7 @@ stmt  level    source
    54          {
    55   1          // 更新最小值
    56   1          if(filtered_L < min_L && filtered_L > 10) min_L = filtered_L;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/03/25  21:58:05  PAGE 2   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 2   
 
    57   1          if(filtered_LM < min_LM && filtered_LM > 10) min_LM = filtered_LM;
    58   1          if(filtered_RM < min_RM && filtered_RM > 10) min_RM = filtered_RM;
@@ -134,7 +134,7 @@ stmt  level    source
   120   1          
   121   1          // 计算水平电感的差值和和值
   122   1          diff_L_R = normalized_L - normalized_R;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/03/25  21:58:05  PAGE 3   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 3   
 
   123   1          sum_L_R = normalized_L + normalized_R;
   124   1          
@@ -202,7 +202,7 @@ stmt  level    source
   186   1          if(sum_value < threshold)
   187   1          {
   188   2              is_out_of_track = 1;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/03/25  21:58:05  PAGE 4   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 4   
 
   189   2          }
   190   1          
@@ -270,7 +270,7 @@ stmt  level    source
   252   1          ips114_showstr(0,4,"Pos:");
   253   1          ips114_showint16(5*8, 4, position);
   254   1          
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/03/25  21:58:05  PAGE 5   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 5   
 
   255   1          // 显示差比和数据
   256   1          ips114_showstr(0,5,"L-R:");

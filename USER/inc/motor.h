@@ -11,8 +11,8 @@
 
 
 void motor_init(void);
-void set_pwm_left(int32_t duty);
-void set_pwm_right(int32_t duty);
+void set_motor_pwm(int32_t left_duty, int32_t right_duty);
+
 
 
 #endif

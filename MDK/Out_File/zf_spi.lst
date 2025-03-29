@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_spi                                                             25/03/25  21:58:06  PAGE 1   
+C251 COMPILER V5.60.0,  zf_spi                                                             29/03/25  12:22:59  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_spi
@@ -66,7 +66,7 @@ stmt  level    source
    49   1        {
    50   2          gpio_mode(sck_pin & 0xFF,GPIO);
    51   2        }
-C251 COMPILER V5.60.0,  zf_spi                                                             25/03/25  21:58:06  PAGE 2   
+C251 COMPILER V5.60.0,  zf_spi                                                             29/03/25  12:22:59  PAGE 2   
 
    52   1        
    53   1        if(mosi_pin != SPI_NULL_PIN)
@@ -134,7 +134,7 @@ stmt  level    source
   115          //-------------------------------------------------------------------------------------------------------
              -------------
   116          //  @brief      SPI发送接收函数
-C251 COMPILER V5.60.0,  zf_spi                                                             25/03/25  21:58:06  PAGE 3   
+C251 COMPILER V5.60.0,  zf_spi                                                             29/03/25  12:22:59  PAGE 3   
 
   117          //  @param      dat           发送的数据
   118          //  @since      v1.0
@@ -202,7 +202,7 @@ stmt  level    source
   177   2              P_SW1 |= (0x02<<2);
   178   2              break;
   179   2          case SPI_CH4:
-C251 COMPILER V5.60.0,  zf_spi                                                             25/03/25  21:58:06  PAGE 4   
+C251 COMPILER V5.60.0,  zf_spi                                                             29/03/25  12:22:59  PAGE 4   
 
   180   2              P_SW1 |= (0x03<<2);
   181   2              break;

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 1   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_fifo
@@ -66,7 +66,7 @@ stmt  level    source
    50   1      }
    51          
    52          //-------------------------------------------------------------------------------------------------------
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 2   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 2   
 
              -------------
    53          // 函数简介     FIFO 尾指针位移
@@ -134,7 +134,7 @@ stmt  level    source
   108          // 备注信息
   109          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 3   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 3   
 
   110          uint32 fifo_used (fifo_struct *fifo)
   111          {
@@ -202,7 +202,7 @@ stmt  level    source
   165          // 使用示例     zf_log(fifo_write_buffer(&fifo, data, 32) == FIFO_SUCCESS, "fifo_write_buffer error");
   166          // 备注信息
   167          //-------------------------------------------------------------------------------------------------------
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 4   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 4   
 
              -------------
   168          fifo_state_enum fifo_write_buffer (fifo_struct *fifo, void *dat, uint32 length)
@@ -270,7 +270,7 @@ stmt  level    source
   225   6                              fifo_head_offset(fifo, temp_length);                    // 头指针偏移
   226   6                              memcpy(
   227   6                                  &(((uint32 *)fifo->buffer)[fifo->head]),
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 5   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 5   
 
   228   6                                  &(((uint32 *)dat)[temp_length]),
   229   6                                  (length - temp_length) * 4);                        // 拷贝第二段数据
@@ -338,7 +338,7 @@ stmt  level    source
   286   1          fifo_state_enum return_state = FIFO_SUCCESS;                                // 操作结果初值
   287   1      
   288   1          do
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 6   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 6   
 
   289   1          {
   290   2              if(NULL == dat)
@@ -406,7 +406,7 @@ stmt  level    source
              -------------
   345          fifo_state_enum fifo_read_buffer (fifo_struct *fifo, void *dat, uint32 *length, fifo_operation_enum flag)
   346          {
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 7   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 7   
 
   347   1          //zf_assert(NULL != fifo);
   348   1          //zf_assert(NULL != length);
@@ -474,7 +474,7 @@ stmt  level    source
   403   6                              memcpy(&(((uint16 *)dat)[temp_length]), fifo->buffer, (uint16)((*length - temp_le
              -ngth) * 2));
   404   6                          }break;
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 8   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 8   
 
   405   5                          case FIFO_DATA_32BIT:
   406   5                          {
@@ -542,7 +542,7 @@ stmt  level    source
   460   3                  if((FIFO_RESET | FIFO_CLEAR | FIFO_WRITE) & fifo->execution)        // 判断是否当前 FIFO 是否
              -在执行清空或重置操作
   461   3                  {
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 9   
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 9   
 
   462   4                      *length = fifo_data_length;                                     // 纠正读取的长度
   463   4                      return_state = FIFO_READ_UNDO;                                  // 读取操作未完成
@@ -610,7 +610,7 @@ stmt  level    source
   514   2              if(FIFO_READ_AND_CLEAN == flag)                                         // 如果选择读取并更改 FIF
              -O 状态
   515   2              {
-C251 COMPILER V5.60.0,  zf_fifo                                                            25/03/25  21:58:06  PAGE 10  
+C251 COMPILER V5.60.0,  zf_fifo                                                            29/03/25  12:22:59  PAGE 10  
 
   516   3                  if((FIFO_RESET | FIFO_CLEAR | FIFO_READ) == fifo->execution)        // 不在 重置 清空 读取 状
              -态 避免异常

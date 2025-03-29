@@ -1,9 +1,5 @@
 {
     "lint": {
-        "exclude": [
-            "USER/src/**/*.c",
-            "USER/src/**/*.h"
-        ],
         "ignoreErrors": [
             {
                 "code": "1696",
@@ -29,5 +25,50 @@
     },
     "ai": {
         "memorySize": 20
-    }
+    },
+    "include": [
+        "seekfree_libraries/zf_uart.h",
+        "seekfree_libraries/zf_uart.c",
+        "seekfree_libraries/zf_gpio.c",
+        "seekfree_libraries/zf_function.c",
+        "seekfree_libraries/zf_function.h",
+        "seekfree_libraries/zf_eeprom.c",
+        "seekfree_libraries/zf_exti.h",
+        "seekfree_libraries/zf_tim.h",
+        "seekfree_libraries/zf_spi.c",
+        "seekfree_libraries/zf_spi.h",
+        "seekfree_libraries/zf_tim.c",
+        "seekfree_libraries/zf_pwm.c",
+        "seekfree_libraries/zf_pwm.h",
+        "seekfree_libraries/zf_nvic.c",
+        "seekfree_libraries/zf_nvic.h",
+        "seekfree_libraries/zf_mdu16.c",
+        "seekfree_libraries/zf_mdu16.h",
+        "seekfree_libraries/zf_iic.c",
+        "seekfree_libraries/zf_iic.h",
+        "seekfree_libraries/zf_fifo.c",
+        "seekfree_libraries/zf_fifo.h",
+        "seekfree_libraries/zf_gpio.h",
+        "seekfree_libraries/zf_exti.c",
+        "seekfree_libraries/zf_eeprom.h",
+        "seekfree_libraries/zf_delay.h",
+        "seekfree_libraries/zf_adc.c",
+        "seekfree_libraries/zf_adc.h",
+        "seekfree_libraries/zf_delay.c",
+        "USER/src/main.c",
+        "USER/src/electromagnetic_tracking.c",
+        "USER/src/filter.c",
+        "USER/src/pid.c",
+        "USER/src/isr.c",
+        "USER/src/motor.c",
+        "USER/src/encoder.c",
+        "USER/inc/electromagnetic_tracking.h",
+        "USER/inc/filter.h",
+        "USER/inc/pid.h",
+        "USER/inc/isr.h",
+        "USER/inc/motor.h",
+        "USER/inc/encoder.h",
+        "libraries/common.h",
+        "libraries/common.c" 
+    ]
 } 
