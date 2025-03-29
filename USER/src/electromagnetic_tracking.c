@@ -49,7 +49,7 @@ uint16 adc_mean_filter(ADCN_enum adcn, uint8 count)
     return (uint16)(sum / count);  // 返回均值
 }
 
-// 更新每个电感的最大最小值
+// 更新每个电感的最大最小值，用于动态校准
 void update_min_max_values(void)
 {
     // 更新最小值

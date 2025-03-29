@@ -50,7 +50,7 @@ void main()
 		position = calculate_position();
 		
 		// 检查电磁保护
-		// protection_flag = check_electromagnetic_protection();
+		//protection_flag = check_electromagnetic_protection();
 		
 		// if(protection_flag)
 		// {

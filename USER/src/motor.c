@@ -13,48 +13,49 @@ void motor_init(void)
 }
 
 
-void set_pwm_left(int32_t duty)
+void set_motor_pwm(int32_t left_duty, int32_t right_duty)
 {
-	//PWM限幅并输出
-	if(duty >= 0)
+	// 左轮PWM限幅并输出
+	if(left_duty >= 0)
 	{
-		if (duty > MOTOR_PWM_LIMIT)
+		if (left_duty > MOTOR_PWM_LIMIT)
 		{
-			duty = MOTOR_PWM_LIMIT;
+			left_duty = MOTOR_PWM_LIMIT;
 		}
 	
-		pwm_duty(PWMA_CH1P_P60, duty);
+		pwm_duty(PWMA_CH1P_P60, left_duty);
+		pwm_duty(PWMA_CH2P_P62, 0);
 	}
 	else
 	{
-		if (duty < -MOTOR_PWM_LIMIT)
+		if (left_duty < -MOTOR_PWM_LIMIT)
 		{
-			duty = -MOTOR_PWM_LIMIT;
+			left_duty = -MOTOR_PWM_LIMIT;
 		}
 	
-		pwm_duty(PWMA_CH2P_P62, -duty);
+		pwm_duty(PWMA_CH1P_P60, 0);
+		pwm_duty(PWMA_CH2P_P62, -left_duty);
 	}
-}
-
-
-void set_pwm_right(int32_t duty)
-{
-	if (duty >= 0)
+	
+	// 右轮PWM限幅并输出
+	if (right_duty >= 0)
 	{
-		if (duty > MOTOR_PWM_LIMIT)
+		if (right_duty > MOTOR_PWM_LIMIT)
 		{
-			duty = MOTOR_PWM_LIMIT;
+			right_duty = MOTOR_PWM_LIMIT;
 		}
 		
-		pwm_duty(PWMA_CH3P_P64, duty);
+		pwm_duty(PWMA_CH3P_P64, right_duty);
+		pwm_duty(PWMA_CH4P_P66, 0);
 	}
 	else	
 	{
-		if (duty < -MOTOR_PWM_LIMIT)
+		if (right_duty < -MOTOR_PWM_LIMIT)
 		{
-			duty = -MOTOR_PWM_LIMIT;
+			right_duty = -MOTOR_PWM_LIMIT;
 		}
 		
-		pwm_duty(PWMA_CH4P_P66, -duty);
+		pwm_duty(PWMA_CH3P_P64, 0);
+		pwm_duty(PWMA_CH4P_P66, -right_duty);
 	}
 }
