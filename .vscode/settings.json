@@ -5,6 +5,14 @@
         "common.h": "c",
         "seekfree_absolute_encoder.h": "c",
         "motor.h": "c",
-        "electromagnetic_tracking.h": "c"
+        "electromagnetic_tracking.h": "c",
+        "zf_adc.h": "c",
+        "seekfree_imu963ra.h": "c",
+        "zf_fifo.h": "c",
+        "stdio.h": "c",
+        "stc32gxx.h": "c",
+        "seekfree_ips114_spi.h": "c",
+        "board.h": "c",
+        "zf_tim.h": "c"
     }
 }

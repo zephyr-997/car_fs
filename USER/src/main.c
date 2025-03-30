@@ -4,14 +4,17 @@ void main()
 {
 	board_init();			
 	electromagnetic_init();  // 初始化电磁传感器
-	ips114_init();					
+	ips114_init_simspi();					
 	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
-	pit_timer_ms(TIM_2, 10);
-	motor_init();
-	encoder_init();
+	//pit_timer_ms(TIM_2, 10);
+	//motor_init();
+	//encoder_init();
 	// imu963ra_init();
 	// Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
-	
+
+	delay_ms(100); // 延时等待系统稳定
+	ips114_clear_simspi(WHITE);									//清屏
+
     while(1)
 	{
 		//串口接收
@@ -31,23 +34,22 @@ void main()
 
 		// sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_EncoderRight);
 		// uart_putstr(UART_4, g_TxData);
-
-		// sprintf(g_TxData, "%hu,%hu,%hu,%hu,%hd\n", filtered_data[SENSOR_L][0], filtered_data[SENSOR_LM][0], 
-        //          filtered_data[SENSOR_RM][0], filtered_data[SENSOR_R][0], position);
-		// uart_putstr(UART_4, g_TxData);
+ 
 
 		// 获取滤波后的ADC数据
-		average_filter();  // 使用递推均值滤波获取电感数据
+		//average_filter();  // 使用递推均值滤波获取电感数据
+		mid_filter();      // 使用中位值滤波获取电感数据
 
-		// 更新最大最小值
-		update_min_max_values();
-		
 		// 归一化电感数据
 		normalize_sensors();
 		
 		// 计算位置偏差
-		position = calculate_position();
+		//position = calculate_position_improved();
 		
+
+		sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)result[SENSOR_L], (uint16)result[SENSOR_LM], (uint16)result[SENSOR_RM], (uint16)result[SENSOR_R], position);
+		uart_putstr(UART_4, g_TxData);
+
 		//检查电磁保护
 		// protection_flag = check_electromagnetic_protection();
 		
@@ -57,7 +59,7 @@ void main()
 		// 	// 这里需要添加控制电机停止的代码
 			
 		// 	// 显示保护触发信息
-		// 	ips114_showstr(0, 7, "Protection: Out of Track!");
+		// 	ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
 			
 		// 	// 永久停止或等待重置
 		// 	while(1)
@@ -70,8 +72,14 @@ void main()
 		
 		// 显示电磁传感器数据
 		//display_electromagnetic_data();
-		
-		delay_ms(5);
+
+		delay_ms(10);
+		// ips114_showstr_simspi(0,0,"L:");   
+		// delay_ms(500);
+		// ips114_clear_simspi(RED);									
+		// delay_ms(500);
+		// ips114_showstr_simspi(0,0,"L:");   
+
 	}	
 }
 

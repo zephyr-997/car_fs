@@ -28,7 +28,7 @@ void average_filter(void);                     // 递推均值滤波函数
 void mid_filter(void);                         // 中位值滤波函数
 void update_min_max_values(void);              // 更新每个电感的最大最小值
 void normalize_sensors(void);                  // 归一化电感数据
-int16 calculate_position(void);                // 计算位置（差比和加权算法）
+int16 calculate_position_improved(void);      // 改进版计算位置
 uint8 check_electromagnetic_protection(void);  // 电磁保护逻辑函数
 
 // 外部变量声明

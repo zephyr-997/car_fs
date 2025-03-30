@@ -16,25 +16,17 @@
  * @Taobao   		https://seekfree.taobao.com/
  * @date       		2019-04-30
  * @note		
- * 接线定义：
- *                   ------------------------------------
+ * 接线定义：  
  *                   模块管脚            单片机管脚
  *                   // 硬件 SPI 引脚
- *                   SCL/SPC             查看 SEEKFREE_IMU963RA.h 中 IMU963RA_SPC_PIN 宏定义
+ *                   SCL/SPC             查看 SEEKFREE_IMU963RA.h 中 IMU963RA_CLK_PIN 宏定义
  *                   SDA/DSI             查看 SEEKFREE_IMU963RA.h 中 IMU963RA_SDI_PIN 宏定义
  *                   SA0/SDO             查看 SEEKFREE_IMU963RA.h 中 IMU963RA_SDO_PIN 宏定义
  *                   CS                  查看 SEEKFREE_IMU963RA.h 中 IMU963RA_CS_PIN  宏定义
  *                   VCC                 3.3V电源
  *                   GND                 电源地
  *                   其余引脚悬空
- 
- *                   // 软件 IIC 引脚
- *                   SCL/SPC             查看 SEEKFREE_IMU963RA.h 中 IMU963RA_SCL_PIN 宏定义
- *                   SDA/DSI             查看 SEEKFREE_IMU963RA.h 中 IMU963RA_SDA_PIN 宏定义
- *                   VCC                 3.3V电源
- *                   GND                 电源地
- *                   其余引脚悬空
- *                   ------------------------------------
+ *         
 ********************************************************************************************************************/
 
 #ifndef _SEEKFREE_IMU963RA_h
@@ -42,27 +34,18 @@
 
 #include "common.h"
 #include "board.h"
+#include "headfile.h"
 
-#define IMU963RA_USE_SOFT_IIC       	(0)       	// 默认使用软件 SPI 方式驱动
-
-#if IMU963RA_USE_SOFT_IIC                                         
-//=====================================================软件 IIC 驱动====================================================
-	#define IMU963RA_SCL_PIN            (P40)     	// 软件 IIC SCL 引脚 连接 IMU660RA 的 SCL 引脚
-	#define IMU963RA_SDA_PIN            (P41)      	// 软件 IIC SDA 引脚 连接 IMU660RA 的 SDA 引脚
-	#define IMU963RA_SOFT_IIC_DELAY     (0  )   	// 软件 IIC 的时钟延时周期 数值越小 IIC 通信速率越快
-//=====================================================软件 IIC 驱动====================================================
-#else
-//=====================================================软件 SPI 驱动====================================================
-	#define IMU963RA_SPC_PIN            (P40)      	// 软件 SPI SCK 引脚
-	#define IMU963RA_SDI_PIN            (P41)      	// 软件 SPI MOSI 引脚
-	#define IMU963RA_SDO_PIN            (P42)      	// 软件 SPI MISO 引脚
-	#define IMU963RA_CS_PIN             (P43)      	// 软件 SPI CS 引脚
-//=====================================================软件 SPI 驱动====================================================
-#endif
+//硬件SPI引脚定义
+#define  IMU693RA_SPI       SPI_CH3
+#define  IMU963RA_CLK_PIN   SPI_CH3_SCLK_P43
+#define  IMU963RA_MOSI_PIN  SPI_CH3_MOSI_P40
+#define  IMU963RA_MISO_PIN  SPI_CH3_MISO_P41
+#define  IMU963RA_CS(x)     P42 = x
 
 #define IMU963RA_TIMEOUT_COUNT                      (0x00FF)                    // IMU963RA 超时计数
 
-//================================================定义 IMU963RA 内部地址================================================
+//定义 IMU963RA 内部地址
 #define IMU963RA_DEV_ADDR                           (0x6B)                      // SA0接地：0x6A SA0上拉：0x6B 模块默认上拉
 #define IMU963RA_SPI_W                              (0x00)
 #define IMU963RA_SPI_R                              (0x80)
@@ -209,7 +192,7 @@
 // 设置为:0x19 磁力计量程为:8G     获取到的加速度计数据 除以3000， 可以转化为带物理单位的数据，单位：G(高斯)
 // 设置为:0x09 磁力计量程为:2G     获取到的加速度计数据 除以12000，可以转化为带物理单位的数据，单位：G(高斯)
 
-//================================================定义 IMU963RA 内部地址================================================
+//定义 IMU963RA 内部地址
 
 extern int16 imu963ra_acc_x,  imu963ra_acc_y,  imu963ra_acc_z;
 extern int16 imu963ra_gyro_x, imu963ra_gyro_y, imu963ra_gyro_z;

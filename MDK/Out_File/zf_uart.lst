@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  23:09:21  PAGE 1   
+C251 COMPILER V5.60.0,  zf_uart                                                            30/03/25  21:58:25  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_uart
@@ -66,7 +66,7 @@ stmt  level    source
              -num tim_n)
    49          {
    50   1          uint16 brt;
-C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  23:09:21  PAGE 2   
+C251 COMPILER V5.60.0,  zf_uart                                                            30/03/25  21:58:25  PAGE 2   
 
    51   1      
    52   1        brt = (uint16)(65536 - (sys_clk/baud/4));
@@ -134,10 +134,10 @@ stmt  level    source
   114   3            {
   115   4              P_SW2 |= 0x01;
   116   4            }
-C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  23:09:21  PAGE 3   
+C251 COMPILER V5.60.0,  zf_uart                                                            30/03/25  21:58:25  PAGE 3   
 
   117   3            
-  118   3            IE2 |= 0x01 << 0; //ÔÊÐí´®ÐÐ¿Ú2ÖÐ¶Ï
+  118   3            IE2 |= 0x01 << 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½2ï¿½Ð¶ï¿½
   119   3            busy[2] = 0;
   120   3            break;
   121   3          }
@@ -169,7 +169,7 @@ stmt  level    source
   147   4              P_SW2 |= 0x02;
   148   4            }
   149   3            
-  150   3            IE2 |= 0x01<<3; //ÔÊÐí´®ÐÐ¿Ú3ÖÐ¶Ï
+  150   3            IE2 |= 0x01<<3; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½3ï¿½Ð¶ï¿½
   151   3            busy[3] = 0;
   152   3            break;
   153   3          }
@@ -199,12 +199,12 @@ stmt  level    source
   177   3            else if((UART4_RX_P52 == uart_rx_pin) && (UART4_TX_P53 == uart_tx_pin))
   178   3            {
   179   4              P5M0 = 0x00;
-  180   4              P5M1 = 0x01<<2;//P5.2 ÐèÒªÉèÖÃÎª¸ß×è
+  180   4              P5M1 = 0x01<<2;//P5.2 ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
   181   4              P_SW2 |= 0x04;
   182   4            }
-C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  23:09:21  PAGE 4   
+C251 COMPILER V5.60.0,  zf_uart                                                            30/03/25  21:58:25  PAGE 4   
 
-  183   3            IE2 |= 0x01<<4; //ÔÊÐí´®ÐÐ¿Ú4ÖÐ¶Ï
+  183   3            IE2 |= 0x01<<4; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½4ï¿½Ð¶ï¿½
   184   3            busy[4] = 0;
   185   3            break;
   186   3          }
@@ -215,11 +215,11 @@ stmt  level    source
   191          
   192          //-------------------------------------------------------------------------------------------------------
              -------------
-  193          //  @brief      ´®¿Ú×Ö½ÚÊä³ö
-  194          //  @param      uart_n          ´®¿ÚÄ£¿éºÅ(USART_1,USART_2,USART_3,USART_4)
-  195          //  @param      dat             ÐèÒª·¢ËÍµÄ×Ö½Ú
-  196          //  @return     void        
-  197          //  Sample usage:               uart_putchar(UART_1,0xA5);       // ´®¿Ú1·¢ËÍ0xA5
+  193          //  @brief      ä¸²å£å‘é€å­—ç¬¦ä¸²
+  194          //  @param      uart_n          ä¸²å£æ¨¡å—å·(USART_1,USART_2,USART_3,USART_4)
+  195          //  @param      *str            è¦å‘é€çš„å­—ç¬¦ä¸²åœ°å€
+  196          //  @return     void
+  197          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
   198          //-------------------------------------------------------------------------------------------------------
              -------------
   199          void uart_putchar(UARTN_enum uart_n,uint8 dat)
@@ -252,123 +252,122 @@ stmt  level    source
   226          
   227          //-------------------------------------------------------------------------------------------------------
              -------------
-  228          //  @brief      ´®¿Ú·¢ËÍÊý×é
-  229          //  @param      uart_n          ´®¿ÚÄ£¿éºÅ(USART_1,USART_2,USART_3,USART_4)
-  230          //  @param      *buff           Òª·¢ËÍµÄÊý×éµØÖ·
-  231          //  @param      len             ·¢ËÍ³¤¶È
-  232          //  @return     void
-  233          //  Sample usage:               uart_putbuff(UART_1,&a[0],5);
-  234          //-------------------------------------------------------------------------------------------------------
+  228          //  @brief      ä¸²å£å‘é€å­—ç¬¦ä¸²
+  229          //  @param      uart_n          ä¸²å£æ¨¡å—å·(USART_1,USART_2,USART_3,USART_4)
+  230          //  @param      *str            è¦å‘é€çš„å­—ç¬¦ä¸²åœ°å€
+  231          //  @return     void
+  232          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
+  233          //-------------------------------------------------------------------------------------------------------
              -------------
-  235          void uart_putbuff(UARTN_enum uart_n,uint8 *p,uint32 len)
-  236          {
-  237   1          while(len--)
-  238   1              uart_putchar(uart_n,*p++);
-  239   1      }
+  234          void uart_putbuff(UARTN_enum uart_n,uint8 *p,uint32 len)
+  235          {
+  236   1          while(len--)
+  237   1              uart_putchar(uart_n,*p++);
+  238   1      }
+  239          
   240          
-  241          
-  242          //-------------------------------------------------------------------------------------------------------
+  241          //-------------------------------------------------------------------------------------------------------
              -------------
-  243          //  @brief      ´®¿Ú·¢ËÍ×Ö·û´®
-C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  23:09:21  PAGE 5   
+  242          //  @brief      ä¸²å£å‘é€å­—ç¬¦ä¸²
+  243          //  @param      uart_n          ä¸²å£æ¨¡å—å·(USART_1,USART_2,USART_3,USART_4)
+C251 COMPILER V5.60.0,  zf_uart                                                            30/03/25  21:58:25  PAGE 5   
 
-  244          //  @param      uart_n          ´®¿ÚÄ£¿éºÅ(USART_1,USART_2,USART_3,USART_4)
-  245          //  @param      *str            Òª·¢ËÍµÄ×Ö·û´®µØÖ·
-  246          //  @return     void
-  247          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
-  248          //-------------------------------------------------------------------------------------------------------
+  244          //  @param      *str            è¦å‘é€çš„å­—ç¬¦ä¸²åœ°å€
+  245          //  @return     void
+  246          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
+  247          //-------------------------------------------------------------------------------------------------------
              -------------
-  249          void uart_putstr(UARTN_enum uart_n,uint8 *str)
-  250          {
-  251   1          while(*str)
-  252   1          {
-  253   2              uart_putchar(uart_n, *str++);
-  254   2          }
-  255   1      }
+  248          void uart_putstr(UARTN_enum uart_n,uint8 *str)
+  249          {
+  250   1          while(*str)
+  251   1          {
+  252   2              uart_putchar(uart_n, *str++);
+  253   2          }
+  254   1      }
+  255          
   256          
-  257          
-  258          void uart4_interrupt_callback(void)
-  259          {
-  260   1        if(g_RxPointer > 0)
-  261   1        {
-  262   2          if (strncmp(g_RxData, "left_kp", 7) == 0)
-  263   2          {
-  264   3            sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
-  265   3            
-  266   3      //      sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
-  267   3      //      uart_putstr(UART_4, g_TxData);
-  268   3          }
-  269   2          else if (strncmp(g_RxData, "left_ki", 7) == 0)
-  270   2          {
-  271   3            sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
-  272   3            
-  273   3      //      sprintf(g_TxData, "left_ki:%f\n", LeftPID.kp);
-  274   3      //      uart_putstr(UART_4, g_TxData);
-  275   3          }
-  276   2          else if (strncmp(g_RxData, "left_kd", 7) == 0)
-  277   2          {
-  278   3            sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
-  279   3            
-  280   3      //      sprintf(g_TxData, "left_kd:%f\n", LeftPID.kp);
-  281   3      //      uart_putstr(UART_4, g_TxData);
-  282   3          }
-  283   2          else if (strncmp(g_RxData, "right_kp", 8) == 0)
-  284   2          {
-  285   3            sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
-  286   3            
-  287   3      //      sprintf(g_TxData, "right_kp:%f\n", LeftPID.kp);
-  288   3      //      uart_putstr(UART_4, g_TxData);
-  289   3          }
-  290   2          else if (strncmp(g_RxData, "right_ki", 8) == 0)
-  291   2          {
-  292   3            sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
-  293   3            
-  294   3      //      sprintf(g_TxData, "right_ki:%f\n", LeftPID.kp);
-  295   3      //      uart_putstr(UART_4, g_TxData);
-  296   3          }
-  297   2          else if (strncmp(g_RxData, "right_kd", 8) == 0)
-  298   2          {
-  299   3            sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
-  300   3            
-  301   3      //      sprintf(g_TxData, "right_kd:%f\n", LeftPID.kp);
-  302   3      //      uart_putstr(UART_4, g_TxData);
-  303   3          }
-  304   2          else if (strncmp(g_RxData, "imu_kp:", 7) == 0)
-  305   2          {
-  306   3            sscanf(g_RxData, "imu_kp:%f", &IMU693PID.kp);
-  307   3            
-  308   3      //      sprintf(g_TxData, "imu_kp:%f\n", IMU693PID.kp);
-C251 COMPILER V5.60.0,  zf_uart                                                            29/03/25  23:09:21  PAGE 6   
+  257          void uart4_interrupt_callback(void)
+  258          {
+  259   1        if(g_RxPointer > 0)
+  260   1        {
+  261   2          if (strncmp(g_RxData, "left_kp", 7) == 0)
+  262   2          {
+  263   3            sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
+  264   3            
+  265   3      //      sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
+  266   3      //      uart_putstr(UART_4, g_TxData);
+  267   3          }
+  268   2          else if (strncmp(g_RxData, "left_ki", 7) == 0)
+  269   2          {
+  270   3            sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
+  271   3            
+  272   3      //      sprintf(g_TxData, "left_ki:%f\n", LeftPID.kp);
+  273   3      //      uart_putstr(UART_4, g_TxData);
+  274   3          }
+  275   2          else if (strncmp(g_RxData, "left_kd", 7) == 0)
+  276   2          {
+  277   3            sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
+  278   3            
+  279   3      //      sprintf(g_TxData, "left_kd:%f\n", LeftPID.kp);
+  280   3      //      uart_putstr(UART_4, g_TxData);
+  281   3          }
+  282   2          else if (strncmp(g_RxData, "right_kp", 8) == 0)
+  283   2          {
+  284   3            sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
+  285   3            
+  286   3      //      sprintf(g_TxData, "right_kp:%f\n", LeftPID.kp);
+  287   3      //      uart_putstr(UART_4, g_TxData);
+  288   3          }
+  289   2          else if (strncmp(g_RxData, "right_ki", 8) == 0)
+  290   2          {
+  291   3            sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
+  292   3            
+  293   3      //      sprintf(g_TxData, "right_ki:%f\n", LeftPID.kp);
+  294   3      //      uart_putstr(UART_4, g_TxData);
+  295   3          }
+  296   2          else if (strncmp(g_RxData, "right_kd", 8) == 0)
+  297   2          {
+  298   3            sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
+  299   3            
+  300   3      //      sprintf(g_TxData, "right_kd:%f\n", LeftPID.kp);
+  301   3      //      uart_putstr(UART_4, g_TxData);
+  302   3          }
+  303   2          else if (strncmp(g_RxData, "imu_kp:", 7) == 0)
+  304   2          {
+  305   3            sscanf(g_RxData, "imu_kp:%f", &IMU693PID.kp);
+  306   3            
+  307   3      //      sprintf(g_TxData, "imu_kp:%f\n", IMU693PID.kp);
+  308   3      //      uart_putstr(UART_4, g_TxData);
+C251 COMPILER V5.60.0,  zf_uart                                                            30/03/25  21:58:25  PAGE 6   
 
-  309   3      //      uart_putstr(UART_4, g_TxData);
-  310   3          }
-  311   2          else if (strncmp(g_RxData, "imu_ki:", 7) == 0)
-  312   2          {
-  313   3            sscanf(g_RxData, "imu_ki:%f", &IMU693PID.ki);
-  314   3            
-  315   3      //      sprintf(g_TxData, "imu_ki:%f\n", IMU693PID.ki);
-  316   3      //      uart_putstr(UART_4, g_TxData);
-  317   3          }
-  318   2          else if (strncmp(g_RxData, "imu_kd:", 7) == 0)
-  319   2          {
-  320   3            sscanf(g_RxData, "imu_kd:%f", &IMU693PID.kd);
-  321   3            
-  322   3      //      sprintf(g_TxData, "imu_kd:%f\n", IMU693PID.kd);
-  323   3      //      uart_putstr(UART_4, g_TxData);
-  324   3          }
-  325   2          else if (strncmp(g_RxData, "gyroz:", 6) == 0)
-  326   2          {
-  327   3            sscanf(g_RxData, "gyroz:%f", &g_IMU693Point);
-  328   3            
-  329   3      //      sprintf(g_TxData, "imu_kd:%f\n", IMU693PID.kd);
-  330   3      //      uart_putstr(UART_4, g_TxData);
-  331   3          }
-  332   2        }
-  333   1        
-  334   1        g_RxPointer = 0;
-  335   1        memset(g_RxData, 0, UART_RX_LENGTH);
-  336   1        memset(g_TxData, 0, UART_TX_LENGTH);
-  337   1      }
+  309   3          }
+  310   2          else if (strncmp(g_RxData, "imu_ki:", 7) == 0)
+  311   2          {
+  312   3            sscanf(g_RxData, "imu_ki:%f", &IMU693PID.ki);
+  313   3            
+  314   3      //      sprintf(g_TxData, "imu_ki:%f\n", IMU693PID.ki);
+  315   3      //      uart_putstr(UART_4, g_TxData);
+  316   3          }
+  317   2          else if (strncmp(g_RxData, "imu_kd:", 7) == 0)
+  318   2          {
+  319   3            sscanf(g_RxData, "imu_kd:%f", &IMU693PID.kd);
+  320   3            
+  321   3      //      sprintf(g_TxData, "imu_kd:%f\n", IMU693PID.kd);
+  322   3      //      uart_putstr(UART_4, g_TxData);
+  323   3          }
+  324   2          else if (strncmp(g_RxData, "gyroz:", 6) == 0)
+  325   2          {
+  326   3            sscanf(g_RxData, "gyroz:%f", &g_IMU693Point);
+  327   3            
+  328   3      //      sprintf(g_TxData, "imu_kd:%f\n", IMU693PID.kd);
+  329   3      //      uart_putstr(UART_4, g_TxData);
+  330   3          }
+  331   2        }
+  332   1        
+  333   1        g_RxPointer = 0;
+  334   1        memset(g_RxData, 0, UART_RX_LENGTH);
+  335   1        memset(g_TxData, 0, UART_TX_LENGTH);
+  336   1      }
 
 
 Module Information          Static   Overlayable
