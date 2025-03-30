@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
@@ -13,293 +13,545 @@ stmt  level    source
     1          #include "electromagnetic_tracking.h"
     2          
     3          
-    4          // 滤波后数据
-    5          uint16 filtered_L, filtered_LM, filtered_RM, filtered_R;
-    6          
-    7          // 归一化数据
-    8          float normalized_L, normalized_LM, normalized_RM, normalized_R;
+    4          // 滤波后数据 - 使用二维数组形式
+    5          // 第一维表示电感编号：0-L, 1-LM, 2-RM, 3-R
+    6          // 第二维保留，可用于存储历史数据
+    7          #define SENSOR_COUNT 4   //电感个数
+    8          #define HISTORY_COUNT 5  //滤波次数
     9          
-   10          // 存储每个电感的最大最小值，用于动态校准
-   11          uint16 min_L = 0xFFFF, min_LM = 0xFFFF, min_RM = 0xFFFF, min_R = 0xFFFF;
-   12          uint16 max_L = 0, max_LM = 0, max_RM = 0, max_R = 0;
+   10          uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT]; //滤波后的值
+   11          float result[SENSOR_COUNT];         //电存储每个电感滤波后的最终结果值（尚未归一化）�
+             -�是连接滤波处理和归一化处理的中间变量
+   12          uint16 sum[SENSOR_COUNT][HISTORY_COUNT];              //累加的和
    13          
-   14          // 电感位置计算相关变量
-   15          int16 position;
-   16          
-   17          // 电磁保护逻辑变量
-   18          uint8 protection_flag = 0;
+   14          
+   15          
+   16          // 递推均值滤波相关参数
+   17          uint16 times = HISTORY_COUNT;  // 滤波次数
+   18          uint16 i_num = SENSOR_COUNT;  // 电感数量
    19          
-   20          // 差比和算法中间变量
-   21          float ratio_L_R = 0;
-   22          float ratio_LM_RM = 0;
-   23          
-   24          // 初始化电磁传感器
-   25          void electromagnetic_init(void)
-   26          {
-   27   1          adc_init(ADC_L, 0);
-   28   1          adc_init(ADC_LM, 0);
-   29   1          adc_init(ADC_RM, 0);
-   30   1          adc_init(ADC_R, 0);
-   31   1      }
-   32          
-   33          // 均值滤波函数
-   34          uint16 adc_mean_filter(ADCN_enum adcn, uint8 count)
-   35          {
-   36   1          uint8 i = 0;  // 使用uint8代替uint16，因为循环次数很小
-   37   1          uint32 sum = 0;  // 使用uint32避免溢出
-   38   1          uint16 adc_value = 0;
-   39   1          
-   40   1          // 进行多次采样并累加
-   41   1          for (i = 0; i < count; i++)
-   42   1          {
-   43   2              adc_value = adc_once(adcn, ADC_10BIT);
-   44   2              sum += adc_value;  // 累加读取值
-   45   2              // 添加短暂延时可以提高采样稳定性
-   46   2              delay_us(5);
-   47   2          }
-   48   1          
-   49   1          return (uint16)(sum / count);  // 返回均值
-   50   1      }
-   51          
-   52          // 更新每个电感的最大最小值
-   53          void update_min_max_values(void)
-   54          {
-   55   1          // 更新最小值
-   56   1          if(filtered_L < min_L && filtered_L > 10) min_L = filtered_L;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 2   
+   20          
+   21          
+   22          // 归一化数据
+   23          float normalized_L, normalized_LM, normalized_RM, normalized_R;
+   24          
+   25          // 存储每个电感的最大最小值，用于动态校准
+   26          uint16 min_L = 0xFFFF, min_LM = 0xFFFF, min_RM = 0xFFFF, min_R = 0xFFFF;
+   27          uint16 max_L = 0, max_LM = 0, max_RM = 0, max_R = 0;
+   28          
+   29          // 电感位置计算相关变量
+   30          int16 position;
+   31          
+   32          // 电磁保护逻辑变量
+   33          uint8 protection_flag = 0;
+   34          
+   35          // 差比和算法中间变量
+   36          float ratio_L_R = 0;
+   37          float ratio_LM_RM = 0;
+   38          
+   39          // 初始化电磁传感器
+   40          void electromagnetic_init(void)
+   41          {
+   42   1          adc_init(ADC_L, 0);
+   43   1          adc_init(ADC_LM, 0);
+   44   1          adc_init(ADC_RM, 0);
+   45   1          adc_init(ADC_R, 0);
+   46   1          
+   47   1          // 初始化二维数组
+   48   1          uint8 i, j;
+*** ERROR C25 IN LINE 48 OF ..\USER\src\electromagnetic_tracking.c: syntax error near 'uint8'
+   49   1          for(i = 0; i < SENSOR_COUNT; i++)
+*** ERROR C25 IN LINE 49 OF ..\USER\src\electromagnetic_tracking.c: syntax error near 'for'
+*** ERROR C25 IN LINE 49 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '='
+*** ERROR C25 IN LINE 49 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '<'
+*** ERROR C25 IN LINE 49 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '++'
+   50   1          {
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 2   
 
-   57   1          if(filtered_LM < min_LM && filtered_LM > 10) min_LM = filtered_LM;
-   58   1          if(filtered_RM < min_RM && filtered_RM > 10) min_RM = filtered_RM;
-   59   1          if(filtered_R < min_R && filtered_R > 10) min_R = filtered_R;
-   60   1          
-   61   1          // 更新最大值
-   62   1          if(filtered_L > max_L) max_L = filtered_L;
-   63   1          if(filtered_LM > max_LM) max_LM = filtered_LM;
-   64   1          if(filtered_RM > max_RM) max_RM = filtered_RM;
-   65   1          if(filtered_R > max_R) max_R = filtered_R;
-   66   1      }
-   67          
-   68          // 归一化电感数据
-   69          void normalize_sensors(void)
-   70          {
-   71   1          // 防止除以0，确保最大值和最小值有差异
-   72   1          // 使用1000作为放大系数，避免使用浮点数
-   73   1          if(max_L > min_L) 
-   74   1              normalized_L = (float)((filtered_L - min_L) * 1000) / ((max_L - min_L) * 1000);
-   75   1          else 
-   76   1              normalized_L = 0;
-   77   1              
-   78   1          if(max_LM > min_LM) 
-   79   1              normalized_LM = (float)((filtered_LM - min_LM) * 1000) / ((max_LM - min_LM) * 1000);
-   80   1          else 
-   81   1              normalized_LM = 0;
-   82   1              
-   83   1          if(max_RM > min_RM) 
-   84   1              normalized_RM = (float)((filtered_RM - min_RM) * 1000) / ((max_RM - min_RM) * 1000);
-   85   1          else 
-   86   1              normalized_RM = 0;
-   87   1              
-   88   1          if(max_R > min_R) 
-   89   1              normalized_R = (float)((filtered_R - min_R) * 1000) / ((max_R - min_R) * 1000);
-   90   1          else 
-   91   1              normalized_R = 0;
-   92   1          
-   93   1          // 限制范围在0-1之间
-   94   1          if(normalized_L > 1.0f) normalized_L = 1.0f;
-   95   1          if(normalized_L < 0.0f) normalized_L = 0.0f;
-   96   1          
-   97   1          if(normalized_LM > 1.0f) normalized_LM = 1.0f;
-   98   1          if(normalized_LM < 0.0f) normalized_LM = 0.0f;
-   99   1          
-  100   1          if(normalized_RM > 1.0f) normalized_RM = 1.0f;
-  101   1          if(normalized_RM < 0.0f) normalized_RM = 0.0f;
-  102   1          
-  103   1          if(normalized_R > 1.0f) normalized_R = 1.0f;
-  104   1          if(normalized_R < 0.0f) normalized_R = 0.0f;
-  105   1      }
-  106          
-  107          // 计算位置（使用差比和加权平均方法）
-  108          int16 calculate_position(void)
-  109          {
-  110   1          // 在函数开始处声明所有变量
-  111   1          float weight_sum = 0;
-  112   1          float weighted_sum = 0;
-  113   1          float diff_L_R = 0;
-  114   1          float diff_LM_RM = 0;
-  115   1          float sum_L_R = 0;
-  116   1          float sum_LM_RM = 0;
-  117   1          static int16 last_pos = 0;
-  118   1          int16 pos = 0;
-  119   1          float filter_param = 0.7f; // 滤波系数，可调
-  120   1          
-  121   1          // 计算水平电感的差值和和值
-  122   1          diff_L_R = normalized_L - normalized_R;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 3   
+   51   1              for(j = 0; j < HISTORY_COUNT; j++)
+*** ERROR C25 IN LINE 51 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '='
+*** ERROR C25 IN LINE 51 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '<'
+*** ERROR C25 IN LINE 51 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '++'
+   52   1              {
+   53   1                  adc_fliter_data[i][j] = 0;
+*** ERROR C109 IN LINE 53 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C109 IN LINE 53 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C144 IN LINE 53 OF ..\USER\src\electromagnetic_tracking.c: 'array': initialization needs curly braces
+   54   1                  sum[i][j] = 0;
+*** ERROR C109 IN LINE 54 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C109 IN LINE 54 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C144 IN LINE 54 OF ..\USER\src\electromagnetic_tracking.c: 'array': initialization needs curly braces
+   55   1                  adc_fliter_data[i][j] = 0;
+*** ERROR C109 IN LINE 55 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C109 IN LINE 55 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C53 IN LINE 55 OF ..\USER\src\electromagnetic_tracking.c: redefinition of 'adc_fliter_data'
+*** ERROR C144 IN LINE 55 OF ..\USER\src\electromagnetic_tracking.c: 'array': initialization needs curly braces
+   56   1              }
+*** ERROR C25 IN LINE 56 OF ..\USER\src\electromagnetic_tracking.c: syntax error near '}'
+   57   1          }
+   58   1      }
+   59   1      
+   60   1      //-----------------------------------------------------------------------------
+   61   1      // @brief   得到adc的值
+   62   1      // @param   测的ADC/电感序号
+   63   1      // @return  测出的adc值
+   64   1      // @author  hjx
+   65   1      // Sample usage:get_adc(1)
+   66   1      //-----------------------------------------------------------------------------
+   67   1      uint16 get_adc(uint16 i)
+   68   1      {
+   69   2        switch(i){
+   70   3          case 1:
+   71   3            return adc_once(ADC_L, ADC_10BIT);
+   72   3          
+   73   3          case 2:
+   74   3            return adc_once(ADC_LM, ADC_10BIT);
+   75   3          
+   76   3          case 3:
+   77   3            return adc_once(ADC_RM, ADC_10BIT);
+   78   3          case 4:
+   79   3            return adc_once(ADC_R, ADC_10BIT);
+   80   3          default:
+   81   3            return 0;
+   82   3        }
+   83   2      }
+   84   1      
+   85   1      //-----------------------------------------------------------------------------
+   86   1      // @brief   递推均值滤波
+   87   1      // @param   无
+   88   1      // @return  无
+   89   1      // @author  zp
+   90   1      // Sample usage: average_filter();
+   91   1      //-----------------------------------------------------------------------------
+   92   1      static uint16 filter_index = 0;  // 递推次数计数器
+   93   1      static uint8 is_initialized = 0; // 初始化标志,只在第一次调用时进行多次采样,后续调�
+             -��时使用真正的递推算法
+   94   1      uint16 j = 0;
+*** ERROR C53 IN LINE 94 OF ..\USER\src\electromagnetic_tracking.c: redefinition of 'j'
+   95   1      
+   96   1      void average_filter(void)
+   97   1      {
+   98   2          uint16 a = 0, b = 0;
+   99   2          
+  100   2          // 检查是否需要初始化
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 3   
 
-  123   1          sum_L_R = normalized_L + normalized_R;
-  124   1          
-  125   1          // 计算垂直电感的差值和和值
-  126   1          diff_LM_RM = normalized_LM - normalized_RM;
-  127   1          sum_LM_RM = normalized_LM + normalized_RM;
-  128   1          
-  129   1          // 计算差比和，避免除以0
-  130   1          if(sum_L_R > 0.01f)
-  131   1              ratio_L_R = diff_L_R / sum_L_R;
-  132   1          else
-  133   1              ratio_L_R = 0;
-  134   1              
-  135   1          if(sum_LM_RM > 0.01f)
-  136   1              ratio_LM_RM = diff_LM_RM / sum_LM_RM;
-  137   1          else
-  138   1              ratio_LM_RM = 0;
-  139   1          
-  140   1          // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
-  141   1          if(sum_L_R < 0.1f && sum_LM_RM < 0.1f)
-  142   1          {
-  143   2              // 保持上一次的位置值
-  144   2              return last_pos;
-  145   2          }
-  146   1          
-  147   1          // 十字路口特征：中间电感值大，两侧电感值小
-  148   1          if(normalized_LM > 0.6f && normalized_RM > 0.6f && 
-  149   1             normalized_L < 0.3f && normalized_R < 0.3f)
-  150   1          {
-  151   2              // 十字路口处理逻辑，保持直行
-  152   2              return 0;
-  153   2          }
-  154   1          
-  155   1          // 差比和加权，水平电感权重大，垂直电感权重小
-  156   1          weighted_sum = ratio_L_R * 100 * 0.7f + ratio_LM_RM * 100 * 0.3f;
-  157   1          
-  158   1          // 限制范围在-100到100之间
-  159   1          if(weighted_sum > 100) weighted_sum = 100;
-  160   1          if(weighted_sum < -100) weighted_sum = -100;
-  161   1          
-  162   1          pos = (int16)weighted_sum;
-  163   1          
-  164   1          // 添加低通滤波，减少抖动
-  165   1          pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
-  166   1          last_pos = pos;
-  167   1          
-  168   1          return pos;
-  169   1      }
-  170          
-  171          // 电磁保护逻辑函数实现
-  172          uint8 check_electromagnetic_protection(void)
-  173          {
-  174   1          // 在函数开始处声明所有变量
-  175   1          uint8 is_out_of_track = 0;
-  176   1          uint16 sum_value = 0;
-  177   1          uint16 threshold = 100;  // 阈值，需要根据实际情况调整
-  178   1          static uint8 out_of_track_count = 0;
-  179   1          static uint8 protection_triggered = 0;
-  180   1          
-  181   1          // 计算所有电感的和值
-  182   1          sum_value = filtered_L + filtered_LM + filtered_RM + filtered_R;
-  183   1          
-  184   1          // 判断是否脱离赛道的条件
-  185   1          // 1. 所有电感值总和过小，说明可能脱离赛道
-  186   1          if(sum_value < threshold)
-  187   1          {
-  188   2              is_out_of_track = 1;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 4   
+  101   2          if (!is_initialized)
+  102   2          {
+  103   3              // 重置累加器
+  104   3              for(a = 0; a < i_num; a++)
+  105   3              {
+  106   4                  sum[a][0] = 0;
+*** ERROR C72 IN LINE 106 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  107   4              }
+  108   3              
+  109   3              // 前几次采集，累积足够的数据
+  110   3              for(filter_index = 0; filter_index < times; filter_index++)
+  111   3              {
+  112   4                  for(b = 0; b < i_num; b++)
+  113   4                  {
+  114   5                      sum[b][0] += get_adc(b+1);  // 采集一次ADC并累加
+*** ERROR C72 IN LINE 114 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  115   5                  }
+  116   4                  delay_us(5); // 添加短暂延时提高采样稳定性
+  117   4              }
+  118   3              
+  119   3              // 计算初始平均值
+  120   3              for(a = 0; a < i_num; a++)
+  121   3              {
+  122   4                  adc_fliter_data[a][0] = sum[a][0] / times;  // 求平均
+*** ERROR C72 IN LINE 122 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 122 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  123   4                  result[a] = adc_fliter_data[a][0];
+*** ERROR C72 IN LINE 123 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  124   4              }
+  125   3              
+  126   3              is_initialized = 1; // 标记初始化完成
+  127   3          }
+  128   2          else  // 已初始化，执行递推均值滤波
+  129   2          {
+  130   3              for(a = 0; a < i_num; a++)
+  131   3              {
+  132   4                  // 递推均值滤波核心算法：减去平均值，加上新值，重新计算平均值
+  133   4                  sum[a][0] -= sum[a][0] / times;         // 每次去除平均值的贡献
+*** ERROR C72 IN LINE 133 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 133 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  134   4                  sum[a][0] += get_adc(a+1);              // 加上新值
+*** ERROR C72 IN LINE 134 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  135   4                  adc_fliter_data[a][0] = sum[a][0] / times;  // 求新的平均值
+*** ERROR C72 IN LINE 135 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 135 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  136   4                  result[a] = adc_fliter_data[a][0];      // 保存结果
+*** ERROR C72 IN LINE 136 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  137   4              }
+  138   3          }
+  139   2      }
+  140   1      
+  141   1      
+  142   1      //-----------------------------------------------------------------------------
+  143   1      // @brief   中位值滤波，将每个电感的中位数作为结果
+  144   1      // @param   无
+  145   1      // @return  无
+  146   1      // @author  ZP
+  147   1      // Sample usage: mid_filter();
+  148   1      //-----------------------------------------------------------------------------
+  149   1      static uint8 mid_initialized = 0;  // 中位值滤波初始化标志
+  150   1      static uint16 sample_count = 0;    // 采样计数器
+  151   1      
+  152   1      void mid_filter(void)
+  153   1      {
+  154   2          uint16 temp = 0, a = 0, t = 0;
+  155   2          uint16 mid_index = 0;
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 4   
 
-  189   2          }
-  190   1          
-  191   1          // 2. 归一化后的值都很小，说明可能脱离赛道
-  192   1          if(normalized_L < 0.05f && normalized_LM < 0.05f && 
-  193   1             normalized_RM < 0.05f && normalized_R < 0.05f)
-  194   1          {
-  195   2              is_out_of_track = 1;
-  196   2          }
-  197   1          
-  198   1          // 3. 位置偏差过大，说明可能偏离赛道太多
-  199   1          if(position < -90 || position > 90)
-  200   1          {
-  201   2              // 只有当电感值总和也较小时才判断为出赛道
-  202   2              if(sum_value < threshold * 2)
-  203   2              {
-  204   3                  is_out_of_track = 1;
-  205   3              }
-  206   2          }
-  207   1          
-  208   1          // 连续检测逻辑，防止偶然的低值导致误判
-  209   1          if(is_out_of_track)
-  210   1          {
-  211   2              out_of_track_count++;
-  212   2              if(out_of_track_count >= 5)  // 连续5次检测到脱离赛道才触发保护
-  213   2              {
-  214   3                  protection_triggered = 1;
-  215   3              }
-  216   2          }
-  217   1          else
-  218   1          {
-  219   2              // 如果检测正常，则计数器减少但不低于0
-  220   2              if(out_of_track_count > 0)
-  221   2                  out_of_track_count--;
-  222   2          }
-  223   1          
-  224   1          return protection_triggered;
-  225   1      }
-  226          
-  227          // 显示电磁传感器数据
-  228          void display_electromagnetic_data(void)
-  229          {
-  230   1          // 显示原始滤波数据和归一化数据
-  231   1          ips114_showstr(0,0,"L:");   
-  232   1          ips114_showuint16(3*8, 0, filtered_L);
-  233   1          ips114_showstr(9*8,0,"N:");
-  234   1          ips114_showfloat(11*8, 0, normalized_L, 2, 2);
-  235   1          
-  236   1          ips114_showstr(0,1,"LM:");  
-  237   1          ips114_showuint16(3*8, 1, filtered_LM);
-  238   1          ips114_showstr(9*8,1,"N:");
-  239   1          ips114_showfloat(11*8, 1, normalized_LM, 2, 2);
-  240   1          
-  241   1          ips114_showstr(0,2,"RM:");  
-  242   1          ips114_showuint16(3*8, 2, filtered_RM);
-  243   1          ips114_showstr(9*8,2,"N:");
-  244   1          ips114_showfloat(11*8, 2, normalized_RM, 2, 2);
-  245   1          
-  246   1          ips114_showstr(0,3,"R:");   
-  247   1          ips114_showuint16(3*8, 3, filtered_R);
-  248   1          ips114_showstr(9*8,3,"N:");
-  249   1          ips114_showfloat(11*8, 3, normalized_R, 2, 2);
-  250   1          
-  251   1          // 显示位置和差比和数据
-  252   1          ips114_showstr(0,4,"Pos:");
-  253   1          ips114_showint16(5*8, 4, position);
-  254   1          
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  12:22:58  PAGE 5   
+  156   2          
+  157   2          // 调用均值滤波获取新的采样值
+  158   2          average_filter();
+  159   2          
+  160   2          // 如果尚未初始化完成
+  161   2          if (!mid_initialized)
+  162   2          {
+  163   3              // 将当前滤波结果存入历史数组
+  164   3              for(a = 0; a < i_num; a++)
+  165   3              {
+  166   4                  adc_fliter_data[a][sample_count] = adc_fliter_data[a][0];
+*** ERROR C72 IN LINE 166 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 166 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  167   4                  result[a] = adc_fliter_data[a][0];
+*** ERROR C72 IN LINE 167 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  168   4              }
+  169   3              
+  170   3              sample_count++;
+  171   3              
+  172   3              // 当采集到足够样本时，标记初始化完成
+  173   3              if (sample_count >= times)
+  174   3              {
+  175   4                  mid_initialized = 1;
+  176   4                  sample_count = 0;  // 重置计数器用于循环缓冲
+  177   4              }
+  178   3          }
+  179   2          else  // 已初始化，执行中位值滤波
+  180   2          {
+  181   3              // 更新历史数据数组
+  182   3              for(a = 0; a < i_num; a++)
+  183   3              {
+  184   4                  adc_fliter_data[a][sample_count] = adc_fliter_data[a][0];
+*** ERROR C72 IN LINE 184 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 184 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  185   4              }
+  186   3              
+  187   3              // 更新循环缓冲区索引
+  188   3              sample_count = (sample_count + 1) % times;
+  189   3              
+  190   3              // 对每个电感通道进行处理
+  191   3              for(a = 0; a < i_num; a++)
+  192   3              {
+  193   4                  // 创建临时数组用于排序，避免修改原始数据
+  194   4                  uint16 sort_array[times];
+*** ERROR C109 IN LINE 194 OF ..\USER\src\electromagnetic_tracking.c: illegal constant expression
+*** ERROR C122 IN LINE 194 OF ..\USER\src\electromagnetic_tracking.c: 'sort_array': unknown size
+  195   4                  for(t = 0; t < times; t++)
+  196   4                  {
+  197   5                      sort_array[t] = adc_fliter_data[a][t];
+*** ERROR C72 IN LINE 197 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  198   5                  }
+  199   4                  
+  200   4                  // 冒泡排序
+  201   4                  for(uint16 i = 0; i < times-1; i++)
+*** ERROR C25 IN LINE 201 OF ..\USER\src\electromagnetic_tracking.c: syntax error near 'uint16'
+  202   4                  {
+  203   5                      for(t = 0; t < times-i-1; t++)
+  204   5                      {
+  205   6                          if(sort_array[t] > sort_array[t+1])
+  206   6                          {
+  207   7                              temp = sort_array[t];
+  208   7                              sort_array[t] = sort_array[t+1];
+  209   7                              sort_array[t+1] = temp;
+  210   7                          }
+  211   6                      }
+  212   5                  }
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 5   
 
-  255   1          // 显示差比和数据
-  256   1          ips114_showstr(0,5,"L-R:");
-  257   1          ips114_showfloat(5*8, 5, ratio_L_R, 2, 2);
-  258   1          
-  259   1          ips114_showstr(0,6,"LM-RM:");
-  260   1          ips114_showfloat(6*8, 6, ratio_LM_RM, 2, 2);
-  261   1      } 
+  213   4                  
+  214   4                  // 计算中位数索引
+  215   4                  mid_index = times / 2;
+  216   4                  
+  217   4                  // 取中位数作为结果
+  218   4                  result[a] = sort_array[mid_index];
+  219   4              }
+  220   3          }
+  221   2      }
+  222   1      
+  223   1      
+  224   1      // 更新每个电感的最大最小值，用于动态校准
+  225   1      void update_min_max_values(void)
+  226   1      {
+  227   2          // 更新最小值
+  228   2          if(adc_fliter_data[SENSOR_L][0] < min_L && adc_fliter_data[SENSOR_L][0] > 10) min_L = adc_fliter_data
+             -[SENSOR_L][0];
+*** ERROR C72 IN LINE 228 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 228 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 228 OF ..\USER\src\electromagnetic_tracking.c: '<': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 228 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  229   2          if(adc_fliter_data[SENSOR_LM][0] < min_LM && adc_fliter_data[SENSOR_LM][0] > 10) min_LM = adc_fliter_
+             -data[SENSOR_LM][0];
+*** ERROR C72 IN LINE 229 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 229 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 229 OF ..\USER\src\electromagnetic_tracking.c: '<': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 229 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  230   2          if(adc_fliter_data[SENSOR_RM][0] < min_RM && adc_fliter_data[SENSOR_RM][0] > 10) min_RM = adc_fliter_
+             -data[SENSOR_RM][0];
+*** ERROR C72 IN LINE 230 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 230 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 230 OF ..\USER\src\electromagnetic_tracking.c: '<': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 230 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  231   2          if(adc_fliter_data[SENSOR_R][0] < min_R && adc_fliter_data[SENSOR_R][0] > 10) min_R = adc_fliter_data
+             -[SENSOR_R][0];
+*** ERROR C72 IN LINE 231 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 231 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 231 OF ..\USER\src\electromagnetic_tracking.c: '<': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 231 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  232   2          
+  233   2          // 更新最大值
+  234   2          if(adc_fliter_data[SENSOR_L][0] > max_L) max_L = adc_fliter_data[SENSOR_L][0];
+*** ERROR C72 IN LINE 234 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 234 OF ..\USER\src\electromagnetic_tracking.c: '>': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 234 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  235   2          if(adc_fliter_data[SENSOR_LM][0] > max_LM) max_LM = adc_fliter_data[SENSOR_LM][0];
+*** ERROR C72 IN LINE 235 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 235 OF ..\USER\src\electromagnetic_tracking.c: '>': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 235 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  236   2          if(adc_fliter_data[SENSOR_RM][0] > max_RM) max_RM = adc_fliter_data[SENSOR_RM][0];
+*** ERROR C72 IN LINE 236 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 236 OF ..\USER\src\electromagnetic_tracking.c: '>': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 236 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  237   2          if(adc_fliter_data[SENSOR_R][0] > max_R) max_R = adc_fliter_data[SENSOR_R][0];
+*** ERROR C72 IN LINE 237 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** WARNING C173 IN LINE 237 OF ..\USER\src\electromagnetic_tracking.c: '>': signed/unsigned type mismatch
+*** ERROR C72 IN LINE 237 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  238   2      }
+  239   1      
+  240   1      // 归一化电感数据
+  241   1      void normalize_sensors(void)
+  242   1      {
+  243   2          // 动态校准，防止除以0，确保最大值和最小值有差异
+  244   2          // 使用1000作为放大系数，避免使用浮点数
+  245   2          if(max_L > min_L) 
+  246   2              normalized_L = (float)((adc_fliter_data[SENSOR_L][0] - min_L) * 1000) / ((max_L - min_L) * 1000);
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 6   
 
+*** ERROR C72 IN LINE 246 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  247   2          else 
+  248   2              normalized_L = 0;
+  249   2              
+  250   2          if(max_LM > min_LM) 
+  251   2              normalized_LM = (float)((adc_fliter_data[SENSOR_LM][0] - min_LM) * 1000) / ((max_LM - min_LM) * 1
+             -000);
+*** ERROR C72 IN LINE 251 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  252   2          else 
+  253   2              normalized_LM = 0;
+  254   2              
+  255   2          if(max_RM > min_RM) 
+  256   2              normalized_RM = (float)((adc_fliter_data[SENSOR_RM][0] - min_RM) * 1000) / ((max_RM - min_RM) * 1
+             -000);
+*** ERROR C72 IN LINE 256 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  257   2          else 
+  258   2              normalized_RM = 0;
+  259   2              
+  260   2          if(max_R > min_R) 
+  261   2              normalized_R = (float)((adc_fliter_data[SENSOR_R][0] - min_R) * 1000) / ((max_R - min_R) * 1000);
+*** ERROR C72 IN LINE 261 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  262   2          else 
+  263   2              normalized_R = 0;
+  264   2          
+  265   2          // 限制范围在0-1之间
+  266   2          if(normalized_L > 1.0f) normalized_L = 1.0f;
+  267   2          if(normalized_L < 0.0f) normalized_L = 0.0f;
+  268   2          
+  269   2          if(normalized_LM > 1.0f) normalized_LM = 1.0f;
+  270   2          if(normalized_LM < 0.0f) normalized_LM = 0.0f;
+  271   2          
+  272   2          if(normalized_RM > 1.0f) normalized_RM = 1.0f;
+  273   2          if(normalized_RM < 0.0f) normalized_RM = 0.0f;
+  274   2          
+  275   2          if(normalized_R > 1.0f) normalized_R = 1.0f;
+  276   2          if(normalized_R < 0.0f) normalized_R = 0.0f;
+  277   2      }
+  278   1      
+  279   1      // 计算位置（使用差比和加权平均方法）
+  280   1      int16 calculate_position(void)
+  281   1      {
+  282   2          // 在函数开始处声明所有变量
+  283   2          float weight_sum = 0;      // 权重总和
+  284   2          float weighted_sum = 0;    // 加权和结果
+  285   2          float diff_L_R = 0;        // 左右水平电感差值
+  286   2          float diff_LM_RM = 0;      // 左右中间电感差值
+  287   2          float sum_L_R = 0;         // 左右水平电感和值
+  288   2          float sum_LM_RM = 0;       // 左右中间电感和值
+  289   2          static int16 last_pos = 0; // 上一次位置值，用于滤波
+  290   2          int16 pos = 0;             // 当前计算得到的位置值
+  291   2          float filter_param = 0.7f; // 滤波系数，可调
+  292   2          
+  293   2          // 计算水平电感的差值和和值
+  294   2          diff_L_R = normalized_L - normalized_R;
+  295   2          sum_L_R = normalized_L + normalized_R;
+  296   2          
+  297   2          // 计算垂直电感的差值和和值
+  298   2          diff_LM_RM = normalized_LM - normalized_RM;
+  299   2          sum_LM_RM = normalized_LM + normalized_RM;
+  300   2          
+  301   2          // 计算差比和，避免除以0
+  302   2          if(sum_L_R > 0.01f)
+  303   2              ratio_L_R = diff_L_R / sum_L_R;
+  304   2          else
+  305   2              ratio_L_R = 0;
+  306   2              
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 7   
 
-Module Information          Static   Overlayable
-------------------------------------------------
-  code size            =      1994     ------
-  ecode size           =    ------     ------
-  data size            =    ------     ------
-  idata size           =    ------     ------
-  pdata size           =    ------     ------
-  xdata size           =    ------     ------
-  xdata-const size     =    ------     ------
-  edata size           =       100     ------
-  bit size             =    ------     ------
-  ebit size            =    ------     ------
-  bitaddressable size  =    ------     ------
-  ebitaddressable size =    ------     ------
-  far data size        =    ------     ------
-  huge data size       =    ------     ------
-  const size           =    ------     ------
-  hconst size          =       119     ------
-End of Module Information.
+  307   2          if(sum_LM_RM > 0.01f)
+  308   2              ratio_LM_RM = diff_LM_RM / sum_LM_RM;
+  309   2          else
+  310   2              ratio_LM_RM = 0;
+  311   2          
+  312   2          // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
+  313   2          if(sum_L_R < 0.1f && sum_LM_RM < 0.1f)
+  314   2          {
+  315   3              // 保持上一次的位置值
+  316   3              return last_pos;
+  317   3          }
+  318   2          
+  319   2          // 十字路口特征：中间电感值大，两侧电感值小
+  320   2          if(normalized_LM > 0.6f && normalized_RM > 0.6f && 
+  321   2             normalized_L < 0.3f && normalized_R < 0.3f)
+  322   2          {
+  323   3              // 十字路口处理逻辑，保持直行
+  324   3              return 0;
+  325   3          }
+  326   2          
+  327   2          // 差比和加权，水平电感权重大，垂直电感权重小
+  328   2          weighted_sum = ratio_L_R * 100 * 0.7f + ratio_LM_RM * 100 * 0.3f;
+  329   2          
+  330   2          // 限制范围在-100到100之间
+  331   2          if(weighted_sum > 100) weighted_sum = 100;
+  332   2          if(weighted_sum < -100) weighted_sum = -100;
+  333   2          
+  334   2          pos = (int16)weighted_sum;
+  335   2          
+  336   2          // 添加低通滤波，减少抖动
+  337   2          pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
+  338   2          last_pos = pos;
+  339   2          
+  340   2          return pos;
+  341   2      }
+  342   1      
+  343   1      // 电磁保护逻辑函数实现
+  344   1      uint8 check_electromagnetic_protection(void)
+  345   1      {
+  346   2          // 在函数开始处声明所有变量
+  347   2          uint8 is_out_of_track = 0;    // 标记是否脱离赛道的标志位
+  348   2          uint16 sum_value = 0;         // 所有电感值的总和
+  349   2          uint16 threshold = 100;       // 阈值，需要根据实际情况调整，判断脱离赛道的电�
+             -�总和阈值
+  350   2          static uint8 out_of_track_count = 0;    // 连续检测到脱离赛道的次数计数器
+  351   2          static uint8 protection_triggered = 0;  // 保护触发标志位，1表示已触发保护
+  352   2          
+  353   2          // 计算所有电感的和值
+  354   2          sum_value = adc_fliter_data[SENSOR_L][0] + adc_fliter_data[SENSOR_LM][0] + 
+  355   2                      adc_fliter_data[SENSOR_RM][0] + adc_fliter_data[SENSOR_R][0];
+*** ERROR C72 IN LINE 354 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 354 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 354 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+*** ERROR C72 IN LINE 354 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  356   2          
+  357   2          // 判断是否脱离赛道的条件
+  358   2          // 1. 所有电感值总和过小，说明可能脱离赛道
+  359   2          if(sum_value < threshold)
+  360   2          {
+  361   3              is_out_of_track = 1;
+  362   3          }
+  363   2          
+  364   2          // 2. 归一化后的值都很小，说明可能脱离赛道
+  365   2          if(normalized_L < 0.05f && normalized_LM < 0.05f && 
+  366   2             normalized_RM < 0.05f && normalized_R < 0.05f)
+  367   2          {
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 8   
 
+  368   3              is_out_of_track = 1;
+  369   3          }
+  370   2          
+  371   2          // 3. 位置偏差过大，说明可能偏离赛道太多
+  372   2          if(position < -90 || position > 90)
+  373   2          {
+  374   3              // 只有当电感值总和也较小时才判断为出赛道
+  375   3              if(sum_value < threshold * 2)
+  376   3              {
+  377   4                  is_out_of_track = 1;
+  378   4              }
+  379   3          }
+  380   2          
+  381   2          // 连续检测逻辑，防止偶然的低值导致误判
+  382   2          if(is_out_of_track)
+  383   2          {
+  384   3              out_of_track_count++;
+  385   3              if(out_of_track_count >= 5)  // 连续5次检测到脱离赛道才触发保护
+  386   3              {
+  387   4                  protection_triggered = 1;
+  388   4              }
+  389   3          }
+  390   2          else
+  391   2          {
+  392   3              // 如果检测正常，则计数器减少但不低于0
+  393   3              if(out_of_track_count > 0)
+  394   3                  out_of_track_count--;
+  395   3          }
+  396   2          
+  397   2          return protection_triggered;
+  398   2      }
+  399   1      
+  400   1      // 显示电磁传感器数据
+  401   1      void display_electromagnetic_data(void)
+  402   1      {
+  403   2          // 显示原始滤波数据和归一化数据
+  404   2          ips114_showstr(0,0,"L:");   
+  405   2          ips114_showuint16(3*8, 0, adc_fliter_data[SENSOR_L][0]);
+*** WARNING C122 IN LINE 405 OF ..\USER\src\electromagnetic_tracking.c: '[]': unknown size
+*** ERROR C72 IN LINE 405 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  406   2          ips114_showstr(9*8,0,"N:");
+  407   2          ips114_showfloat(11*8, 0, normalized_L, 2, 2);
+  408   2          
+  409   2          ips114_showstr(0,1,"LM:");  
+  410   2          ips114_showuint16(3*8, 1, adc_fliter_data[SENSOR_LM][0]);
+*** WARNING C122 IN LINE 410 OF ..\USER\src\electromagnetic_tracking.c: '[]': unknown size
+*** ERROR C72 IN LINE 410 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  411   2          ips114_showstr(9*8,1,"N:");
+  412   2          ips114_showfloat(11*8, 1, normalized_LM, 2, 2);
+  413   2          
+  414   2          ips114_showstr(0,2,"RM:");  
+  415   2          ips114_showuint16(3*8, 2, adc_fliter_data[SENSOR_RM][0]);
+*** WARNING C122 IN LINE 415 OF ..\USER\src\electromagnetic_tracking.c: '[]': unknown size
+*** ERROR C72 IN LINE 415 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  416   2          ips114_showstr(9*8,2,"N:");
+  417   2          ips114_showfloat(11*8, 2, normalized_RM, 2, 2);
+  418   2          
+  419   2          ips114_showstr(0,3,"R:");   
+  420   2          ips114_showuint16(3*8, 3, adc_fliter_data[SENSOR_R][0]);
+*** WARNING C122 IN LINE 420 OF ..\USER\src\electromagnetic_tracking.c: '[]': unknown size
+*** ERROR C72 IN LINE 420 OF ..\USER\src\electromagnetic_tracking.c: sizeof returns zero
+  421   2          ips114_showstr(9*8,3,"N:");
+  422   2          ips114_showfloat(11*8, 3, normalized_R, 2, 2);
+  423   2          
+  424   2          // 显示位置和差比和数据
+  425   2          ips114_showstr(0,4,"Pos:");
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           29/03/25  23:09:18  PAGE 9   
 
-C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+  426   2          ips114_showint16(5*8, 4, position);
+  427   2          
+  428   2          // 显示差比和数据
+  429   2          ips114_showstr(0,5,"L-R:");
+  430   2          ips114_showfloat(5*8, 5, ratio_L_R, 2, 2);
+  431   2          
+  432   2          ips114_showstr(0,6,"LM-RM:");
+  433   2          ips114_showfloat(6*8, 6, ratio_LM_RM, 2, 2);
+  434   2      } 
+
+C251 COMPILATION COMPLETE.  12 WARNING(S),  72 ERROR(S)

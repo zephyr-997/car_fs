@@ -4,6 +4,7 @@
         "seekfree_18tft.h": "c",
         "common.h": "c",
         "seekfree_absolute_encoder.h": "c",
-        "motor.h": "c"
+        "motor.h": "c",
+        "electromagnetic_tracking.h": "c"
     }
 }

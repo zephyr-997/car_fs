@@ -14,31 +14,30 @@ void main()
 	
     while(1)
 	{
-		
 		//串口接收
-		if(g_RxPointer != 0)
-		{
-			int temp = g_RxPointer;
-			delay_ms(4);
-			if(temp == g_RxPointer)
-			{
-				uart4_interrupt_callback();
-			}
-		}
-		if (flag == 1)
-		{
-			flag = 0;
-		}		
+		// if(g_RxPointer != 0)
+		// {
+		// 	int temp = g_RxPointer;
+		// 	delay_ms(4);
+		// 	if(temp == g_RxPointer)
+		// 	{
+		// 		uart4_interrupt_callback();
+		// 	}
+		// }
+		// if (flag == 1)
+		// {
+		// 	flag = 0;
+		// }		
 
-		sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_EncoderRight);
-		uart_putstr(UART_4, g_TxData);
+		// sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_EncoderRight);
+		// uart_putstr(UART_4, g_TxData);
 
+		// sprintf(g_TxData, "%hu,%hu,%hu,%hu,%hd\n", filtered_data[SENSOR_L][0], filtered_data[SENSOR_LM][0], 
+        //          filtered_data[SENSOR_RM][0], filtered_data[SENSOR_R][0], position);
+		// uart_putstr(UART_4, g_TxData);
 
 		// 获取滤波后的ADC数据
-		filtered_L  = adc_mean_filter(ADC_L, 5);  
-		filtered_LM = adc_mean_filter(ADC_LM, 5); 	  
-		filtered_RM = adc_mean_filter(ADC_RM, 5);		
-		filtered_R  = adc_mean_filter(ADC_R, 5);	
+		average_filter();  // 使用递推均值滤波获取电感数据
 
 		// 更新最大最小值
 		update_min_max_values();
@@ -49,8 +48,8 @@ void main()
 		// 计算位置偏差
 		position = calculate_position();
 		
-		// 检查电磁保护
-		//protection_flag = check_electromagnetic_protection();
+		//检查电磁保护
+		// protection_flag = check_electromagnetic_protection();
 		
 		// if(protection_flag)
 		// {
@@ -70,9 +69,9 @@ void main()
 		// }
 		
 		// 显示电磁传感器数据
-		display_electromagnetic_data();
+		//display_electromagnetic_data();
 		
-		delay_ms(100);
+		delay_ms(5);
 	}	
 }
 
