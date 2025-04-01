@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 1   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_IMU963RA
@@ -66,7 +66,7 @@ stmt  level    source
    52          int16 imu963ra_acc_x = 0,  imu963ra_acc_y = 0,  imu963ra_acc_z = 0;
    53          int16 imu963ra_mag_x = 0,  imu963ra_mag_y = 0,  imu963ra_mag_z = 0;
    54          
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 2   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 2   
 
    55          
    56          //-------------------------------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ stmt  level    source
   111          //  @param      cmd         命令字
   112          //  @param      *val        存储读取的数据地址
   113          //  @since      v1.0
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 3   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 3   
 
   114          //  Sample usage:
   115          //-------------------------------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ stmt  level    source
   170   1          IMU963RA_CS(0);
   171   1          imu963ra_simspi_r_reg_byte(reg | IMU963RA_SPI_R, &dat);
   172   1          IMU963RA_CS(1);
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 4   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 4   
 
   173   1          return dat;
   174   1      }
@@ -270,7 +270,7 @@ stmt  level    source
   228          // 参数说明     reg             目标寄存器
   229          // 返回参数     uint8 xdata           读取的数据
   230          // 使用示例     imu963ra_read_mag_register(IMU963RA_MAG_ADDR, IMU963RA_MAG_CHIP_ID);
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 5   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 5   
 
   231          // 备注信息     内部调用
   232          //-------------------------------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ stmt  level    source
   282   1          uint16 xdata timeout_count = 0;
   283   1          while(0x6B != dat)                                                          // 判断 ID 是否正确
   284   1          {
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 6   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 6   
 
   285   2              if(timeout_count++ > IMU963RA_TIMEOUT_COUNT)
   286   2              {
@@ -406,7 +406,7 @@ stmt  level    source
   343          // 备注信息     执行该函数后，直接查看对应的变量即可
   344          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 7   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 7   
 
   345          void imu963ra_get_gyro (void)
   346          {
@@ -474,7 +474,7 @@ stmt  level    source
   401   2                  break;                  // 0x34 加速度量程为:±16G     获取到的加速度计数据 �
              -��以 2049 ， 可以转化为带物理单位的数据，单位：g(m/s^2)
   402   2              default:
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 8   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 8   
 
   403   2                  break;
   404   2          }
@@ -542,7 +542,7 @@ stmt  level    source
   456   2              case 0x19:
   457   2                  mag_dat = (float)mag_value / 3000;
   458   2                  break;                  //  0x19 磁力计量程为:8G     获取到的加速度计数据 除
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 9   
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 9   
 
              -以3000， 可以转化为带物理单位的数据，单位：G(高斯)
   459   2              case 0x09:
@@ -610,7 +610,7 @@ stmt  level    source
   508   2              // IMU963RA_CTRL2_G 寄存器
   509   2              // 设置为:0x52 陀螺仪量程为:±125dps  获取到的陀螺仪数据除以228.6，   可以
              -转化为带物理单位的数据，单位为：°/s
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 10  
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 10  
 
   510   2              // 设置为:0x50 陀螺仪量程为:±250dps  获取到的陀螺仪数据除以114.3，   可以
              -转化为带物理单位的数据，单位为：°/s
@@ -678,7 +678,7 @@ stmt  level    source
   557   1          while(0);
   558   1          return return_state;
   559   1      }
-C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  30/03/25  21:58:25  PAGE 11  
+C251 COMPILER V5.60.0,  SEEKFREE_IMU963RA                                                  01/04/25  10:34:38  PAGE 11  
 
 
 

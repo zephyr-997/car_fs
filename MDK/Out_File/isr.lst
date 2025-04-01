@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  isr                                                                30/03/25  21:58:22  PAGE 1   
+C251 COMPILER V5.60.0,  isr                                                                01/04/25  10:34:35  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE isr
@@ -66,7 +66,7 @@ stmt  level    source
    53          
    54          
    55          //UART2中断
-C251 COMPILER V5.60.0,  isr                                                                30/03/25  21:58:22  PAGE 2   
+C251 COMPILER V5.60.0,  isr                                                                01/04/25  10:34:35  PAGE 2   
 
    56          void UART2_Isr() interrupt 8
    57          {
@@ -134,7 +134,7 @@ stmt  level    source
   119          //外部中断1
   120          void INT1_Isr() interrupt 2
   121          {
-C251 COMPILER V5.60.0,  isr                                                                30/03/25  21:58:22  PAGE 3   
+C251 COMPILER V5.60.0,  isr                                                                01/04/25  10:34:35  PAGE 3   
 
   122   1      
   123   1      }
@@ -202,7 +202,7 @@ stmt  level    source
   184          //定时器2中断
   185          void TM2_Isr() interrupt 12
   186          {
-C251 COMPILER V5.60.0,  isr                                                                30/03/25  21:58:22  PAGE 4   
+C251 COMPILER V5.60.0,  isr                                                                01/04/25  10:34:35  PAGE 4   
 
   187   1        TIM2_CLEAR_FLAG;  //清除中断标志
   188   1        
@@ -221,33 +221,34 @@ stmt  level    source
   201   1          读取角速度并转化为实际物理数据
   202   1          当突然左转，Gyro_Z为正值；突然右转，Gyro_Z为负值
   203   1        */
-  204   1        imu963ra_get_gyro();
-  205   1        Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
+  204   1        // imu963ra_get_gyro();
+  205   1        // Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
   206   1        
-  207   1        //对Gyro_Z进行卡尔曼滤波
-  208   1        filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
+  207   1        // //对Gyro_Z进行卡尔曼滤波
+  208   1        // filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
   209   1        
-  210   1        //计算陀螺仪角速度pid
-  211   1        imu693_pid = pid_poisitional(&IMU693PID, filtered_GyroZ, g_IMU693Point);
+  210   1        // //计算陀螺仪角速度pid
+  211   1        // imu693_pid = pid_poisitional(&IMU693PID, filtered_GyroZ, g_IMU693Point);
   212   1        
-  213   1        //更新卡尔曼滤波的值
-  214   1        Kalman_Predict(&imu693_kf, imu693_pid);
+  213   1        // //更新卡尔曼滤波的值
+  214   1        // Kalman_Predict(&imu693_kf, imu693_pid);
   215   1        
-  216   1        //计算速度环pid
-  217   1        left_pid = pid_increment(&LeftPID, g_EncoderLeft, g_LeftPoint);
-  218   1        right_pid = pid_increment(&RightPID, g_EncoderRight, g_RightPoint);
+  216   1        // //计算速度环pid
+  217   1        // left_pid = pid_increment(&LeftPID, g_EncoderLeft, g_LeftPoint);
+  218   1        // right_pid = pid_increment(&RightPID, g_EncoderRight, g_RightPoint);
   219   1        
-  220   1        /*
-  221   1          把速度环pid的值转化成PWM的增值
-  222   1          因为left_pid和right_pid的值很小，大概在零点几左右，所以我就把他放大了一点
-  223   1          所以也不是严格的转化成pwm的数量级
-  224   1        */
-  225   1        pidtopwm_left = 40.0 * left_pid;
-  226   1        pidtopwm_right = 40.0 * right_pid;
+  220   1        // /*
+  221   1        //  把速度环pid的值转化成PWM的增值
+  222   1        //  因为left_pid和right_pid的值很小，大概在零点几左右，所以我就把他放大了一�
+             -�
+  223   1        //  所以也不是严格的转化成pwm的数量级
+  224   1        // */
+  225   1        // pidtopwm_left = 40.0 * left_pid;
+  226   1        // pidtopwm_right = 40.0 * right_pid;
   227   1        
-  228   1        //并级pid累加
-  229   1        g_DutyLeft += pidtopwm_left - imu693_pid;
-  230   1        g_DutyRight += pidtopwm_right + imu693_pid;
+  228   1        // //并级pid累加
+  229   1        // g_DutyLeft += pidtopwm_left - imu693_pid;
+  230   1        // g_DutyRight += pidtopwm_right + imu693_pid;
   231   1        
   232   1        // set_motor_pwm(g_DutyLeft, g_DutyRight);
   233   1      
@@ -269,9 +270,9 @@ stmt  level    source
   249          {
   250   1        TIM4_CLEAR_FLAG; //清除中断标志
   251   1      
-  252   1      
-C251 COMPILER V5.60.0,  isr                                                                30/03/25  21:58:22  PAGE 5   
+C251 COMPILER V5.60.0,  isr                                                                01/04/25  10:34:35  PAGE 5   
 
+  252   1      
   253   1      }
   254          
   255          
@@ -302,7 +303,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       569     ------
+  code size            =       346     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------

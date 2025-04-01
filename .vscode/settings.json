@@ -13,6 +13,12 @@
         "stc32gxx.h": "c",
         "seekfree_ips114_spi.h": "c",
         "board.h": "c",
-        "zf_tim.h": "c"
+        "zf_tim.h": "c",
+        "pid.h": "c",
+        "encoder.h": "c",
+        "zf_gpio.h": "c",
+        "string.h": "c",
+        "isr.h": "c",
+        "filter.h": "c"
     }
 }

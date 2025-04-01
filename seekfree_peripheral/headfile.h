@@ -62,6 +62,7 @@
 #include "motor.h"
 #include "encoder.h"
 #include "filter.h"
+#include "pid.h"
 
 
 extern uint8_t RxData[50];

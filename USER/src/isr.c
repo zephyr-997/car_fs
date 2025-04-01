@@ -201,33 +201,33 @@ void TM2_Isr() interrupt 12
 		读取角速度并转化为实际物理数据
 		当突然左转，Gyro_Z为正值；突然右转，Gyro_Z为负值
 	*/
-	imu963ra_get_gyro();
-	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
+	// imu963ra_get_gyro();
+	// Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
 	
-	//对Gyro_Z进行卡尔曼滤波
-	filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
+	// //对Gyro_Z进行卡尔曼滤波
+	// filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
 	
-	//计算陀螺仪角速度pid
-	imu693_pid = pid_poisitional(&IMU693PID, filtered_GyroZ, g_IMU693Point);
+	// //计算陀螺仪角速度pid
+	// imu693_pid = pid_poisitional(&IMU693PID, filtered_GyroZ, g_IMU693Point);
 	
-	//更新卡尔曼滤波的值
-	Kalman_Predict(&imu693_kf, imu693_pid);
+	// //更新卡尔曼滤波的值
+	// Kalman_Predict(&imu693_kf, imu693_pid);
 	
-	//计算速度环pid
-	left_pid = pid_increment(&LeftPID, g_EncoderLeft, g_LeftPoint);
-	right_pid = pid_increment(&RightPID, g_EncoderRight, g_RightPoint);
+	// //计算速度环pid
+	// left_pid = pid_increment(&LeftPID, g_EncoderLeft, g_LeftPoint);
+	// right_pid = pid_increment(&RightPID, g_EncoderRight, g_RightPoint);
 	
-	/*
-		把速度环pid的值转化成PWM的增值
-		因为left_pid和right_pid的值很小，大概在零点几左右，所以我就把他放大了一点
-		所以也不是严格的转化成pwm的数量级
-	*/
-	pidtopwm_left = 40.0 * left_pid;
-	pidtopwm_right = 40.0 * right_pid;
+	// /*
+	// 	把速度环pid的值转化成PWM的增值
+	// 	因为left_pid和right_pid的值很小，大概在零点几左右，所以我就把他放大了一点
+	// 	所以也不是严格的转化成pwm的数量级
+	// */
+	// pidtopwm_left = 40.0 * left_pid;
+	// pidtopwm_right = 40.0 * right_pid;
 	
-	//并级pid累加
-	g_DutyLeft += pidtopwm_left - imu693_pid;
-	g_DutyRight += pidtopwm_right + imu693_pid;
+	// //并级pid累加
+	// g_DutyLeft += pidtopwm_left - imu693_pid;
+	// g_DutyRight += pidtopwm_right + imu693_pid;
 	
 	// set_motor_pwm(g_DutyLeft, g_DutyRight);
 

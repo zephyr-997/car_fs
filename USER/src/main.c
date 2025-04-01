@@ -6,11 +6,11 @@ void main()
 	electromagnetic_init();  // 初始化电磁传感器
 	ips114_init_simspi();					
 	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
-	//pit_timer_ms(TIM_2, 10);
-	//motor_init();
-	//encoder_init();
-	// imu963ra_init();
-	// Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+	pit_timer_ms(TIM_2, 10);
+	motor_init();
+	encoder_init();
+	imu963ra_init();
+	Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
 
 	delay_ms(100); // 延时等待系统稳定
 	ips114_clear_simspi(WHITE);									//清屏
@@ -18,19 +18,19 @@ void main()
     while(1)
 	{
 		//串口接收
-		// if(g_RxPointer != 0)
-		// {
-		// 	int temp = g_RxPointer;
-		// 	delay_ms(4);
-		// 	if(temp == g_RxPointer)
-		// 	{
-		// 		uart4_interrupt_callback();
-		// 	}
-		// }
-		// if (flag == 1)
-		// {
-		// 	flag = 0;
-		// }		
+		if(g_RxPointer != 0)
+		{
+			int temp = g_RxPointer;
+			delay_ms(4);
+			if(temp == g_RxPointer)
+			{
+				uart4_interrupt_callback();
+			}
+		}
+		if (flag == 1)
+		{
+			flag = 0;
+		}		
 
 		// sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_EncoderRight);
 		// uart_putstr(UART_4, g_TxData);
@@ -44,10 +44,12 @@ void main()
 		normalize_sensors();
 		
 		// 计算位置偏差
-		//position = calculate_position_improved();
+		position = calculate_position_improved();
 		
 
-		sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)result[SENSOR_L], (uint16)result[SENSOR_LM], (uint16)result[SENSOR_RM], (uint16)result[SENSOR_R], position);
+		// sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)result[SENSOR_L], (uint16)result[SENSOR_LM], (uint16)result[SENSOR_RM], (uint16)result[SENSOR_R], position);
+		sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)normalized_data[SENSOR_L], (uint16)normalized_data[SENSOR_LM], (uint16)normalized_data[SENSOR_RM], (uint16)normalized_data[SENSOR_R], position);
+
 		uart_putstr(UART_4, g_TxData);
 
 		//检查电磁保护
@@ -71,15 +73,14 @@ void main()
 		// }
 		
 		// 显示电磁传感器数据
-		//display_electromagnetic_data();
+		display_electromagnetic_data();
 
-		delay_ms(10);
+		delay_ms(5);
 		// ips114_showstr_simspi(0,0,"L:");   
 		// delay_ms(500);
 		// ips114_clear_simspi(RED);									
 		// delay_ms(500);
 		// ips114_showstr_simspi(0,0,"L:");   
-
 	}	
 }
 

@@ -29,9 +29,7 @@ int16 position = 0;
 // 电磁保护逻辑变量
 uint8 protection_flag = 0;
 
-// 差比和算法中间变量
-float ratio_L_R = 0;
-float ratio_LM_RM = 0;
+
 
 //-----------------------------------------------------------------------------
 // @brief  	电磁传感器初始化
@@ -91,12 +89,12 @@ uint16 get_adc(uint16 i)
 // @author  zp
 // Sample usage: average_filter();
 //-----------------------------------------------------------------------------
-static uint16 filter_index = 0;  // 递推次数计数器
-static uint8 is_initialized = 0; // 初始化标志,只在第一次调用时进行多次采样,后续调用时使用真正的递推算法
-uint16 j = 0;
+
 
 void average_filter(void)
 {
+    static uint16 filter_index = 0;  // 递推次数计数器
+    static uint8 is_initialized = 0; // 初始化标志,只在第一次调用时进行多次采样,后续调用时使用真正的递推算法   
     uint16 a = 0, b = 0;
     
     // 检查是否需要初始化
