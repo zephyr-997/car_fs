@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  16:41:06  PAGE 1   
+C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  22:31:24  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_eeprom
@@ -66,7 +66,7 @@ stmt  level    source
    50          //  Sample usage:           
    51          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  16:41:06  PAGE 2   
+C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  22:31:24  PAGE 2   
 
    52          void iap_init(void)
    53          {
@@ -134,7 +134,7 @@ stmt  level    source
   108          //-------------------------------------------------------------------------------------------------------
              -------------
   109          void iap_read_bytes(uint32 addr, uint8 *buf, uint16 len)
-C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  16:41:06  PAGE 3   
+C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  22:31:24  PAGE 3   
 
   110          {
   111   1      
@@ -202,7 +202,7 @@ stmt  level    source
   169   1      
   170   1              IAP_CMD = 3;                            //设置 IAP 擦除命令
   171   1              IAP_ADDRL = addr;                       //设置 IAP 低地址
-C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  16:41:06  PAGE 4   
+C251 COMPILER V5.60.0,  zf_eeprom                                                          06/04/25  22:31:24  PAGE 4   
 
   172   1              IAP_ADDRH = addr >> 8;          //设置 IAP 高地址
   173   1              IAP_ADDRE = addr >> 16;         //设置 IAP 最高地址

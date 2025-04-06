@@ -26,7 +26,7 @@ extern int16_t g_DutyLeft, g_DutyRight;
 extern float left_pid, right_pid;
                           
 extern float Gyro_Z, filtered_GyroZ;
-extern float imu693_pid;
+extern float turn_pid;
 
 extern int g_LeftPoint;
 extern int g_RightPoint;

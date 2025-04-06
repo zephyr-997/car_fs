@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
@@ -66,7 +66,7 @@ stmt  level    source
    53   2             for(j = 0; j < HISTORY_COUNT; j++)
    54   2             {
    55   3                 adc_fliter_data[i][j] = 0;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 2   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 2   
 
    56   3                 sum[i][j] = 0;
    57   3             }
@@ -134,7 +134,7 @@ stmt  level    source
   118   2              
   119   2              // 计算初始平均值
   120   2              for(a = 0; a < i_num; a++)
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 3   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 3   
 
   121   2              {
   122   3                  adc_fliter_data[a][0] = sum[a][0] / times;  // 求平均
@@ -202,7 +202,7 @@ stmt  level    source
   184   2              // 更新历史数据数组
   185   2              for(a = 0; a < i_num; a++)
   186   2              {
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 4   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 4   
 
   187   3                  adc_fliter_data[a][sample_count] = adc_fliter_data[a][0];
   188   3              }
@@ -270,7 +270,7 @@ stmt  level    source
   250   3                  if(max_value[i] > min_value[i])  // 确保最大值始终大于最小值
   251   3                      max_value[i] -= max_value[i] / 100;
   252   3              }
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 5   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 5   
 
   253   2          }
   254   1          
@@ -338,7 +338,7 @@ stmt  level    source
   312   2              {
   313   3                  // 如果最大最小值差异太小，可能是传感器故障或未正确初始化
   314   3                  // 使用原始值的相对比例作为替代，也乘以100保持一致性
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 6   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 6   
 
   315   3                  normalized_data[i] = (float)result[i] / 10.0f;  // 假设ADC最大值为1000，归一化到0-
              -100
@@ -406,7 +406,7 @@ stmt  level    source
   377   1              ratio_LM_RM = 0;
   378   1          
   379   1          // 赛道类型识别
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 7   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 7   
 
   380   1          // 1. 十字路口特征：中间电感值大，两侧电感值小
   381   1          if(normalized_data[SENSOR_LM] > 60.0f && normalized_data[SENSOR_RM] > 60.0f && 
@@ -474,7 +474,7 @@ stmt  level    source
   443   2          }
   444   1          
   445   1          // 差比和加权平均
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 8   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 8   
 
   446   1          pos = (int16)((ratio_L_R * weight_L_R + ratio_LM_RM * weight_LM_RM) * 100.0f);
   447   1          
@@ -542,7 +542,7 @@ stmt  level    source
   508   1          // 2. 归一化后的值都很小，说明可能脱离赛道
   509   1          if(normalized_data[SENSOR_L] < 5.0f && normalized_data[SENSOR_LM] < 5.0f && 
   510   1             normalized_data[SENSOR_RM] < 5.0f && normalized_data[SENSOR_R] < 5.0f)
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 9   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 9   
 
   511   1          {
   512   2              is_out_of_track = 1;
@@ -611,7 +611,7 @@ stmt  level    source
 Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =      4342     ------
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 10  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  22:31:20  PAGE 10  
 
   ecode size           =    ------     ------
   data size            =    ------     ------

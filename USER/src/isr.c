@@ -258,8 +258,8 @@ void TM2_Isr() interrupt 12
 	Kalman_Predict(&imu693_kf, turn_pid);
 	
 	//串级pid，内环目标值更新
-	g_LeftPoint = g_SpeedPoint + turn_pid;
-	g_RightPoint = g_SpeedPoint - turn_pid;
+	g_LeftPoint = g_SpeedPoint - turn_pid;
+	g_RightPoint = g_SpeedPoint + turn_pid;
 	
 	//计算速度环pid
 	left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);

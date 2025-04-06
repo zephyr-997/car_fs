@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               06/04/25  16:41:02  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               06/04/25  22:31:20  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -60,13 +60,13 @@ stmt  level    source
    49   2                      /* 按键处理 */
    50   2                      key_task();
    51   2      
-   52   2      //              sprintf(g_TxData, "%d,%d\n",position,0);
-   53   2      //              uart_putstr(UART_4, g_TxData);
+   52   2                      sprintf(g_TxData, "%d,%f\n",position,turn_pid);
+   53   2                      uart_putstr(UART_4, g_TxData);
    54   2                      
-   55   2                      sprintf(g_TxData, "%d,%d,%d\n", g_EncoderLeft, g_EncoderRight, g_SpeedPoint);
-   56   2                      uart_putstr(UART_4, g_TxData);
+   55   2      //              sprintf(g_TxData, "%d,%d,%d\n", g_EncoderLeft, g_EncoderRight, g_SpeedPoint);
+   56   2      //              uart_putstr(UART_4, g_TxData);
    57   2      
-C251 COMPILER V5.60.0,  main                                                               06/04/25  16:41:02  PAGE 2   
+C251 COMPILER V5.60.0,  main                                                               06/04/25  22:31:20  PAGE 2   
 
    58   2                      // 获取滤波后的ADC数据
    59   2                      //average_filter();  // 使用递推均值滤波获取电感数据
@@ -124,7 +124,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       301     ------
+  code size            =       299     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -135,13 +135,13 @@ Module Information          Static   Overlayable
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
-C251 COMPILER V5.60.0,  main                                                               06/04/25  16:41:02  PAGE 3   
+C251 COMPILER V5.60.0,  main                                                               06/04/25  22:31:20  PAGE 3   
 
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        10     ------
+  hconst size          =         7     ------
 End of Module Information.
 
 
