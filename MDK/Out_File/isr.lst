@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  isr                                                                06/04/25  16:41:02  PAGE 1   
+C251 COMPILER V5.60.0,  isr                                                                06/04/25  22:31:20  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE isr
@@ -66,7 +66,7 @@ stmt  level    source
    53   1      }
    54          
    55          
-C251 COMPILER V5.60.0,  isr                                                                06/04/25  16:41:02  PAGE 2   
+C251 COMPILER V5.60.0,  isr                                                                06/04/25  22:31:20  PAGE 2   
 
    56          
    57          //UART2中断
@@ -134,7 +134,7 @@ stmt  level    source
   119          
   120          
   121          //外部中断1
-C251 COMPILER V5.60.0,  isr                                                                06/04/25  16:41:02  PAGE 3   
+C251 COMPILER V5.60.0,  isr                                                                06/04/25  22:31:20  PAGE 3   
 
   122          void INT1_Isr() interrupt 2
   123          {
@@ -202,7 +202,7 @@ stmt  level    source
   185   3                              break;
   186   3                              
   187   3                              case 1:
-C251 COMPILER V5.60.0,  isr                                                                06/04/25  16:41:02  PAGE 4   
+C251 COMPILER V5.60.0,  isr                                                                06/04/25  22:31:20  PAGE 4   
 
   188   3                              {
   189   4                                      if (key[i].state == 0)
@@ -270,7 +270,7 @@ stmt  level    source
   250   1              
   251   1              //对Gyro_Z进行卡尔曼滤波
   252   1              filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
-C251 COMPILER V5.60.0,  isr                                                                06/04/25  16:41:02  PAGE 5   
+C251 COMPILER V5.60.0,  isr                                                                06/04/25  22:31:20  PAGE 5   
 
   253   1              
   254   1              //计算转向环pid,右正
@@ -280,8 +280,8 @@ stmt  level    source
   258   1              Kalman_Predict(&imu693_kf, turn_pid);
   259   1              
   260   1              //串级pid，内环目标值更新
-  261   1              g_LeftPoint = g_SpeedPoint + turn_pid;
-  262   1              g_RightPoint = g_SpeedPoint - turn_pid;
+  261   1              g_LeftPoint = g_SpeedPoint - turn_pid;
+  262   1              g_RightPoint = g_SpeedPoint + turn_pid;
   263   1              
   264   1              //计算速度环pid
   265   1              left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
@@ -338,7 +338,7 @@ stmt  level    source
   316          //void  PWM1_Isr()  interrupt 26;
   317          //void  PWM2_Isr()  interrupt 27;
 
-C251 COMPILER V5.60.0,  isr                                                                06/04/25  16:41:02  PAGE 6   
+C251 COMPILER V5.60.0,  isr                                                                06/04/25  22:31:20  PAGE 6   
 
 
 Module Information          Static   Overlayable

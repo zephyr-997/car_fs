@@ -49,11 +49,11 @@ void main(void)
 		/* 按键处理 */
 		key_task();
 
-//		sprintf(g_TxData, "%d,%d\n",position,0);
-//		uart_putstr(UART_4, g_TxData);
-		
-		sprintf(g_TxData, "%d,%d,%d\n", g_EncoderLeft, g_EncoderRight, g_SpeedPoint);
+		sprintf(g_TxData, "%d,%f\n",position,turn_pid);
 		uart_putstr(UART_4, g_TxData);
+		
+//		sprintf(g_TxData, "%d,%d,%d\n", g_EncoderLeft, g_EncoderRight, g_SpeedPoint);
+//		uart_putstr(UART_4, g_TxData);
 
 		// 获取滤波后的ADC数据
 		//average_filter();  // 使用递推均值滤波获取电感数据
