@@ -1,12 +1,12 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
 OBJECT MODULE PLACED IN .\Out_File\electromagnetic_tracking.obj
-COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FL
-                    -OAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree
-                    -_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) TABS(2) OBJECT(.\Ou
-                    -t_File\electromagnetic_tracking.obj) 
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FLOAT64 WARNINGLEVEL
+                    -(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seek
+                    -free_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) OBJECT(.\Out_File\electromagnetic_tra
+                    -cking.obj) 
 
 stmt  level    source
 
@@ -21,9 +21,9 @@ stmt  level    source
     9          #define HISTORY_COUNT 5  //滤波次数
    10          
    11          uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
-   12          float result[SENSOR_COUNT] = {0};   //电存储每个电感滤波后的最终结果值（尚未归一化�
+   12          float result[SENSOR_COUNT] = {0};               //电存储每个电感滤波后的最终结果值（尚未归一化�
              -�，是连接滤波处理和归一化处理的中间变量
-   13          uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};        //累加的和
+   13          uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};          //累加的和
    14          
    15          // 递推均值滤波相关参数
    16          uint16 times = HISTORY_COUNT;  // 滤波次数
@@ -45,7 +45,7 @@ stmt  level    source
    32          
    33          
    34          //-----------------------------------------------------------------------------
-   35          // @brief   电磁传感器初始化
+   35          // @brief       电磁传感器初始化
    36          // @param   无
    37          // @return  无
    38          // @author  ZP
@@ -66,7 +66,7 @@ stmt  level    source
    53   2             for(j = 0; j < HISTORY_COUNT; j++)
    54   2             {
    55   3                 adc_fliter_data[i][j] = 0;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 2   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 2   
 
    56   3                 sum[i][j] = 0;
    57   3             }
@@ -75,7 +75,7 @@ stmt  level    source
    60   1      }
    61          
    62          //-----------------------------------------------------------------------------
-   63          // @brief   得到adc的值
+   63          // @brief       得到adc的值
    64          // @param   测的ADC/电感序号
    65          // @return  测出的adc值
    66          // @author  ZP
@@ -83,22 +83,22 @@ stmt  level    source
    68          //-----------------------------------------------------------------------------
    69          uint16 get_adc(uint16 i)
    70          {
-   71   1        switch(i){
-   72   2          case 0:
-   73   2            return adc_once(ADC_L, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
-   74   2          case 1:
-   75   2            return adc_once(ADC_LM, ADC_10BIT);
-   76   2          case 2:
-   77   2            return adc_once(ADC_RM, ADC_10BIT);
-   78   2          case 3:
-   79   2            return adc_once(ADC_R, ADC_10BIT);
-   80   2          default:
-   81   2            return 0;
-   82   2        }
+   71   1              switch(i){
+   72   2                      case 0:
+   73   2                              return adc_once(ADC_L, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
+   74   2                      case 1:
+   75   2                              return adc_once(ADC_LM, ADC_10BIT);
+   76   2                      case 2:
+   77   2                              return adc_once(ADC_RM, ADC_10BIT);
+   78   2                      case 3:
+   79   2                              return adc_once(ADC_R, ADC_10BIT);
+   80   2                      default:
+   81   2                              return 0;
+   82   2              }
    83   1      }
    84          
    85          //-----------------------------------------------------------------------------
-   86          // @brief   递推均值滤波
+   86          // @brief       递推均值滤波
    87          // @param   无
    88          // @return  无
    89          // @author  zp
@@ -134,7 +134,7 @@ stmt  level    source
   118   2              
   119   2              // 计算初始平均值
   120   2              for(a = 0; a < i_num; a++)
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 3   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 3   
 
   121   2              {
   122   3                  adc_fliter_data[a][0] = sum[a][0] / times;  // 求平均
@@ -158,7 +158,7 @@ stmt  level    source
   140          
   141          
   142          //-----------------------------------------------------------------------------
-  143          // @brief   中位值滤波，将每个电感的中位数作为结果
+  143          // @brief       中位值滤波，将每个电感的中位数作为结果
   144          // @param   无
   145          // @return  无
   146          // @author  ZP
@@ -171,10 +171,10 @@ stmt  level    source
   153          {
   154   1          uint16 temp = 0, a = 0, t = 0;
   155   1          uint16 mid_index = 0;  //中位数
-  156   1        uint16 i = 0; //用于循环
+  156   1              uint16 i = 0; //用于循环
   157   1          // 创建临时数组用于排序，避免修改原始数据
   158   1          uint16 sort_array[HISTORY_COUNT];  // 使用宏定义的常量而不是变量
-  159   1        
+  159   1              
   160   1          // 调用均值滤波获取新的采样值
   161   1          average_filter();
   162   1          
@@ -202,7 +202,7 @@ stmt  level    source
   184   2              // 更新历史数据数组
   185   2              for(a = 0; a < i_num; a++)
   186   2              {
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 4   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 4   
 
   187   3                  adc_fliter_data[a][sample_count] = adc_fliter_data[a][0];
   188   3              }
@@ -243,7 +243,7 @@ stmt  level    source
   223          
   224          
   225          //-----------------------------------------------------------------------------
-  226          // @brief   更新每个电感的最大最小值，用于动态校准
+  226          // @brief       更新每个电感的最大最小值，用于动态校准
   227          // @param   无
   228          // @return  无
   229          // @author  ZP
@@ -270,7 +270,7 @@ stmt  level    source
   250   3                  if(max_value[i] > min_value[i])  // 确保最大值始终大于最小值
   251   3                      max_value[i] -= max_value[i] / 100;
   252   3              }
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 5   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 5   
 
   253   2          }
   254   1          
@@ -302,7 +302,7 @@ stmt  level    source
   280   1      }
   281          
   282          //-----------------------------------------------------------------------------
-  283          // @brief   归一化电感数据
+  283          // @brief       归一化电感数据
   284          // @param   无
   285          // @return  无
   286          // @author  ZP
@@ -338,7 +338,7 @@ stmt  level    source
   312   2              {
   313   3                  // 如果最大最小值差异太小，可能是传感器故障或未正确初始化
   314   3                  // 使用原始值的相对比例作为替代，也乘以100保持一致性
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 6   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 6   
 
   315   3                  normalized_data[i] = (float)result[i] / 10.0f;  // 假设ADC最大值为1000，归一化到0-
              -100
@@ -361,7 +361,7 @@ stmt  level    source
   332   1      }
   333          
   334          //-----------------------------------------------------------------------------
-  335          // @brief   改进版计算位置（使用自适应差比和加权方法）
+  335          // @brief       改进版计算位置（使用自适应差比和加权方法）
   336          // @param   无
   337          // @return  计算得到的位置值，范围-100到100
   338          // @author  ZP
@@ -406,7 +406,7 @@ stmt  level    source
   377   1              ratio_LM_RM = 0;
   378   1          
   379   1          // 赛道类型识别
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 7   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 7   
 
   380   1          // 1. 十字路口特征：中间电感值大，两侧电感值小
   381   1          if(normalized_data[SENSOR_LM] > 60.0f && normalized_data[SENSOR_RM] > 60.0f && 
@@ -474,7 +474,7 @@ stmt  level    source
   443   2          }
   444   1          
   445   1          // 差比和加权平均
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 8   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 8   
 
   446   1          pos = (int16)((ratio_L_R * weight_L_R + ratio_LM_RM * weight_LM_RM) * 100.0f);
   447   1          
@@ -509,7 +509,7 @@ stmt  level    source
   476          
   477          
   478          //-----------------------------------------------------------------------------
-  479          // @brief   电磁保护逻辑函数
+  479          // @brief       电磁保护逻辑函数
   480          // @param   无
   481          // @return  保护触发标志位，1表示已触发保护
   482          // @author  ZP
@@ -542,7 +542,7 @@ stmt  level    source
   508   1          // 2. 归一化后的值都很小，说明可能脱离赛道
   509   1          if(normalized_data[SENSOR_L] < 5.0f && normalized_data[SENSOR_LM] < 5.0f && 
   510   1             normalized_data[SENSOR_RM] < 5.0f && normalized_data[SENSOR_R] < 5.0f)
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 9   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 9   
 
   511   1          {
   512   2              is_out_of_track = 1;
@@ -611,7 +611,7 @@ stmt  level    source
 Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =      4342     ------
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           01/04/25  10:34:35  PAGE 10  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           06/04/25  16:41:03  PAGE 10  
 
   ecode size           =    ------     ------
   data size            =    ------     ------

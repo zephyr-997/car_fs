@@ -20,16 +20,16 @@
 #ifndef __ISR_H_
 #define __ISR_H_
 
-extern int g_DutyLeft, g_DutyRight;
+
+extern int g_SpeedPoint;
+extern int32 g_DutyLeft, g_DutyRight;
 extern float left_pid, right_pid;
-extern float pidtopwm_left, pidtopwm_right;
                           
 extern float Gyro_Z, filtered_GyroZ;
 extern float imu693_pid;
 
 extern int g_LeftPoint;
 extern int g_RightPoint;
-extern float g_IMU693Point;
 
 extern int flag;
 

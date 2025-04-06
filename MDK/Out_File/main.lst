@@ -1,127 +1,147 @@
-C251 COMPILER V5.60.0,  main                                                               01/04/25  10:35:17  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               06/04/25  16:41:02  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
 OBJECT MODULE PLACED IN .\Out_File\main.obj
-COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\main.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3
-                    -) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfr
-                    -ee_peripheral;..\libraries) DEBUG PRINT(.\Out_File\main.lst) TABS(2) OBJECT(.\Out_File\main.obj) 
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\main.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED
+                    -) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\l
+                    -ibraries) DEBUG PRINT(.\Out_File\main.lst) OBJECT(.\Out_File\main.obj) 
 
 stmt  level    source
 
     1          #include "headfile.h"
     2          
-    3          void main()
+    3          void main(void)
     4          {
-    5   1        board_init();     
-    6   1        electromagnetic_init();  // 初始化电磁传感器
-    7   1        ips114_init_simspi();         
-    8   1        uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
-    9   1        pit_timer_ms(TIM_2, 10);
-   10   1        motor_init();
-   11   1        encoder_init();
-   12   1        imu963ra_init();
-   13   1        Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
-   14   1      
-   15   1        delay_ms(100); // 延时等待系统稳定
-   16   1        ips114_clear_simspi(WHITE);                 //清屏
+    5   1              int state = 5;
+    6   1              
+    7   1              board_init();                   
+    8   1              electromagnetic_init();  // 初始化电磁传感器
+    9   1              ips114_init_simspi();                                   
+   10   1              uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
+   11   1              pit_timer_ms(TIM_2, 10);
+   12   1              pit_timer_ms(TIM_1, 10);
+   13   1              motor_init();
+   14   1              encoder_init();
+   15   1              state = imu963ra_init();
+   16   1              Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
    17   1      
-   18   1          while(1)
-   19   1        {
-   20   2          //串口接收
-   21   2          if(g_RxPointer != 0)
-   22   2          {
-   23   3            int temp = g_RxPointer;
-   24   3            delay_ms(4);
-   25   3            if(temp == g_RxPointer)
-   26   3            {
-   27   4              uart4_interrupt_callback();
-   28   4            }
-   29   3          }
-   30   2          if (flag == 1)
-   31   2          {
-   32   3            flag = 0;
-   33   3          }   
-   34   2      
-   35   2          // sprintf(g_TxData, "%f,%f,%f,%d,%d\n",Gyro_Z, filtered_GyroZ, g_IMU693Point, g_EncoderLeft, g_Encoder
-             -Right);
-   36   2          // uart_putstr(UART_4, g_TxData);
-   37   2       
-   38   2      
-   39   2          // 获取滤波后的ADC数据
-   40   2          //average_filter();  // 使用递推均值滤波获取电感数据
-   41   2          mid_filter();      // 使用中位值滤波获取电感数据
-   42   2      
-   43   2          // 归一化电感数据
-   44   2          normalize_sensors();
-   45   2          
-   46   2          // 计算位置偏差
-   47   2          position = calculate_position_improved();
-   48   2          
-   49   2      
-   50   2          // sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)result[SENSOR_L], (uint16)result[SENSOR_LM], (uint16)r
-             -esult[SENSOR_RM], (uint16)result[SENSOR_R], position);
-   51   2          sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)normalized_data[SENSOR_L], (uint16)normalized_data[SENSOR
-             -_LM], (uint16)normalized_data[SENSOR_RM], (uint16)normalized_data[SENSOR_R], position);
-   52   2      
-   53   2          uart_putstr(UART_4, g_TxData);
-   54   2      
-C251 COMPILER V5.60.0,  main                                                               01/04/25  10:35:17  PAGE 2   
+   18   1              delay_ms(100); // 延时等待系统稳定
+   19   1              ips114_clear_simspi(WHITE);                                                                     //清屏
+   20   1      
+   21   1          while(1)
+   22   1              {
+   23   2                      /* 串口接收 */
+   24   2                      if(g_RxPointer != 0)
+   25   2                      {
+   26   3                              int temp = g_RxPointer;
+   27   3                              delay_ms(4);
+   28   3                              if(temp == g_RxPointer)
+   29   3                              {
+   30   4                                      uart4_interrupt_callback();
+   31   4                              }
+   32   3                      }
+   33   2                      
+   34   2                      /* 定时操作 */
+   35   2                      if (flag == 1)
+   36   2                      {
+   37   3      //                      if (g_SpeedPoint == 200)
+   38   3      //                      {
+   39   3      //                              g_SpeedPoint = 500;
+   40   3      //                      }
+   41   3      //                      else if (g_SpeedPoint == 500)
+   42   3      //                      {
+   43   3      //                              g_SpeedPoint = 200;
+   44   3      //                      }
+   45   3                              
+   46   3                              flag = 0;
+   47   3                      }
+   48   2      
+   49   2                      /* 按键处理 */
+   50   2                      key_task();
+   51   2      
+   52   2      //              sprintf(g_TxData, "%d,%d\n",position,0);
+   53   2      //              uart_putstr(UART_4, g_TxData);
+   54   2                      
+   55   2                      sprintf(g_TxData, "%d,%d,%d\n", g_EncoderLeft, g_EncoderRight, g_SpeedPoint);
+   56   2                      uart_putstr(UART_4, g_TxData);
+   57   2      
+C251 COMPILER V5.60.0,  main                                                               06/04/25  16:41:02  PAGE 2   
 
-   55   2          //检查电磁保护
-   56   2          // protection_flag = check_electromagnetic_protection();
-   57   2          
-   58   2          // if(protection_flag)
-   59   2          // {
-   60   2          //  // 触发保护，停车
-   61   2          //  // 这里需要添加控制电机停止的代码
-   62   2            
-   63   2          //  // 显示保护触发信息
-   64   2          //  ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
-   65   2            
-   66   2          //  // 永久停止或等待重置
-   67   2          //  while(1)
-   68   2          //  {
-   69   2          //    // 可以添加重置逻辑，例如按键检测
-   70   2          //    // 如果需要重新启动，可以在这里添加条件
-   71   2          //    delay_ms(100);
-   72   2          //  }
-   73   2          // }
-   74   2          
-   75   2          // 显示电磁传感器数据
-   76   2          display_electromagnetic_data();
-   77   2      
-   78   2          delay_ms(5);
-   79   2          // ips114_showstr_simspi(0,0,"L:");   
-   80   2          // delay_ms(500);
-   81   2          // ips114_clear_simspi(RED);                  
-   82   2          // delay_ms(500);
-   83   2          // ips114_showstr_simspi(0,0,"L:");   
-   84   2        } 
-   85   1      }
-   86          
-   87          
-   88          
+   58   2                      // 获取滤波后的ADC数据
+   59   2                      //average_filter();  // 使用递推均值滤波获取电感数据
+   60   2                      mid_filter();      // 使用中位值滤波获取电感数据
+   61   2      
+   62   2      //              // 归一化电感数据
+   63   2                      normalize_sensors();
+   64   2      //              
+   65   2                      // 计算位置偏差
+   66   2                      position = calculate_position_improved();
+   67   2                      
+   68   2      
+   69   2                      // sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)result[SENSOR_L], (uint16)result[SENSOR_LM], (uint16)r
+             -esult[SENSOR_RM], (uint16)result[SENSOR_R], position);
+   70   2      //              sprintf(g_TxData, "%d,%d,%d,%d,%d\n", (uint16)normalized_data[SENSOR_L], (uint16)normalized_data[SENS
+             -OR_LM], (uint16)normalized_data[SENSOR_RM], (uint16)normalized_data[SENSOR_R], position);
+   71   2      //              uart_putstr(UART_4, g_TxData);
+   72   2      
+   73   2                      //检查电磁保护
+   74   2                      // protection_flag = check_electromagnetic_protection();
+   75   2                      
+   76   2                      // if(protection_flag)
+   77   2                      // {
+   78   2                      //      // 触发保护，停车
+   79   2                      //      // 这里需要添加控制电机停止的代码
+   80   2                              
+   81   2                      //      // 显示保护触发信息
+   82   2                      //      ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
+   83   2                              
+   84   2                      //      // 永久停止或等待重置
+   85   2                      //      while(1)
+   86   2                      //      {
+   87   2                      //              // 可以添加重置逻辑，例如按键检测
+   88   2                      //              // 如果需要重新启动，可以在这里添加条件
+   89   2                      //              delay_ms(100);
+   90   2                      //      }
+   91   2                      // }
+   92   2                      
+   93   2                      // 显示电磁传感器数据
+   94   2      //              display_electromagnetic_data();
+   95   2      
+   96   2      //              delay_ms(5);
+   97   2      
+   98   2                      // ips114_showstr_simspi(0,0,"L:");   
+   99   2                      // delay_ms(500);
+  100   2                      // ips114_clear_simspi(RED);                                                                    
+  101   2                      // delay_ms(500);
+  102   2                      // ips114_showstr_simspi(0,0,"L:");   
+  103   2              }       
+  104   1      }
+  105          
+  106          
+  107          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       311     ------
+  code size            =       301     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =         2     ------
+  edata size           =         4     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
+C251 COMPILER V5.60.0,  main                                                               06/04/25  16:41:02  PAGE 3   
+
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        16     ------
+  hconst size          =        10     ------
 End of Module Information.
 
 

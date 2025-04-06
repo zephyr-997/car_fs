@@ -359,6 +359,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\src\pid.c</FilePath>
             </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\key.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -393,6 +398,11 @@
               <FileName>pid.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\USER\inc\pid.h</FilePath>
+            </File>
+            <File>
+              <FileName>key.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\USER\inc\key.h</FilePath>
             </File>
           </Files>
         </Group>
