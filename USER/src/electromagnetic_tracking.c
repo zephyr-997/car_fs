@@ -26,7 +26,7 @@ uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0};  // 每个电感的最大值
 // 电感位置计算相关变量
 int16 position = 0;
 
-// 电磁保护逻辑变量
+// 电磁保护逻辑变量,0表示未保护，1表示保护
 uint8 protection_flag = 0;
 
 

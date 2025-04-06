@@ -71,7 +71,7 @@ void main(void)
 //		uart_putstr(UART_4, g_TxData);
 
 		//检查电磁保护
-		// protection_flag = check_electromagnetic_protection();
+		protection_flag = check_electromagnetic_protection();
 		
 		// if(protection_flag)
 		// {

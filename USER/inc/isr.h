@@ -22,7 +22,7 @@
 
 
 extern int g_SpeedPoint;
-extern int32 g_DutyLeft, g_DutyRight;
+extern int16_t g_DutyLeft, g_DutyRight;
 extern float left_pid, right_pid;
                           
 extern float Gyro_Z, filtered_GyroZ;

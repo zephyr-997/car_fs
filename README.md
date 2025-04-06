@@ -35,6 +35,10 @@ This is a car project.
     
     10. 将代码更改历史记录到readme.md
 
+    11. 将按键代码移植到main.c,修改速度环为串级PID
+
+    12. 创建运动全局变量
+
 
 
 二、TIPS:

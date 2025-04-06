@@ -70,6 +70,7 @@ extern uint8_t RxData[50];
 extern uint8_t RxPointer;
 extern uint8_t RxDat;
 
-
+// 电磁保护逻辑变量
+extern uint8 protection_flag;
 
 #endif

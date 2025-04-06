@@ -43,5 +43,8 @@ extern uint8 protection_flag;                  // 保护标志
 // 调试相关函数
 void display_electromagnetic_data(void);       // 显示电磁传感器数据
 
+// 电磁保护逻辑变量
+extern uint8 protection_flag;
+
 #endif 
 

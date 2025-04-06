@@ -212,7 +212,7 @@ void TM1_Isr() interrupt 3
 
 
 float left_pid = 0, right_pid = 0;               //速度环pid的增量，还需转化再赋给电机
-int32 g_DutyLeft = 0, g_DutyRight = 0;             //最后真正要给电机的PWM值
+int16_t g_DutyLeft = 0, g_DutyRight = 0;             //最后真正要给电机的PWM值
 
 float Gyro_Z = 0, filtered_GyroZ = 0;            //陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
@@ -266,10 +266,17 @@ void TM2_Isr() interrupt 12
 	right_pid = pid_increment_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
 	
 	//转int
-	g_DutyLeft = left_pid;
-	g_DutyRight = right_pid;
+	g_DutyLeft = (int16_t)left_pid;
+	g_DutyRight = (int16_t)right_pid;
 	
-	set_motor_pwm(g_DutyLeft, g_DutyRight);
+	if (protection_flag == 0)
+	{
+		set_motor_pwm(g_DutyLeft, g_DutyRight);
+	}
+	else
+	{
+		set_motor_pwm(0, 0);
+	}
 }
 
 
