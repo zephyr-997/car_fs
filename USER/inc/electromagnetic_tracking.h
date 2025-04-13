@@ -4,21 +4,25 @@
 #include "headfile.h"
 
 // 电感通道定义
-#define ADC_L   ADC_P00  // 左水平电感
-#define ADC_LM  ADC_P01  // 左垂直电感
-#define ADC_RM  ADC_P05  // 右垂直电感
-#define ADC_R   ADC_P06  // 右水平电感
+#define ADC_HL  ADC_P06  // 左侧横向电感
+#define ADC_VL  ADC_P05  // 左侧纵向电感
+#define ADC_HML ADC_P01  // 左中横向电感
+#define ADC_HMR ADC_P13  // 右中横向电感
+#define ADC_VR  ADC_P14  // 右侧纵向电感
+#define ADC_HR  ADC_P00  // 右侧横向电感
 
 // 电感数组定义
-#define SENSOR_COUNT 4   // 电感个数
+#define SENSOR_COUNT 6   // 电感个数
 #define HISTORY_COUNT 5  // 滤波次数，当前只存储最新值
 
 // 电感类型枚举
 typedef enum {
-    SENSOR_L = 0,
-    SENSOR_LM = 1,
-    SENSOR_RM = 2,
-    SENSOR_R = 3
+    SENSOR_HL  = 0,  // 左侧横向电感
+    SENSOR_VL  = 1,  // 左侧纵向电感
+    SENSOR_HML = 2,  // 左中横向电感
+    SENSOR_HMR = 3,  // 右中横向电感
+    SENSOR_VR  = 4,  // 右侧纵向电感
+    SENSOR_HR  = 5   // 右侧横向电感
 } sensor_type_e;
 
 // 函数声明

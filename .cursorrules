@@ -7,9 +7,14 @@
             },
             {
                 "code": "1696",
-                "message": "无法打开 源 文件*"
+                "message": "无法打开 源 文件 "intrins.h" *"
             }
         ],
+        "ignoreFiles": [
+            "USER/src/isr.c",
+            "./USER/src/isr.c",
+            "d:/Working/cursor/car1.0/USER/src/isr.c"
+         ],
         "rules": [
             {
                 "id": "variable-declaration-at-top",

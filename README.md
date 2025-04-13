@@ -37,8 +37,9 @@ This is a car project.
 
     11. 将按键代码移植到main.c,修改速度环为串级PID
 
-    12. 创建运动全局变量
+    12. 创建protection_flag全局保护变量，增加电磁保护逻辑函数check_electromagnetic_protection（）
 
+    13. 从四电感方案更改为六电感方案，接口正确，新扩展板和电感正常
 
 
 二、TIPS:

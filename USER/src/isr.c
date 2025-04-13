@@ -1,3 +1,4 @@
+// cursor-ignore-file
 ///*********************************************************************************************************************
 // * COPYRIGHT NOTICE
 // * Copyright (c) 2020,逐飞科技
@@ -24,6 +25,44 @@
 #include "isr.h"
 #include "key.h"
 #include "electromagnetic_tracking.h"
+
+
+//void  INT0_Isr()  interrupt 0;
+//void  TM0_Isr()   interrupt 1;
+//void  INT1_Isr()  interrupt 2;
+//void  TM1_Isr()   interrupt 3;
+//void  UART1_Isr() interrupt 4;
+//void  ADC_Isr()   interrupt 5;
+//void  LVD_Isr()   interrupt 6;
+//void  PCA_Isr()   interrupt 7;
+//void  UART2_Isr() interrupt 8;
+//void  SPI_Isr()   interrupt 9;
+//void  INT2_Isr()  interrupt 10;
+//void  INT3_Isr()  interrupt 11;
+//void  TM2_Isr()   interrupt 12;
+//void  INT4_Isr()  interrupt 16;
+//void  UART3_Isr() interrupt 17;
+//void  UART4_Isr() interrupt 18;
+//void  TM3_Isr()   interrupt 19;
+//void  TM4_Isr()   interrupt 20;
+//void  CMP_Isr()   interrupt 21;
+//void  I2C_Isr()   interrupt 24;
+//void  USB_Isr()   interrupt 25;
+//void  PWM1_Isr()  interrupt 26;
+//void  PWM2_Isr()  interrupt 27;
+
+// 函数前置声明
+void uart4_interrupt_callback(void);
+
+// 全局变量定义
+float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还需转化再赋给电机
+int16_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
+float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
+float turn_pid = 0;
+int g_SpeedPoint = 70;
+int g_LeftPoint = 0;                             // 左轮目标速度                  
+int g_RightPoint = 0;                            // 右轮目标速度             
+int count = 0, flag = 0;
 
 //UART1中断
 void UART1_Isr() interrupt 4
@@ -211,19 +250,6 @@ void TM1_Isr() interrupt 3
 }
 
 
-float left_pid = 0, right_pid = 0;               //速度环pid的增量，还需转化再赋给电机
-int16_t g_DutyLeft = 0, g_DutyRight = 0;             //最后真正要给电机的PWM值
-
-float Gyro_Z = 0, filtered_GyroZ = 0;            //陀螺仪角速度的原始值和卡尔曼滤波之后的值
-float turn_pid = 0;
-
-int g_SpeedPoint = 70;
-int g_LeftPoint = 0;                            //左轮目标速度                  
-int g_RightPoint = 0;                           //右轮目标速度             
-
-int count = 0, flag = 0;
-
-
 //定时器2中断
 void TM2_Isr() interrupt 12
 {
@@ -269,14 +295,14 @@ void TM2_Isr() interrupt 12
 	g_DutyLeft = (int16_t)left_pid;
 	g_DutyRight = (int16_t)right_pid;
 	
-	if (protection_flag == 0)
-	{
-		set_motor_pwm(g_DutyLeft, g_DutyRight);
-	}
-	else
-	{
-		set_motor_pwm(0, 0);
-	}
+	// if (protection_flag == 0)
+	// {
+	// 	set_motor_pwm(g_DutyLeft, g_DutyRight);
+	// }
+	// else
+	// {
+	// 	set_motor_pwm(0, 0);
+	// }
 }
 
 

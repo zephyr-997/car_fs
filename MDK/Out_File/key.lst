@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  key                                                                06/04/25  22:31:23  PAGE 1   
+C251 COMPILER V5.60.0,  key                                                                11/04/25  14:53:20  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE key
 OBJECT MODULE PLACED IN .\Out_File\key.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\key.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED)
-                    - BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\li
-                    -braries) DEBUG PRINT(.\Out_File\key.lst) OBJECT(.\Out_File\key.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\key.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3)
+                    - OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfre
+                    -e_peripheral;..\libraries) DEBUG PRINT(.\Out_File\key.lst) TABS(2) OBJECT(.\Out_File\key.obj) 
 
 stmt  level    source
 
@@ -15,30 +15,30 @@ stmt  level    source
     4          
     5          void key_task(void)
     6          {
-    7   1              if (key[0].flag == 1)
-    8   1              {
-    9   2                      P52 = !P52;
-   10   2                      
-   11   2                      key[0].flag = 0;
-   12   2              }
-   13   1              if (key[1].flag == 1)
-   14   1              {
-   15   2                      P52 = !P52;
-   16   2                      
-   17   2                      key[1].flag = 0;
-   18   2              }
-   19   1              if (key[2].flag == 1)
-   20   1              {
-   21   2                      P52 = !P52;
-   22   2                      
-   23   2                      key[2].flag = 0;
-   24   2              }
-   25   1              if (key[3].flag == 1)
-   26   1              {
-   27   2                      P52 = !P52;
-   28   2                      
-   29   2                      key[3].flag = 0;
-   30   2              }
+    7   1        if (key[0].flag == 1)
+    8   1        {
+    9   2          P52 = !P52;
+   10   2          
+   11   2          key[0].flag = 0;
+   12   2        }
+   13   1        if (key[1].flag == 1)
+   14   1        {
+   15   2          P52 = !P52;
+   16   2          
+   17   2          key[1].flag = 0;
+   18   2        }
+   19   1        if (key[2].flag == 1)
+   20   1        {
+   21   2          P52 = !P52;
+   22   2          
+   23   2          key[2].flag = 0;
+   24   2        }
+   25   1        if (key[3].flag == 1)
+   26   1        {
+   27   2          P52 = !P52;
+   28   2          
+   29   2          key[3].flag = 0;
+   30   2        }
    31   1      }
 
 
