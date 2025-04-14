@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  pid                                                                11/04/25  14:53:20  PAGE 1   
+C251 COMPILER V5.60.0,  pid                                                                14/04/25  22:01:24  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE pid
@@ -66,7 +66,7 @@ stmt  level    source
    55   1        
    56   1        error = target - real;
    57   1        pid->interror += error;
-C251 COMPILER V5.60.0,  pid                                                                11/04/25  14:53:20  PAGE 2   
+C251 COMPILER V5.60.0,  pid                                                                14/04/25  22:01:24  PAGE 2   
 
    58   1        
    59   1        //积分限幅
@@ -134,7 +134,7 @@ stmt  level    source
   118   2        }
   119   1        else if (pid->output < -pid->o_limit)
   120   1        {
-C251 COMPILER V5.60.0,  pid                                                                11/04/25  14:53:20  PAGE 3   
+C251 COMPILER V5.60.0,  pid                                                                14/04/25  22:01:24  PAGE 3   
 
   121   2          pid->output = -pid->o_limit;
   122   2        }

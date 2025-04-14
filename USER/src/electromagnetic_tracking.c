@@ -3,9 +3,9 @@
 #include "common.h"
 
 // 滤波后数据 - 使用二维数组形式
-// 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HMR, 4-VR, 5-HR
+// 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HC, 4-HMR, 5-VR, 6-HR
 // 第二维保留，可用于存储历史数据
-#define SENSOR_COUNT 6   //电感个数
+#define SENSOR_COUNT 7   //电感个数
 #define HISTORY_COUNT 5  //滤波次数
 
 uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
@@ -17,13 +17,14 @@ uint16 times = HISTORY_COUNT;  // 滤波次数
 uint16 i_num = SENSOR_COUNT;  // 电感数量
 
 // 归一化数据 - 改为数组形式
-float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};  // 归一化后的电感数据数组
+float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};  // 归一化后的电感数据数组
 
 // 存储每个电感的最大最小值，用于动态校准 - 改为数组形式
-uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0};  // 每个电感的最大值
+uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
+uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
 
 // 电感位置计算相关变量
+float signal_strength_value = 0;   // 信号强度指标
 int16 position = 0;
 
 // 电磁保护逻辑变量,0表示未保护，1表示保护
@@ -45,6 +46,7 @@ void electromagnetic_init(void)
    adc_init(ADC_HL, 0);   // 左侧横向电感
    adc_init(ADC_VL, 0);   // 左侧纵向电感
    adc_init(ADC_HML, 0);  // 左中横向电感
+   adc_init(ADC_HC, 0);   // 中间横向电感
    adc_init(ADC_HMR, 0);  // 右中横向电感
    adc_init(ADC_VR, 0);   // 右侧纵向电感
    adc_init(ADC_HR, 0);   // 右侧横向电感
@@ -78,10 +80,12 @@ uint16 get_adc(uint16 i)
 		case 2:
 			return adc_once(ADC_HML, ADC_10BIT);
 		case 3:
-			return adc_once(ADC_HMR, ADC_10BIT);
+			return adc_once(ADC_HC, ADC_10BIT);  // 新增中间横向电感
 		case 4:
-			return adc_once(ADC_VR, ADC_10BIT);
+			return adc_once(ADC_HMR, ADC_10BIT);
 		case 5:
+			return adc_once(ADC_VR, ADC_10BIT);
+		case 6:
 			return adc_once(ADC_HR, ADC_10BIT);
 		default:
 			return 0;
@@ -347,8 +351,9 @@ void normalize_sensors(void)
 int16 calculate_position_improved(void)
 {
     // 在函数开始处声明所有变量
-    float weight_outer = 0.4f;   // 外侧电感权重(HL和HR)
-    float weight_middle = 0.4f;  // 中间电感权重(HML和HMR)
+    float weight_outer = 0.2f;   // 外侧电感权重(HL和HR)
+    float weight_middle = 0.5f;  // 中间电感权重(HML和HMR)
+    float weight_center = 0.1f;  // 中心电感权重(HC)
     float weight_vertical = 0.2f; // 纵向电感权重(VL和VR)
     
     float diff_outer = 0;        // 外侧电感差值
@@ -358,6 +363,7 @@ int16 calculate_position_improved(void)
     float sum_outer = 0;         // 外侧电感和值
     float sum_middle = 0;        // 中间电感和值
     float sum_vertical = 0;      // 纵向电感和值
+    float center_value = 0;      // 中间电感值
     
     float ratio_outer = 0;       // 外侧电感差比和
     float ratio_middle = 0;      // 中间电感差比和
@@ -366,8 +372,10 @@ int16 calculate_position_improved(void)
     float signal_strength = 0;   // 信号强度指标
     static int16 last_pos = 0;   // 上一次位置值，用于滤波
     int16 pos = 0;               // 当前计算得到的位置值
-    float filter_param = 0.7f;   // 滤波系数，可调
+    float filter_param = 0.5f;   // 滤波系数，可调
     uint8 track_type = 0;        // 赛道类型：0-普通，1-十字，2-环岛，3-坡道
+    static int16 max_change_rate = 10; // 允许的最大变化率
+    int16 position_change = 0;   // 位置变化量
     
     // 计算各对电感的差值和和值
     diff_outer = normalized_data[SENSOR_HL] - normalized_data[SENSOR_HR];
@@ -379,28 +387,33 @@ int16 calculate_position_improved(void)
     diff_vertical = normalized_data[SENSOR_VL] - normalized_data[SENSOR_VR];
     sum_vertical = normalized_data[SENSOR_VL] + normalized_data[SENSOR_VR];
     
-    // 计算信号强度指标 - 所有电感平均值
-    signal_strength = (sum_outer + sum_middle + sum_vertical) / 6.0f;
+    // 获取中间电感值
+    center_value = normalized_data[SENSOR_HC];
     
+    // 计算信号强度指标 - 所有电感平均值
+    signal_strength = (sum_outer + sum_middle + sum_vertical + center_value) / 7.0f;
+    signal_strength_value = signal_strength; // 保存信号强度指标
+
     // 计算差比和，避免除以0
-    if(sum_outer > 1.0f)
+    if(sum_outer > 5.0f) // 外侧电感值大于5.0f
         ratio_outer = diff_outer / sum_outer;
     else
         ratio_outer = 0;
         
-    if(sum_middle > 1.0f)
+    if(sum_middle > 5.0f) // 改为5.0f与外侧电感一致
         ratio_middle = diff_middle / sum_middle;
     else
         ratio_middle = 0;
     
-    if(sum_vertical > 1.0f)
+    if(sum_vertical > 5.0f) // 改为5.0f与外侧电感一致
         ratio_vertical = diff_vertical / sum_vertical;
     else
         ratio_vertical = 0;
     
-    // 赛道类型识别 - 需要根据六电感特征重新调整
-    // 1. 十字路口特征：中间电感值大，两侧电感值小
+    // 赛道类型识别 - 需要根据七电感特征重新调整
+    // 1. 十字路口特征：中间和中心电感值大，两侧电感值小
     if(normalized_data[SENSOR_HML] > 60.0f && normalized_data[SENSOR_HMR] > 60.0f && 
+       normalized_data[SENSOR_HC] > 70.0f && // 中心电感强
        normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HR] < 30.0f &&
        sum_vertical > 80.0f)  // 垂直电感也有一定的值
     {
@@ -436,42 +449,70 @@ int16 calculate_position_improved(void)
             // 根据信号强度动态调整权重
             if(signal_strength > 70.0f) // 信号强，可能在直道
             {
-                weight_outer = 0.3f;
-                weight_middle = 0.5f;
+                weight_outer = 0.25f;  // 适当平衡中间和外侧电感的权重
+                weight_middle = 0.45f;
+                weight_center = 0.1f;  // 中心电感给较小权重
                 weight_vertical = 0.2f;
+                filter_param = 0.6f;  // 直道上可以稍微灵敏一些
+                max_change_rate = 15;  // 直道允许更大变化率
             }
             else if(signal_strength < 30.0f) // 信号弱，可能在弯道
             {
-                weight_outer = 0.5f;
+                weight_outer = 0.4f;
                 weight_middle = 0.3f;
+                weight_center = 0.1f;
                 weight_vertical = 0.2f;
+                filter_param = 0.4f;  // 弯道处提高滤波力度，平滑变化
+                max_change_rate = 8;   // 弯道减小变化率
+            }
+            else
+            {
+                // 默认权重
+                weight_outer = 0.3f;
+                weight_middle = 0.4f;
+                weight_center = 0.1f;
+                weight_vertical = 0.2f;
+                filter_param = 0.5f;
+                max_change_rate = 10;
             }
             break;
             
         case 1: // 十字路口
-            // 十字路口更依赖中间电感和垂直电感
+            // 十字路口中心电感更重要
             weight_outer = 0.2f;
-            weight_middle = 0.5f;
-            weight_vertical = 0.3f;
+            weight_middle = 0.4f;
+            weight_center = 0.2f;  // 十字路口中心电感给较大权重
+            weight_vertical = 0.2f;
+            filter_param = 0.5f;
+            max_change_rate = 10;
             break;
             
         case 2: // 环岛
             // 环岛更依赖外侧电感
-            weight_outer = 0.6f;
+            weight_outer = 0.5f;
             weight_middle = 0.3f;
+            weight_center = 0.1f;
             weight_vertical = 0.1f;
+            filter_param = 0.7f;
+            max_change_rate = 12;
             break;
             
         case 3: // 坡道
             // 坡道使用平均权重
-            weight_outer = 0.33f;
-            weight_middle = 0.34f;
-            weight_vertical = 0.33f;
+            weight_outer = 0.25f;
+            weight_middle = 0.3f;
+            weight_center = 0.15f;
+            weight_vertical = 0.3f;
+            filter_param = 0.6f;
+            max_change_rate = 10;
+            break;
+
+        default:
             break;
     }
     
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
-    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f)
+    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
     {
         // 根据上一次位置判断偏离方向
         if(last_pos > 0)
@@ -480,35 +521,39 @@ int16 calculate_position_improved(void)
             return -100; // 向左偏离
     }
     
+    // 位置计算（包含中心电感的贡献）
+    // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因子
+    float center_correction = 0;
+    
+    // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
+    if(center_value > 50.0f) {
+        // 修正系数，当中心电感强度高时，修正系数大
+        center_correction = (center_value - 50.0f) / 50.0f * 0.3f;  // 最大修正30%
+    }
+    
     // 三组差比和加权平均计算位置
     pos = (int16)((ratio_outer * weight_outer + 
                    ratio_middle * weight_middle + 
                    ratio_vertical * weight_vertical) * 100.0f);
     
+    // 应用中心电感修正 - 向中心线拉近
+    pos = (int16)(pos * (1.0f - center_correction));
+    
     // 限制范围在-100到100之间
     if(pos > 100) pos = 100;
     if(pos < -100) pos = -100;
     
-    // 根据赛道类型调整滤波参数
-    if(track_type == 0) // 普通赛道
-    {
-        // 根据信号强度调整滤波参数
-        if(signal_strength > 70.0f) // 信号强，可能在直道
-            filter_param = 0.8f; // 响应更快
-        else
-            filter_param = 0.6f; // 更平滑
-    }
-    else if(track_type == 1) // 十字路口
-    {
-        filter_param = 0.5f; // 十字路口需要更平滑的控制
-    }
-    else if(track_type == 2) // 环岛
-    {
-        filter_param = 0.9f; // 环岛需要更快的响应
-    }
+    // 位置变化量限制，防止突变
+    position_change = pos - last_pos;
+    if(position_change > max_change_rate)
+        pos = last_pos + max_change_rate;
+    else if(position_change < -max_change_rate)
+        pos = last_pos - max_change_rate;
     
-    // 添加自适应低通滤波，减少抖动
+    // 应用低通滤波
     pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
+    
+    // 保存当前位置用于下次计算
     last_pos = pos;
     
     return pos;
@@ -527,7 +572,7 @@ uint8 check_electromagnetic_protection(void)
     // 在函数开始处声明所有变量
     uint8 is_out_of_track = 0;    // 标记是否脱离赛道的标志位
     uint16 sum_value = 0;         // 所有电感值的总和
-    uint16 threshold = 150;       // 阈值，需要根据六电感的实际情况重新调整
+    uint16 threshold = 175;       // 阈值，需要根据七电感的实际情况调整（增加）
     static uint8 out_of_track_count = 0;    // 连续检测到脱离赛道的次数计数器
     static uint8 in_track_count = 0;        // 连续检测到在轨道上的次数计数器
     static uint8 protection_triggered = 0;  // 保护触发标志位，1表示已触发保护
@@ -550,8 +595,9 @@ uint8 check_electromagnetic_protection(void)
     
     // 2. 归一化后的值都很小，说明可能脱离赛道
     if(normalized_data[SENSOR_HL] < 5.0f && normalized_data[SENSOR_VL] < 5.0f && 
-       normalized_data[SENSOR_HML] < 5.0f && normalized_data[SENSOR_HMR] < 5.0f &&
-       normalized_data[SENSOR_VR] < 5.0f && normalized_data[SENSOR_HR] < 5.0f)
+       normalized_data[SENSOR_HML] < 5.0f && normalized_data[SENSOR_HC] < 5.0f && 
+       normalized_data[SENSOR_HMR] < 5.0f && normalized_data[SENSOR_VR] < 5.0f && 
+       normalized_data[SENSOR_HR] < 5.0f)
     {
         is_out_of_track = 1;
         trigger_reason = 2;
@@ -623,26 +669,31 @@ void display_electromagnetic_data(void)
     ips114_showstr_simspi(9*8,2,"N:");
     ips114_showfloat_simspi(11*8, 2, normalized_data[SENSOR_HML], 2, 2);
     
-    ips114_showstr_simspi(0,3,"HMR:");   
-    ips114_showuint16_simspi(4*8, 3, result[SENSOR_HMR]);
+    ips114_showstr_simspi(0,3,"HC:");   
+    ips114_showuint16_simspi(3*8, 3, result[SENSOR_HC]);
     ips114_showstr_simspi(9*8,3,"N:");
-    ips114_showfloat_simspi(11*8, 3, normalized_data[SENSOR_HMR], 2, 2);
+    ips114_showfloat_simspi(11*8, 3, normalized_data[SENSOR_HC], 2, 2);
     
-    ips114_showstr_simspi(0,4,"VR:");   
-    ips114_showuint16_simspi(3*8, 4, result[SENSOR_VR]);
+    ips114_showstr_simspi(0,4,"HMR:");   
+    ips114_showuint16_simspi(4*8, 4, result[SENSOR_HMR]);
     ips114_showstr_simspi(9*8,4,"N:");
-    ips114_showfloat_simspi(11*8, 4, normalized_data[SENSOR_VR], 2, 2);
+    ips114_showfloat_simspi(11*8, 4, normalized_data[SENSOR_HMR], 2, 2);
     
-    ips114_showstr_simspi(0,5,"HR:");   
-    ips114_showuint16_simspi(3*8, 5, result[SENSOR_HR]);
+    ips114_showstr_simspi(0,5,"VR:");   
+    ips114_showuint16_simspi(3*8, 5, result[SENSOR_VR]);
     ips114_showstr_simspi(9*8,5,"N:");
-    ips114_showfloat_simspi(11*8, 5, normalized_data[SENSOR_HR], 2, 2);
+    ips114_showfloat_simspi(11*8, 5, normalized_data[SENSOR_VR], 2, 2);
+    
+    ips114_showstr_simspi(0,6,"HR:");   
+    ips114_showuint16_simspi(3*8, 6, result[SENSOR_HR]);
+    ips114_showstr_simspi(9*8,6,"N:");
+    ips114_showfloat_simspi(11*8, 6, normalized_data[SENSOR_HR], 2, 2);
     
     // 显示位置和差比和数据
-    ips114_showstr_simspi(0,6,"Pos:");
-    ips114_showint16_simspi(5*8, 6, position);
+    ips114_showstr_simspi(0,7,"Pos:");
+    ips114_showint16_simspi(5*8, 7, position);
     
     // 显示保护状态
-    ips114_showstr_simspi(0,7,"Prot:");
-    ips114_showuint8_simspi(6*8, 7, protection_flag);
+    ips114_showstr_simspi(10*8,7,"P:");
+    ips114_showuint8_simspi(12*8, 7, protection_flag);
 } 
