@@ -313,7 +313,7 @@ void normalize_sensors(void)
         if(max_value[i] - min_value[i] > 20) 
         {
             // 标准线性归一化，将值映射到0-100范围（乘以100方便后续使用）
-            normalized_data[i] = (float)(result[i] - min_value[i]) / (max_value[i] - min_value[i]) * 100.0f;
+            normalized_data[i] = (float)(result[i] - min_value[i]) * 100.0f / (max_value[i] - min_value[i]);
             
             // 可选：使用平方根非线性映射，增强小信号响应(如果发现小车对小偏差反应不敏感，可以取消平方根映射的注释)
             // normalized_data[i] = sqrtf(normalized_data[i] / 100.0f) * 100.0f;
@@ -376,6 +376,10 @@ int16 calculate_position_improved(void)
     uint8 track_type = 0;        // 赛道类型：0-普通，1-十字，2-环岛，3-坡道
     static int16 max_change_rate = 10; // 允许的最大变化率
     int16 position_change = 0;   // 位置变化量
+	
+	// 位置计算（包含中心电感的贡献）
+    // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因子
+    float center_correction = 0;
     
     // 计算各对电感的差值和和值
     diff_outer = normalized_data[SENSOR_HL] - normalized_data[SENSOR_HR];
@@ -521,9 +525,7 @@ int16 calculate_position_improved(void)
             return -100; // 向左偏离
     }
     
-    // 位置计算（包含中心电感的贡献）
-    // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因子
-    float center_correction = 0;
+    
     
     // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
     if(center_value > 50.0f) {
