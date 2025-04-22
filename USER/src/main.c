@@ -82,6 +82,7 @@ void main(void)
 		 (uint16)normalized_data[SENSOR_HMR], 
 		 (uint16)normalized_data[SENSOR_VR], 
 		 (uint16)normalized_data[SENSOR_HR], 
+		//  track_type,
 		//  sum_value, 
 		//  (uint16)signal_strength_value,
 		  position);

@@ -47,6 +47,11 @@ extern int16 position;                         // 位置偏差
 extern uint8 protection_flag;                  // 保护标志
 extern float signal_strength_value;            // 信号强度指标
 
+//电磁位置计算变量
+extern float filter_param;   // 滤波系数，可调
+extern uint8 track_type;        // 赛道类型：0-普通，1-十字，2-环岛，3-直角弯道
+
+
 // 调试相关函数
 void display_electromagnetic_data(void);       // 显示电磁传感器数据
 

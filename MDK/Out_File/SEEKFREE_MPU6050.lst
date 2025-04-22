@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   21/04/25  14:25:11  PAGE 1   
+C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   22/04/25  20:32:53  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_MPU6050
@@ -66,7 +66,7 @@ stmt  level    source
    51          //-------------------------------------------------------------------------------------------------------
              -------------
    52          static void mpu6050_simiic_delay(void)
-C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   21/04/25  14:25:11  PAGE 2   
+C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   22/04/25  20:32:53  PAGE 2   
 
    53          {
    54   1          uint16 xdata j=MPU6050_IIC_DELAY;
@@ -134,7 +134,7 @@ stmt  level    source
   116          static void mpu6050_send_ch(uint8 c)
   117          {
   118   1          uint8 xdata i = 8;
-C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   21/04/25  14:25:11  PAGE 3   
+C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   22/04/25  20:32:53  PAGE 3   
 
   119   1          while(i--)
   120   1          {
@@ -202,7 +202,7 @@ stmt  level    source
   180   1      }
   181          
   182          //-------------------------------------------------------------------------------------------------------
-C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   21/04/25  14:25:11  PAGE 4   
+C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   22/04/25  20:32:53  PAGE 4   
 
              -------------
   183          //  @brief      模拟IIC从设备寄存器读取数据
@@ -270,7 +270,7 @@ stmt  level    source
   240   1          mpu6050_simiic_write_reg(MPU6050_DEV_ADDR, PWR_MGMT_1, 0x00); //解除休眠状态
   241   1          mpu6050_simiic_write_reg(MPU6050_DEV_ADDR, SMPLRT_DIV, 0x07);   //125HZ采样率
   242   1          if(0x07 != mpu6050_simiic_read_reg(MPU6050_DEV_ADDR, SMPLRT_DIV))
-C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   21/04/25  14:25:11  PAGE 5   
+C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   22/04/25  20:32:53  PAGE 5   
 
   243   1          {
   244   2              printf("mpu6050 init error.\r\n");
@@ -338,7 +338,7 @@ stmt  level    source
   301          //  @param      NULL
   302          //  @return     void
   303          //  @since      v1.0
-C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   21/04/25  14:25:11  PAGE 6   
+C251 COMPILER V5.60.0,  SEEKFREE_MPU6050                                                   22/04/25  20:32:53  PAGE 6   
 
   304          //  Sample usage:       执行该函数后，直接查看对应的变量即可
   305          //-------------------------------------------------------------------------------------------------------

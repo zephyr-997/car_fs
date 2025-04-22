@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 1   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_IPS114_SPI
@@ -66,7 +66,7 @@ stmt  level    source
              -------------
    49          //  以下函数是使用软件SPI通信，相比较硬件SPI，软件SPI引脚更加灵活，可以使�
              -�任意普通IO
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 2   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 2   
 
    50          //-------------------------------------------------------------------------------------------------------
              -------------
@@ -134,7 +134,7 @@ stmt  level    source
   108          //-------------------------------------------------------------------------------------------------------
              -------------
   109          //  @brief      内部调用，用户无需关心
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 3   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 3   
 
   110          //  @param      void        
   111          //  @return             
@@ -202,7 +202,7 @@ stmt  level    source
   170   1          ips114_writeData_simspi(0x33); 
   171   1      
   172   1          ips114_writeIndex_simspi(0xB7); 
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 4   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 4   
 
   173   1          ips114_writeData_simspi(0x35);  
   174   1      
@@ -270,7 +270,7 @@ stmt  level    source
   236   1      }
   237          
   238          
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 5   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 5   
 
   239          
   240          void ips114_set_region_simspi(uint16 x1,uint16 y1,uint16 x2,uint16 y2)
@@ -338,7 +338,7 @@ stmt  level    source
   300   3                ips114_writeDatai_16bit_simspi(color);         
   301   3            }
   302   2          }
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 6   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 6   
 
   303   1      }
   304          
@@ -406,7 +406,7 @@ stmt  level    source
              -------------
   361          void ips114_showstr_simspi(uint16 x,uint16 y,const int8 dat[])
   362          {
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 7   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 7   
 
   363   1        uint16 xdata j;
   364   1        
@@ -474,7 +474,7 @@ stmt  level    source
   422   1        while(i<3)
   423   1        {
   424   2          ips114_showchar_simspi((uint8)(x+(8*(i+1))), (uint8)(y*16),(int8)('0' + a[i]));
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 8   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 8   
 
   425   2          i++;
   426   2        }
@@ -542,7 +542,7 @@ stmt  level    source
   484   1        i = 0;
   485   1        while(i<5)
   486   1        {
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 9   
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 9   
 
   487   2          ips114_showchar_simspi((uint8)(x+(8*(i+1))), (uint8)(y*16),(int8)('0' + a[i]));
   488   2          i++;
@@ -610,7 +610,7 @@ stmt  level    source
   542          //                              负数会显示一个 ‘-’号   正数显示一个空格
   543          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 10  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 10  
 
   544          void ips114_showfloat_simspi(uint16 x,uint16 y,double dat,uint8 num,uint8 pointnum)
   545          {
@@ -678,7 +678,7 @@ stmt  level    source
   603          //-------------------------------------------------------------------------------------------------------
              -------------
   604          //  @brief      内部调用，用户无需关心
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 11  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 11  
 
   605          //  @param      void        
   606          //  @return             
@@ -746,7 +746,7 @@ stmt  level    source
                    ips114_writeData(0xC0);
                    #elif (IPS114_DISPLAY_DIR==2)    
                    ips114_writeData(0x70);
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 12  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 12  
 
                    #else                            
   666   1          ips114_writeData(0xA0);
@@ -814,7 +814,7 @@ stmt  level    source
   728   1          ips114_writeData(0x44);
   729   1          ips114_writeData(0x51);
   730   1          ips114_writeData(0x2F);
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 13  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 13  
 
   731   1          ips114_writeData(0x1F);
   732   1          ips114_writeData(0x1F);
@@ -882,7 +882,7 @@ stmt  level    source
   793          //  @brief      液晶清屏函数
   794          //  @param      color         颜色设置
   795          //  @return     void
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 14  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 14  
 
   796          //  @since      v1.0
   797          //  Sample usage:               ips114_clear(YELLOW);// 全屏设置为黄色
@@ -950,7 +950,7 @@ stmt  level    source
   854   3            temp>>=1;
   855   3          }
   856   2        }
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 15  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 15  
 
   857   1      }
   858          
@@ -1018,7 +1018,7 @@ stmt  level    source
   915          //  @param      dat             需要显示的变量，数据类型uint8
   916          //  @return     void
   917          //  @since      v1.0
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 16  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 16  
 
   918          //  Sample usage:               ips114_showuint8(0,0,x);//x为uint8类型
   919          //-------------------------------------------------------------------------------------------------------
@@ -1086,7 +1086,7 @@ stmt  level    source
   977          //  @since      v1.0
   978          //  Sample usage:               ips114_showuint16(0,0,x);//x为uint16类型
   979          //-------------------------------------------------------------------------------------------------------
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 17  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 17  
 
              -------------
   980          void ips114_showuint16(uint16 x,uint16 y,uint16 dat)
@@ -1154,7 +1154,7 @@ stmt  level    source
  1038          //  @param      x               坐标x方向的起点 参数范围 0 -（IPS114_X_MAX-1）
  1039          //  @param      y               坐标y方向的起点 参数范围 0 -（IPS114_Y_MAX/16-1）
  1040          //  @param      dat             需要显示的变量，数据类型float或double
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 18  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 18  
 
  1041          //  @param      num             整数位显示长度   最高10位  
  1042          //  @param      pointnum        小数位显示长度   最高6位
@@ -1223,7 +1223,7 @@ Module Information          Static   Overlayable
   huge data size       =    ------     ------
   const size           =    ------     ------
   hconst size          =         6     ------
-C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                21/04/25  14:25:11  PAGE 19  
+C251 COMPILER V5.60.0,  SEEKFREE_IPS114_SPI                                                22/04/25  20:32:53  PAGE 19  
 
 End of Module Information.
 
