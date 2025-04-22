@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 1   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_PRINTF
 OBJECT MODULE PLACED IN .\Out_File\SEEKFREE_PRINTF.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\seekfree_peripheral\SEEKFREE_PRINTF.c XSMALL INTR2 FLOAT64 WARNINGLEV
-                    -EL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\se
-                    -ekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\SEEKFREE_PRINTF.lst) OBJECT(.\Out_File\SEEKFREE_PRINTF.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\seekfree_peripheral\SEEKFREE_PRINTF.c XSMALL INTR2 
+                    -FLOAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfr
+                    -ee_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\SEEKFREE_PRINTF.lst) TABS(2) OBJECT(.\Out_File\
+                    -SEEKFREE_PRINTF.obj) 
 
 stmt  level    source
 
@@ -19,15 +20,15 @@ stmt  level    source
     7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
     8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
     9           *
-   10           * @file                SEEKFREE_PRINTF
-   11           * @company                     成都逐飞科技有限公司
-   12           * @author              逐飞科技(QQ3184284598)
-   13           * @version             查看doc内version文件 版本说明
-   14           * @Software            MDK FOR C251 V5.60
-   15           * @Target core         STC32G12K128
-   16           * @Taobao              https://seekfree.taobao.com/
-   17           * @date                2019-04-30
-   18           * @note                    示波器下载地址：https://pan.baidu.com/s/198CMXTZsbI3HAEqNXDngBw（包含清华直立方案资料）
+   10           * @file          SEEKFREE_PRINTF
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ3184284598)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC32G12K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2019-04-30
+   18           * @note        示波器下载地址：https://pan.baidu.com/s/198CMXTZsbI3HAEqNXDngBw（包含清华直立方案资料）
    19           ********************************************************************************************************
              -************/
    20          
@@ -65,9 +66,9 @@ stmt  level    source
    52   2              pos_dat = dat;
    53   2              while(1)
    54   2              {
-   55   3                  temp_data = pos_dat%radix;
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 2   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 2   
 
+   55   3                  temp_data = pos_dat%radix;
    56   3                  if(10 <= temp_data) temp_data += 'A'-10;
    57   3                  else                temp_data += '0';
    58   3                  
@@ -100,15 +101,15 @@ stmt  level    source
    85          //{
    86          //#if(PRINTF)     //如果宏定义PRINTF为0 则不编译printf函数内容，调用printf没有任何操作
    87          //    va_list arg;
-   88          //      va_start(arg, format);
+   88          //  va_start(arg, format);
    89          //    
-   90          //      while (*format)
-   91          //      {
-   92          //              int8 ret = *format;
-   93          //              if (ret == '%')
-   94          //              {
-   95          //                      switch (*++format)
-   96          //                      {
+   90          //  while (*format)
+   91          //  {
+   92          //    int8 ret = *format;
+   93          //    if (ret == '%')
+   94          //    {
+   95          //      switch (*++format)
+   96          //      {
    97          //                case 'a':// 十六进制p计数法输出浮点数 暂未实现
    98          //                {
    99          //                    
@@ -133,9 +134,9 @@ stmt  level    source
   118          //                    if(ival<0)  uart_putchar(DEBUG_UART, '-');
   119          //                    printf_reverse_order(vstr,vlen);
   120          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
-  121          //                }break;
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 3   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 3   
 
+  121          //                }break;
   122          //                
   123          //                case 'f':// 浮点数，输出小数点后六位  不能指定输出精度
   124          //                case 'F':// 浮点数，输出小数点后六位  不能指定输出精度
@@ -150,7 +151,7 @@ stmt  level    source
   133          
   134          //                    ival = ((double)ival - (int32)ival)*1000000;
   135          //                    vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
-  136          //                                    while(6>vlen)
+  136          //              while(6>vlen)
   137          //                    {
   138          //                        vstr[vlen] = '0';
   139          //                        vlen++;
@@ -201,9 +202,9 @@ stmt  level    source
   184          //                }break;
   185          //                
   186          //                case 'p':// 以16进制形式输出指针
-  187          //                {
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 4   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 4   
 
+  187          //                {
   188          //                    int8 vstr[33];
   189          //                    uint32 ival = (uint32)va_arg(arg, uint32);
   190          //                    uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
@@ -219,15 +220,15 @@ stmt  level    source
   200          //                }break;
   201          
   202          //                default:break;
-  203          //                      }
-  204          //              }
-  205          //              else
-  206          //              {
-  207          //                      uart_putchar(DEBUG_UART, (int8)(*format));
-  208          //              }
-  209          //              format++;
-  210          //      }
-  211          //      va_end(arg);
+  203          //      }
+  204          //    }
+  205          //    else
+  206          //    {
+  207          //      uart_putchar(DEBUG_UART, (int8)(*format));
+  208          //    }
+  209          //    format++;
+  210          //  }
+  211          //  va_end(arg);
   212          //#endif
   213          //}
   214          
@@ -236,15 +237,15 @@ stmt  level    source
   217          {
   218   1          uint32 buff_len=0;
   219   1          va_list arg;
-  220   1              va_start(arg, format);
+  220   1        va_start(arg, format);
   221   1       
-  222   1              while (*format)
-  223   1              {
-  224   2                      int8 ret = *format;
-  225   2                      if (ret == '%')
-  226   2                      {
-  227   3                              switch (*++format)
-  228   3                              {
+  222   1        while (*format)
+  223   1        {
+  224   2          int8 ret = *format;
+  225   2          if (ret == '%')
+  226   2          {
+  227   3            switch (*++format)
+  228   3            {
   229   4                      case 'a':// 十六进制p计数法输出浮点数 暂未实现
   230   4                      {
   231   5                          
@@ -269,9 +270,9 @@ stmt  level    source
   250   5                          int32 ival = (int32)va_arg(arg, int32);
   251   5                          uint8 vlen = number_conversion_ascii((uint32)ival, vstr, 1, 10);
   252   5                          
-  253   5                          if(ival<0)  
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 5   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 5   
 
+  253   5                          if(ival<0)  
   254   5                          {
   255   6                              vstr[vlen] = '-';
   256   6                              vlen++;
@@ -311,19 +312,19 @@ stmt  level    source
   290   6                              vstr[0] = vstr[1] = vstr[2] = vstr[3] = vstr[4] = vstr[5] = '0';
   291   6                              vlen = 6;
   292   6                          }
-  293   5                                              
+  293   5                
   294   5                          while(6>vlen)
   295   5                          {
   296   6                              vstr[vlen] = '0';
   297   6                              vlen++;
   298   6                          }
-  299   5                                              
+  299   5                
   300   5                          vstr[vlen] = '.';
   301   5                          vlen++;
   302   5                          
   303   5                          printf_reverse_order(vstr,vlen);
   304   5                          memcpy(buff,vstr,vlen);
-  305   5                                              buff += vlen;
+  305   5                buff += vlen;
   306   5                          buff_len += vlen;
   307   5      
   308   5                          break;
@@ -337,9 +338,9 @@ stmt  level    source
   316   5                          
   317   5                          printf_reverse_order(vstr,vlen);
   318   5                          memcpy(buff,vstr,vlen);
-  319   5                          buff += vlen;
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 6   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 6   
 
+  319   5                          buff += vlen;
   320   5                          buff_len += vlen;
   321   5                      }break;
   322   4                      
@@ -387,7 +388,7 @@ stmt  level    source
   364   5                          int8 vstr[33];
   365   5                          uint32 ival = (uint32)va_arg(arg, uint32);
   366   5                          //uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
-  367   5                                              number_conversion_ascii(ival, vstr, 0, 16);
+  367   5                number_conversion_ascii(ival, vstr, 0, 16);
   368   5                          
   369   5                          printf_reverse_order(vstr,8);
   370   5                          memcpy(buff,vstr,8);
@@ -405,19 +406,19 @@ stmt  level    source
   382   5                      }break;
   383   4      
   384   4                      default:break;
-  385   4                              }
-C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    17/04/25  14:34:28  PAGE 7   
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    21/04/25  14:25:11  PAGE 7   
 
-  386   3                      }
-  387   2                      else
-  388   2                      {
+  385   4            }
+  386   3          }
+  387   2          else
+  388   2          {
   389   3                  *buff = (int8)(*format);
   390   3                  buff++;
   391   3                  buff_len++;
-  392   3                      }
-  393   2                      format++;
-  394   2              }
-  395   1              va_end(arg);
+  392   3          }
+  393   2          format++;
+  394   2        }
+  395   1        va_end(arg);
   396   1      
   397   1          return buff_len;
   398   1      }

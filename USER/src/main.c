@@ -3,8 +3,8 @@
 void main(void)
 {
 	int state = 5;
-	uint16 sum_value = 0;
-	uint16 value[7] = {0};
+	uint16 sum_value = 0; //
+	uint16 value[7] = {0}; //调试用数组
 	board_init();			
 	electromagnetic_init();  // 初始化电磁传感器
 	// ips114_init_simspi();					
@@ -66,15 +66,6 @@ void main(void)
 		// 计算位置偏差
 		position = calculate_position_improved();
 		
-		// 读取七电感ADC值（用于调试）
-		value[0] = adc_once(ADC_HL,  ADC_10BIT);
-		value[1] = adc_once(ADC_VL,  ADC_10BIT);
-		value[2] = adc_once(ADC_HML, ADC_10BIT);
-		value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-		value[4] = adc_once(ADC_HMR, ADC_10BIT);
-		value[5] = adc_once(ADC_VR,  ADC_10BIT);
-		value[6] = adc_once(ADC_HR,  ADC_10BIT);	
-
 
 		// 计算所有电感值的总和
 		sum_value = (uint16)normalized_data[SENSOR_HL] + (uint16)normalized_data[SENSOR_VL] + 
@@ -83,30 +74,19 @@ void main(void)
 		            (uint16)normalized_data[SENSOR_HR];
 
 		// 通过串口输出七电感数据
-		sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+		sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d\n",
 		 (uint16)normalized_data[SENSOR_HL], 
 		 (uint16)normalized_data[SENSOR_VL], 
 		 (uint16)normalized_data[SENSOR_HML], 
-		 (uint16)normalized_data[SENSOR_HC], // 新增中间横向电感
+		 (uint16)normalized_data[SENSOR_HC],
 		 (uint16)normalized_data[SENSOR_HMR], 
 		 (uint16)normalized_data[SENSOR_VR], 
 		 (uint16)normalized_data[SENSOR_HR], 
-		 sum_value, (uint16)signal_strength_value, position);
+		//  sum_value, 
+		//  (uint16)signal_strength_value,
+		  position);
 		uart_putstr(UART_4, g_TxData);
 
-
-		// 通过串口输出七电感原始数据
-// 		sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
-// 		 value[0], 
-// 		 value[1], 
-// 		 value[2], 
-// 		 value[3], 
-// 		 value[4],
-// 		 value[5],
-//      value[6]);
-// 		uart_putstr(UART_4, g_TxData);
-
-		// delay_ms(20);
 
 		//检查电磁保护
 		// protection_flag = check_electromagnetic_protection();
@@ -121,7 +101,7 @@ void main(void)
 		// 	ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
 			
 		// 	// 永久停止或等待重置
-		// 	while(1)
+		// 	while(1)                                                               
 		// 	{
 		// 		// 可以添加重置逻辑，例如按键检测
 		// 		// 如果需要重新启动，可以在这里添加条件
@@ -132,13 +112,29 @@ void main(void)
 		// 显示电磁传感器数据
 //		display_electromagnetic_data();
 
-		delay_ms(5);  
+		/*调试功能*/
 
-		// ips114_showstr_simspi(0,0,"L:");   
-		// delay_ms(500);
-		// ips114_clear_simspi(RED);									
-		// delay_ms(500);
-		// ips114_showstr_simspi(0,0,"L:");   
+		// 读取七电感ADC值（用于调试）
+		// value[0] = adc_once(ADC_HL,  ADC_10BIT);
+		// value[1] = adc_once(ADC_VL,  ADC_10BIT);
+		// value[2] = adc_once(ADC_HML, ADC_10BIT);
+		// value[3] = adc_once(ADC_HC,  ADC_10BIT); 
+		// value[4] = adc_once(ADC_HMR, ADC_10BIT);
+		// value[5] = adc_once(ADC_VR,  ADC_10BIT);
+		// value[6] = adc_once(ADC_HR,  ADC_10BIT);	
+
+		// 通过串口输出七电感原始数据
+		// sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
+		//  value[0], 
+		//  value[1], 
+		//  value[2], 
+		//  value[3], 
+		//  value[4],
+		//  value[5],
+        //  value[6]);
+		//  uart_putstr(UART_4, g_TxData);
+
+		delay_ms(5);  
 	}	
 }
 

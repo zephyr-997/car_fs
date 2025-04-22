@@ -80,7 +80,7 @@ uint16 get_adc(uint16 i)
 		case 2:
 			return adc_once(ADC_HML, ADC_10BIT);
 		case 3:
-			return adc_once(ADC_HC, ADC_10BIT);  // 新增中间横向电感
+			return adc_once(ADC_HC, ADC_10BIT); 
 		case 4:
 			return adc_once(ADC_HMR, ADC_10BIT);
 		case 5:
@@ -351,9 +351,9 @@ void normalize_sensors(void)
 int16 calculate_position_improved(void)
 {
     // 在函数开始处声明所有变量
-    float weight_outer = 0.2f;   // 外侧电感权重(HL和HR)
-    float weight_middle = 0.5f;  // 中间电感权重(HML和HMR)
-    float weight_center = 0.1f;  // 中心电感权重(HC)
+    float weight_outer = 0.15f;   // 外侧电感权重(HL和HR)
+    float weight_middle = 0.45f;  // 中间电感权重(HML和HMR)
+    float weight_center = 0.2f;  // 中心电感权重(HC)
     float weight_vertical = 0.2f; // 纵向电感权重(VL和VR)
     
     float diff_outer = 0;        // 外侧电感差值
@@ -373,7 +373,7 @@ int16 calculate_position_improved(void)
     static int16 last_pos = 0;   // 上一次位置值，用于滤波
     int16 pos = 0;               // 当前计算得到的位置值
     float filter_param = 0.5f;   // 滤波系数，可调
-    uint8 track_type = 0;        // 赛道类型：0-普通，1-十字，2-环岛，3-坡道
+    uint8 track_type = 0;        // 赛道类型：0-普通，1-十字，2-环岛，3-直角弯道
     static int16 max_change_rate = 10; // 允许的最大变化率
     int16 position_change = 0;   // 位置变化量
 	
@@ -439,11 +439,15 @@ int16 calculate_position_improved(void)
             // 右环岛
         }
     }
-    // 3. 坡道特征：所有电感值都较大
-    else if(normalized_data[SENSOR_HL] > 70.0f && normalized_data[SENSOR_HR] > 70.0f &&
-            normalized_data[SENSOR_HML] > 70.0f && normalized_data[SENSOR_HMR] > 70.0f)
+    // 3. 直角弯道特征：一侧横向和纵向电感值明显高于另一侧，同时信号强度适中
+    else if(((normalized_data[SENSOR_HL] > 65.0f && normalized_data[SENSOR_VL] > 65.0f && 
+              normalized_data[SENSOR_HR] < 25.0f && normalized_data[SENSOR_VR] < 25.0f) || 
+             (normalized_data[SENSOR_HR] > 65.0f && normalized_data[SENSOR_VR] > 65.0f && 
+              normalized_data[SENSOR_HL] < 25.0f && normalized_data[SENSOR_VL] < 25.0f)) && 
+            normalized_data[SENSOR_HC] < 40.0f && // 中心电感较弱
+            signal_strength > 30.0f && signal_strength < 60.0f) // 信号强度适中
     {
-        track_type = 3; // 坡道
+        track_type = 3; // 直角弯道
     }
     
     // 根据赛道类型和信号强度调整权重
@@ -453,12 +457,12 @@ int16 calculate_position_improved(void)
             // 根据信号强度动态调整权重
             if(signal_strength > 70.0f) // 信号强，可能在直道
             {
-                weight_outer = 0.25f;  // 适当平衡中间和外侧电感的权重
-                weight_middle = 0.45f;
-                weight_center = 0.1f;  // 中心电感给较小权重
+                weight_outer = 0.2f;  // 适当平衡中间和外侧电感的权重
+                weight_middle = 0.45f; 
+                weight_center = 0.15f;  // 中心电感给较小权重
                 weight_vertical = 0.2f;
-                filter_param = 0.6f;  // 直道上可以稍微灵敏一些
-                max_change_rate = 15;  // 直道允许更大变化率
+                filter_param = 0.5f;  // 直道上可以稍微灵敏一些
+                max_change_rate = 10;  // 直道允许更大变化率
             }
             else if(signal_strength < 30.0f) // 信号弱，可能在弯道
             {
@@ -501,14 +505,14 @@ int16 calculate_position_improved(void)
             max_change_rate = 12;
             break;
             
-        case 3: // 坡道
-            // 坡道使用平均权重
-            weight_outer = 0.25f;
-            weight_middle = 0.3f;
-            weight_center = 0.15f;
-            weight_vertical = 0.3f;
-            filter_param = 0.6f;
-            max_change_rate = 10;
+        case 3: // 直角弯道
+            // 直角弯道更依赖外侧和纵向电感
+            weight_outer = 0.45f;      // 外侧电感权重大
+            weight_middle = 0.25f;     // 中间电感权重适中
+            weight_center = 0.05f;     // 中心电感权重小（直角弯道中心电感不可靠）
+            weight_vertical = 0.25f;   // 纵向电感权重较大
+            filter_param = 0.6f;       // 响应要快一些
+            max_change_rate = 18;      // 允许较大变化率以快速响应
             break;
 
         default:

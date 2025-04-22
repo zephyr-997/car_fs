@@ -13,7 +13,7 @@
 #define ADC_HR  ADC_P00  // 右侧横向电感
 
 // 电感数组定义
-#define SENSOR_COUNT 7   // 电感个数（从6改为7）
+#define SENSOR_COUNT 7   // 电感个数
 #define HISTORY_COUNT 5  // 滤波次数，当前只存储最新值
 
 // 电感类型枚举
@@ -21,7 +21,7 @@ typedef enum {
     SENSOR_HL  = 0,  // 左侧横向电感
     SENSOR_VL  = 1,  // 左侧纵向电感
     SENSOR_HML = 2,  // 左中横向电感
-    SENSOR_HC  = 3,  // 中间横向电感（新增）
+    SENSOR_HC  = 3,  // 中间横向电感
     SENSOR_HMR = 4,  // 右中横向电感
     SENSOR_VR  = 5,  // 右侧纵向电感
     SENSOR_HR  = 6   // 右侧横向电感
