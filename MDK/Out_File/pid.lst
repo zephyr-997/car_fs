@@ -1,158 +1,182 @@
-C251 COMPILER V5.60.0,  pid                                                                22/04/25  20:32:52  PAGE 1   
+C251 COMPILER V5.60.0,  pid                                                                24/04/25  23:36:05  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE pid
 OBJECT MODULE PLACED IN .\Out_File\pid.obj
-COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\pid.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3)
-                    - OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfre
-                    -e_peripheral;..\libraries) DEBUG PRINT(.\Out_File\pid.lst) TABS(2) OBJECT(.\Out_File\pid.obj) 
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\pid.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED)
+                    - BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\li
+                    -braries) DEBUG PRINT(.\Out_File\pid.lst) OBJECT(.\Out_File\pid.obj) 
 
 stmt  level    source
 
     1          #include "pid.h"
     2          
-    3          PID_t LeftPID = { 5.4 , //kp
-    4                    0.52 , //ki
-    5                    3.0 , //kd
-    6                    0.7 , //kf
-    7                          0.0 , //上次误差
-    8                    0.0 , //上上次误差
-    9                    0.0 , //积分误差
-   10                    0.0 , //上次目标值
-   11                    0.0 , //pid输出
-   12                    0   , //积分限幅
-   13                    0     //输出限幅
-   14                  };//左轮速度环PID
+    3          PID_t LeftPID = { 7.1 , //kp
+    4                                            0.71 , //ki
+    5                                            3.5 , //kd
+    6                                            0.6 , //kf
+    7                                0.0 , //上次误差
+    8                                            0.0 , //上上次误差
+    9                                            0.0 , //积分误差
+   10                                            0.0 , //上次目标值
+   11                                            0.0 , //pid输出
+   12                                            0   , //积分限幅
+   13                                            0     //输出限幅
+   14                                          };//左轮速度环PID
    15          
-   16                    
-   17          PID_t RightPID = { 5.8 , //kp
-   18                     0.425 , //ki
-   19                     3.0 , //kd
-   20                     1.4 , //kf
-   21                           0.0 , //上次误差
-   22                     0.0 , //上上次误差
-   23                     0.0 , //积分误差
-   24                     0.0 , //上次目标值
-   25                           0.0 , //pid输出
-   26                     0   , //积分限幅
-   27                     0     //输出限幅
-   28                   };//右轮速度环PID
+   16                                            
+   17          PID_t RightPID = { 7.0 , //kp
+   18                                             0.68 , //ki
+   19                                             4.8 , //kd
+   20                                             0.3 , //kf
+   21                                 0.0 , //上次误差
+   22                                             0.0 , //上上次误差
+   23                                             0.0 , //积分误差
+   24                                             0.0 , //上次目标值
+   25                                 0.0 , //pid输出
+   26                                             0   , //积分限幅
+   27                                             0     //输出限幅
+   28                                           };//右轮速度环PID
    29          
    30          
    31          PID_t TurnPID = { 0.0 ,   //kp
-   32                    0.0 ,   //ki
-   33                    0.0 ,   //kd
-   34                    0.0 ,   //kf
-   35                          0.0 ,   //上次误差
-   36                    0.0 ,   //上上次误差
-   37                    0.0 ,   //积分误差
-   38                    0.0 ,   //上次目标值
-   39                          0.0 ,   //pid输出
-   40                    0.0 ,   //积分限幅
-   41                    900.0   //输出限幅
-   42                  };//转向环PID
+   32                                            0.0 ,   //ki
+   33                                            0.0 ,   //kd
+   34                                            0.0 ,   //kf
+   35                                0.0 ,   //上次误差
+   36                                            0.0 ,   //上上次误差
+   37                                            0.0 ,   //积分误差
+   38                                            0.0 ,   //上次目标值
+   39                                0.0 ,   //pid输出
+   40                                            0.0 ,   //积分限幅
+   41                                            900.0   //输出限幅
+   42                                          };//转向环PID
    43          
-   44                  
+   44                                          
    45          float myfabs(float num)
    46          {
-   47   1        return (num > 0) ? num : -num;
+   47   1              return (num > 0) ? num : -num;
    48   1      }
-   49                  
-   50          
-   51          //位置式PID（带前馈）
-   52          float pid_poisitional_feedforward(PID_t* pid, float real, float target)
-   53          {
-   54   1        int error = 0;
-   55   1        
-   56   1        error = target - real;
-   57   1        pid->interror += error;
-C251 COMPILER V5.60.0,  pid                                                                22/04/25  20:32:52  PAGE 2   
+   49          
+   50          int myabs(int num)
+   51          {
+   52   1              return (num > 0) ? num : -num;
+   53   1      }
+   54                                          
+   55          
+   56          //位置式PID（带前馈）
+   57          float pid_poisitional_feedforward(PID_t* pid, float real, float target)
+C251 COMPILER V5.60.0,  pid                                                                24/04/25  23:36:05  PAGE 2   
 
-   58   1        
-   59   1        //积分限幅
-   60   1        if (pid->interror > pid->i_limit)
-   61   1        {
-   62   2          pid->interror = pid->i_limit;
-   63   2        }
-   64   1        else if (pid->interror < -pid->i_limit)
-   65   1        {
-   66   2          pid->interror = -pid->i_limit;
-   67   2        }
-   68   1        
-   69   1        //线性、积分、微分、前馈共同作用
-   70   1        pid->output = pid->kp * error + pid->ki * pid->interror + pid->kd * (error - pid->lasterror) + pid->kf *
+   58          {
+   59   1              int error = 0;
+   60   1              
+   61   1              error = target - real;
+   62   1              pid->interror += error;
+   63   1              
+   64   1              //积分限幅
+   65   1              if (pid->interror > pid->i_limit)
+   66   1              {
+   67   2                      pid->interror = pid->i_limit;
+   68   2              }
+   69   1              else if (pid->interror < -pid->i_limit)
+   70   1              {
+   71   2                      pid->interror = -pid->i_limit;
+   72   2              }
+   73   1              
+   74   1              //线性、积分、微分、前馈共同作用
+   75   1              pid->output = pid->kp * error + pid->ki * pid->interror + pid->kd * (error - pid->lasterror) + pid->kf *
              - (target - pid->lasttarget);
-   71   1        
-   72   1        pid->lasterror = error;
-   73   1        pid->lasttarget = target;
-   74   1        
-   75   1        //输出限幅
-   76   1        if (pid->output > pid->o_limit)
-   77   1        {
-   78   2          pid->output = pid->o_limit;
-   79   2        }
-   80   1        else if (pid->output < -pid->o_limit)
-   81   1        {
-   82   2          pid->output = -pid->o_limit;
-   83   2        }
-   84   1        
-   85   1        return pid->output; 
-   86   1      }
-   87          
-   88          
-   89          //增量式PID（带前馈）
-   90          float pid_increment_feedforward(PID_t* pid, float real, float target)
-   91          {
-   92   1        int error;
-   93   1        
-   94   1        error = target - real;
-   95   1        
-   96   1        pid->output += pid->kp * (error - pid->lasterror) + pid->ki * error + pid->kd * (error - 2 * pid->laster
+   76   1              
+   77   1              pid->lasterror = error;
+   78   1              pid->lasttarget = target;
+   79   1              
+   80   1              //输出限幅
+   81   1              if (pid->output > pid->o_limit)
+   82   1              {
+   83   2                      pid->output = pid->o_limit;
+   84   2              }
+   85   1              else if (pid->output < -pid->o_limit)
+   86   1              {
+   87   2                      pid->output = -pid->o_limit;
+   88   2              }
+   89   1              
+   90   1              return pid->output; 
+   91   1      }
+   92          
+   93          
+   94          //增量式PID（带前馈）
+   95          float pid_increment_feedforward(PID_t* pid, float real, float target)
+   96          {
+   97   1              int error;
+   98   1              
+   99   1              error = target - real;
+  100   1              
+  101   1              pid->output += pid->kp * (error - pid->lasterror) + pid->ki * error + pid->kd * (error - 2 * pid->laster
              -ror + pid->preverror) + pid->kf * (target - pid->lasttarget);
-   97   1        
-   98   1        pid->preverror = pid->lasterror;
-   99   1        pid->lasterror = error;
-  100   1        pid->lasttarget = target;
-  101   1        
-  102   1        return pid->output;
-  103   1      }
-  104          
-  105          
-  106          //魔改位置式pid（加二次项）
-  107          float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
-  108          {
-  109   1        int error = position;
-  110   1        
-  111   1        pid->output = (pid->kp * error) + (pid->kp * pid->kp * error * myfabs(error)) + (pid->kd * (error - pid-
-             ->lasterror) + (pid->kd * pid->kd * GyroZ));
-  112   1        pid->lasterror = error;
-  113   1        
-  114   1        //输出限幅
-  115   1        if (pid->output > pid->o_limit)
-  116   1        {
-  117   2          pid->output = pid->o_limit;
-  118   2        }
-  119   1        else if (pid->output < -pid->o_limit)
-  120   1        {
-C251 COMPILER V5.60.0,  pid                                                                22/04/25  20:32:52  PAGE 3   
+  102   1              
+  103   1              pid->preverror = pid->lasterror;
+  104   1              pid->lasterror = error;
+  105   1              pid->lasttarget = target;
+  106   1              
+  107   1              return pid->output;
+  108   1      }
+  109          
+  110          
+  111          float pid_poisitional_normal(PID_t* pid, float position)
+  112          {
+  113   1              pid->output = pid->kp * position + pid->kd * (position - pid->lasterror);
+  114   1              pid->lasterror = position;
+  115   1              
+  116   1              //输出限幅
+  117   1              if (pid->output > pid->o_limit)
+  118   1              {
+  119   2                      pid->output = pid->o_limit;
+  120   2              }
+  121   1              else if (pid->output < -pid->o_limit)
+C251 COMPILER V5.60.0,  pid                                                                24/04/25  23:36:05  PAGE 3   
 
-  121   2          pid->output = -pid->o_limit;
-  122   2        }
-  123   1        
-  124   1        return pid->output;
-  125   1      }
+  122   1              {
+  123   2                      pid->output = -pid->o_limit;
+  124   2              }
+  125   1              
+  126   1              return pid->output;
+  127   1      }
+  128          
+  129          
+  130          //魔改位置式pid（加二次项）
+  131          float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
+  132          {
+  133   1              int error = position;
+  134   1              
+  135   1              pid->output = (pid->kp * error) + (pid->kp * pid->kp * error * myfabs(error)) + (pid->kd * (error - pid-
+             ->lasterror) + (pid->kd * pid->kd * GyroZ));
+  136   1              pid->lasterror = error;
+  137   1              
+  138   1              //输出限幅
+  139   1              if (pid->output > pid->o_limit)
+  140   1              {
+  141   2                      pid->output = pid->o_limit;
+  142   2              }
+  143   1              else if (pid->output < -pid->o_limit)
+  144   1              {
+  145   2                      pid->output = -pid->o_limit;
+  146   2              }
+  147   1              
+  148   1              return pid->output;
+  149   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =      1407     ------
+  code size            =      1707     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =       178     ------
+  edata size           =       188     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------

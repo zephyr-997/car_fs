@@ -59,9 +59,9 @@ float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还�
 int16_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
 float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
-int g_SpeedPoint = 70;
-int g_LeftPoint = 0;                             // 左轮目标速度                  
-int g_RightPoint = 0;                            // 右轮目标速度             
+int g_SpeedPoint = 100;
+int g_LeftPoint = 100;                             // 左轮目标速度                  
+int g_RightPoint = 100;                            // 右轮目标速度             
 int count = 0, flag = 0;
 
 //UART1中断
@@ -271,21 +271,29 @@ void TM2_Isr() interrupt 12
 		读取角速度并转化为实际物理数据
 		当突然左转，Gyro_Z为正值；突然右转，Gyro_Z为负值
 	*/
-	imu963ra_get_gyro();
-	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
+//	imu963ra_get_gyro();
+//	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
 	
 	//对Gyro_Z进行卡尔曼滤波
-	filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
+//	filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
 	
 	//计算转向环pid,右正
-	turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+//	turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+	turn_pid = pid_poisitional_normal(&TurnPID, position);
 	
 	//更新卡尔曼滤波的值
-	Kalman_Predict(&imu693_kf, turn_pid);
+//	Kalman_Predict(&imu693_kf, turn_pid);
 	
-	//串级pid，内环目标值更新
-	g_LeftPoint = g_SpeedPoint - turn_pid;
-	g_RightPoint = g_SpeedPoint + turn_pid;
+	//
+//	g_LeftPoint = g_SpeedPoint - turn_pid;
+//	g_RightPoint = g_SpeedPoint + turn_pid;
+	
+	//
+	if(myabs(g_LeftPoint - g_RightPoint) <= 150)
+	{
+		g_LeftPoint -= turn_pid;
+		g_RightPoint += turn_pid;
+	}
 	
 	//计算速度环pid
 	left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
@@ -303,6 +311,8 @@ void TM2_Isr() interrupt 12
 	// {
 	// 	set_motor_pwm(0, 0);
 	// }
+	
+	set_motor_pwm(g_DutyLeft , g_DutyRight);
 }
 
 

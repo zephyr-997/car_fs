@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  encoder                                                            22/04/25  20:32:51  PAGE 1   
+C251 COMPILER V5.60.0,  encoder                                                            24/04/25  23:36:03  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE encoder
 OBJECT MODULE PLACED IN .\Out_File\encoder.obj
-COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\encoder.c XSMALL INTR2 FLOAT64 WARNINGLEVE
-                    -L(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\see
-                    -kfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\encoder.lst) TABS(2) OBJECT(.\Out_File\encoder.obj) 
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\encoder.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3) OPTIMIZE(0,SP
+                    -EED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;.
+                    -.\libraries) DEBUG PRINT(.\Out_File\encoder.lst) OBJECT(.\Out_File\encoder.obj) 
 
 stmt  level    source
 
@@ -17,46 +17,46 @@ stmt  level    source
     6          
     7          void encoder_init(void)
     8          {
-    9   1        ctimer_count_init(CTIM0_P34);
-   10   1        ctimer_count_init(CTIM3_P04);
+    9   1              ctimer_count_init(CTIM0_P34);
+   10   1              ctimer_count_init(CTIM3_P04);
    11   1      }
    12          
    13          
    14          int get_left_encoder(void)
    15          {
-   16   1        int encoder_left;
-   17   1        
-   18   1        if(LEFT_DIR == 1)
-   19   1        {
-   20   2          encoder_left = ctimer_count_read(CTIM0_P34);
-   21   2        }
-   22   1        else
-   23   1        {
-   24   2          encoder_left = ctimer_count_read(CTIM0_P34) * -1;
-   25   2        }
-   26   1        
-   27   1        ctimer_count_clean(CTIM0_P34);
-   28   1        
-   29   1        return encoder_left;
+   16   1              int encoder_left;
+   17   1              
+   18   1              if(LEFT_DIR == 1)
+   19   1              {
+   20   2                      encoder_left = ctimer_count_read(CTIM0_P34);
+   21   2              }
+   22   1              else
+   23   1              {
+   24   2                      encoder_left = ctimer_count_read(CTIM0_P34) * -1;
+   25   2              }
+   26   1              
+   27   1              ctimer_count_clean(CTIM0_P34);
+   28   1              
+   29   1              return encoder_left;
    30   1      }
    31          
    32          
    33          int get_right_encoder(void)
    34          {
-   35   1        int encoder_right;
-   36   1        
-   37   1        if(RIGHT_DIR == 1)
-   38   1        {
-   39   2          encoder_right = ctimer_count_read(CTIM3_P04) * -1;
-   40   2        }
-   41   1        else
-   42   1        {
-   43   2          encoder_right = ctimer_count_read(CTIM3_P04);
-   44   2        }
-   45   1        
-   46   1        ctimer_count_clean(CTIM3_P04);
-   47   1        
-   48   1        return encoder_right;
+   35   1              int encoder_right;
+   36   1              
+   37   1              if(RIGHT_DIR == 1)
+   38   1              {
+   39   2                      encoder_right = ctimer_count_read(CTIM3_P04) * -1;
+   40   2              }
+   41   1              else
+   42   1              {
+   43   2                      encoder_right = ctimer_count_read(CTIM3_P04);
+   44   2              }
+   45   1              
+   46   1              ctimer_count_clean(CTIM3_P04);
+   47   1              
+   48   1              return encoder_right;
    49   1      }
 
 
@@ -67,7 +67,7 @@ Module Information          Static   Overlayable
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
-C251 COMPILER V5.60.0,  encoder                                                            22/04/25  20:32:51  PAGE 2   
+C251 COMPILER V5.60.0,  encoder                                                            24/04/25  23:36:03  PAGE 2   
 
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------

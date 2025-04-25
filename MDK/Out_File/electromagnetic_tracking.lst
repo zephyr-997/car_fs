@@ -1,12 +1,12 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
 OBJECT MODULE PLACED IN .\Out_File\electromagnetic_tracking.obj
-COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FL
-                    -OAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree
-                    -_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) TABS(2) OBJECT(.\Ou
-                    -t_File\electromagnetic_tracking.obj) 
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FLOAT64 WARNINGLEVEL
+                    -(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seek
+                    -free_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) OBJECT(.\Out_File\electromagnetic_tra
+                    -cking.obj) 
 
 stmt  level    source
 
@@ -21,9 +21,9 @@ stmt  level    source
     9          #define HISTORY_COUNT 5  //滤波次数
    10          
    11          uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
-   12          float result[SENSOR_COUNT] = {0};   //电存储每个电感滤波后的最终结果值（尚未归一化�
+   12          float result[SENSOR_COUNT] = {0};               //电存储每个电感滤波后的最终结果值（尚未归一化�
              -�，是连接滤波处理和归一化处理的中间变量
-   13          uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};        //累加的和
+   13          uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};          //累加的和
    14          
    15          // 递推均值滤波相关参数
    16          uint16 times = HISTORY_COUNT;  // 滤波次数
@@ -50,7 +50,7 @@ stmt  level    source
    35          
    36          
    37          //-----------------------------------------------------------------------------
-   38          // @brief   电磁传感器初始化
+   38          // @brief       电磁传感器初始化
    39          // @param   无
    40          // @return  无
    41          // @author  ZP
@@ -66,7 +66,7 @@ stmt  level    source
    51   1         adc_init(ADC_HC, 0);   // 中间横向电感
    52   1         adc_init(ADC_HMR, 0);  // 右中横向电感
    53   1         adc_init(ADC_VR, 0);   // 右侧纵向电感
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 2   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 2   
 
    54   1         adc_init(ADC_HR, 0);   // 右侧横向电感
    55   1         
@@ -83,7 +83,7 @@ stmt  level    source
    66   1      }
    67          
    68          //-----------------------------------------------------------------------------
-   69          // @brief   得到adc的值
+   69          // @brief       得到adc的值
    70          // @param   测的ADC/电感序号
    71          // @return  测出的adc值
    72          // @author  ZP
@@ -91,28 +91,28 @@ stmt  level    source
    74          //-----------------------------------------------------------------------------
    75          uint16 get_adc(uint16 i)
    76          {
-   77   1        switch(i){
-   78   2          case 0:
-   79   2            return adc_once(ADC_HL, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
-   80   2          case 1:
-   81   2            return adc_once(ADC_VL, ADC_10BIT);
-   82   2          case 2:
-   83   2            return adc_once(ADC_HML, ADC_10BIT);
-   84   2          case 3:
-   85   2            return adc_once(ADC_HC, ADC_10BIT); 
-   86   2          case 4:
-   87   2            return adc_once(ADC_HMR, ADC_10BIT);
-   88   2          case 5:
-   89   2            return adc_once(ADC_VR, ADC_10BIT);
-   90   2          case 6:
-   91   2            return adc_once(ADC_HR, ADC_10BIT);
-   92   2          default:
-   93   2            return 0;
-   94   2        }
+   77   1              switch(i){
+   78   2                      case 0:
+   79   2                              return adc_once(ADC_HL, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
+   80   2                      case 1:
+   81   2                              return adc_once(ADC_VL, ADC_10BIT);
+   82   2                      case 2:
+   83   2                              return adc_once(ADC_HML, ADC_10BIT);
+   84   2                      case 3:
+   85   2                              return adc_once(ADC_HC, ADC_10BIT); 
+   86   2                      case 4:
+   87   2                              return adc_once(ADC_HMR, ADC_10BIT);
+   88   2                      case 5:
+   89   2                              return adc_once(ADC_VR, ADC_10BIT);
+   90   2                      case 6:
+   91   2                              return adc_once(ADC_HR, ADC_10BIT);
+   92   2                      default:
+   93   2                              return 0;
+   94   2              }
    95   1      }
    96          
    97          //-----------------------------------------------------------------------------
-   98          // @brief   递推均值滤波
+   98          // @brief       递推均值滤波
    99          // @param   无
   100          // @return  无
   101          // @author  zp
@@ -134,7 +134,7 @@ stmt  level    source
   116   2              for(a = 0; a < i_num; a++)
   117   2              {
   118   3                  sum[a][0] = 0;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 3   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 3   
 
   119   3              }
   120   2              
@@ -172,7 +172,7 @@ stmt  level    source
   152          
   153          
   154          //-----------------------------------------------------------------------------
-  155          // @brief   中位值滤波，将每个电感的中位数作为结果
+  155          // @brief       中位值滤波，将每个电感的中位数作为结果
   156          // @param   无
   157          // @return  无
   158          // @author  ZP
@@ -185,10 +185,10 @@ stmt  level    source
   165          {
   166   1          uint16 temp = 0, a = 0, t = 0;
   167   1          uint16 mid_index = 0;  //中位数
-  168   1        uint16 i = 0; //用于循环
+  168   1              uint16 i = 0; //用于循环
   169   1          // 创建临时数组用于排序，避免修改原始数据
   170   1          uint16 sort_array[HISTORY_COUNT];  // 使用宏定义的常量而不是变量
-  171   1        
+  171   1              
   172   1          // 调用均值滤波获取新的采样值
   173   1          average_filter();
   174   1          
@@ -202,7 +202,7 @@ stmt  level    source
   182   3                  result[a] = adc_fliter_data[a][0];
   183   3              }
   184   2              
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 4   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 4   
 
   185   2              sample_count++;
   186   2              
@@ -257,7 +257,7 @@ stmt  level    source
   235          
   236          
   237          //-----------------------------------------------------------------------------
-  238          // @brief   更新每个电感的最大最小值，用于动态校准
+  238          // @brief       更新每个电感的最大最小值，用于动态校准
   239          // @param   无
   240          // @return  无
   241          // @author  ZP
@@ -270,7 +270,7 @@ stmt  level    source
   248   1          
   249   1          // 定期轻微衰减最大最小值，使系统能适应环境变化
   250   1          update_counter++;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 5   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 5   
 
   251   1          if(update_counter >= 1000)  // 每1000次调用执行一次衰减
   252   1          {
@@ -316,7 +316,7 @@ stmt  level    source
   292   1      }
   293          
   294          //-----------------------------------------------------------------------------
-  295          // @brief   归一化电感数据
+  295          // @brief       归一化电感数据
   296          // @param   无
   297          // @return  无
   298          // @author  ZP
@@ -338,7 +338,7 @@ stmt  level    source
   312   1          for(i = 0; i < SENSOR_COUNT; i++)
   313   1          {
   314   2              // 检查最大最小值差异是否足够大，防止除以接近0的值
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 6   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 6   
 
   315   2              if(max_value[i] - min_value[i] > 20) 
   316   2              {
@@ -375,7 +375,7 @@ stmt  level    source
   344   1      }
   345          
   346          //-----------------------------------------------------------------------------
-  347          // @brief   改进版计算位置（使用自适应差比和加权方法）
+  347          // @brief       改进版计算位置（使用自适应差比和加权方法）
   348          // @param   无
   349          // @return  计算得到的位置值，范围-100到100
   350          // @author  ZP
@@ -406,14 +406,14 @@ stmt  level    source
   375   1          static int16 last_pos = 0;   // 上一次位置值，用于滤波
   376   1          static int16 very_last_pos = 0;  // 上上次位置值，用于二次滤波
   377   1          static int16 very_very_last_pos = 0;  // 上上上次位置值，用于三次滤波
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 7   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 7   
 
   378   1          int16 pos = 0;               // 当前计算得到的位置值
   379   1          static int16 max_change_rate = 10; // 允许的最大变化率
   380   1          int16 position_change = 0;   // 位置变化量
   381   1          static uint8 is_straight_road = 0;  // 记录是否处于直道模式
-  382   1        
-  383   1        // 位置计算（包含中心电感的贡献）
+  382   1              
+  383   1              // 位置计算（包含中心电感的贡献）
   384   1          // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因�
              -�
   385   1          float center_correction = 0;
@@ -474,7 +474,7 @@ stmt  level    source
   438   1          // if(normalized_data[SENSOR_HML] > 60.0f && normalized_data[SENSOR_HMR] > 60.0f && 
   439   1          //    normalized_data[SENSOR_HC] > 70.0f && // 中心电感强
   440   1          //    normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HR] < 30.0f &&
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 8   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 8   
 
   441   1          //    sum_vertical > 80.0f)  // 垂直电感也有一定的值
   442   1          // {
@@ -542,7 +542,7 @@ stmt  level    source
   503   3                      max_change_rate = 10;
   504   3                  }
   505   2                  break;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 9   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 9   
 
   506   2                  
   507   2              case 1: // 十字路口
@@ -610,18 +610,18 @@ stmt  level    source
   569   1          if(pos < -100) pos = -100;
   570   1          
   571   1          // 直道状态下添加不灵敏区
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 10  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 10  
 
-  572   1          if(is_straight_road) {
-  573   2              // 不灵敏区处理
-  574   2              if(pos > -10 && pos < 10) {
-  575   3                  pos = 0;  // 小偏差直接归零
-  576   3              } else if(pos > 0) {
-  577   3                  pos -= 5;  // 正值减少一些
-  578   3              } else {
-  579   3                  pos += 5;  // 负值增加一些
-  580   3              }
-  581   2          }
+  572   1      //    if(is_straight_road) {
+  573   1      //        // 不灵敏区处理
+  574   1      //        if(pos > -10 && pos < 10) {
+  575   1      //            pos = 0;  // 小偏差直接归零
+  576   1      //        } else if(pos > 0) {
+  577   1      //            pos -= 5;  // 正值减少一些
+  578   1      //        } else {
+  579   1      //            pos += 5;  // 负值增加一些
+  580   1      //        }
+  581   1      //    }
   582   1          
   583   1          // 位置变化量限制，防止突变
   584   1          position_change = pos - last_pos;
@@ -656,7 +656,7 @@ stmt  level    source
   613          
   614          
   615          //-----------------------------------------------------------------------------
-  616          // @brief   电磁保护逻辑函数
+  616          // @brief       电磁保护逻辑函数
   617          // @param   无
   618          // @return  保护触发标志位，1表示已触发保护
   619          // @author  ZP
@@ -678,7 +678,7 @@ stmt  level    source
   635   1          for(i = 0; i < SENSOR_COUNT; i++)
   636   1          {
   637   2              sum_value += result[i];
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 11  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 11  
 
   638   2          }
   639   1          
@@ -746,7 +746,7 @@ stmt  level    source
   699   3              }
   700   2          }
   701   1          
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 12  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 12  
 
   702   1          return protection_triggered;
   703   1      }
@@ -802,7 +802,7 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =      5692     ------
+  code size            =      5611     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -815,7 +815,7 @@ Module Information          Static   Overlayable
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           22/04/25  21:11:22  PAGE 13  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 13  
 
   huge data size       =    ------     ------
   const size           =    ------     ------

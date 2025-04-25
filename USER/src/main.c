@@ -13,14 +13,15 @@ void main(void)
 	pit_timer_ms(TIM_1, 10);
 	motor_init();
 	encoder_init();
-	state = imu963ra_init();
-	Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+	
+//	state = imu963ra_init();
+//	Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+	
 	// ips114_clear_simspi(WHITE);	 //清屏
 	delay_ms(100); // 延时等待系统稳定
-	//set_motor_pwm(2000, 2000);
 	
     while(1)
-	{
+	{	
 		/* 串口接收 */
 		if(g_RxPointer != 0)
 		{
@@ -31,6 +32,8 @@ void main(void)
 				uart4_interrupt_callback();
 			}
 		}
+		
+//		set_motor_pwm(1000, 1250);
 		
 		/* 定时操作 */
 		if (flag == 1)
@@ -48,12 +51,15 @@ void main(void)
 		}
 
 		/* 按键处理 */
-		// key_task();
+		key_task();
 
-		// sprintf(g_TxData, "%d,%f\n",position,turn_pid);
-		// uart_putstr(UART_4, g_TxData);
+//		sprintf(g_TxData, "%d,%f\n", position, turn_pid);
+//		uart_putstr(UART_4, g_TxData);
 		
-//		sprintf(g_TxData, "%d,%d,%d\n", g_EncoderLeft, g_EncoderRight, g_SpeedPoint);
+		sprintf(g_TxData, "%d,%d,%d,%d,%d,%f\n", g_EncoderLeft, g_LeftPoint, g_EncoderRight, g_RightPoint, position, turn_pid);
+		uart_putstr(UART_4, g_TxData);
+//		
+//		sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //		uart_putstr(UART_4, g_TxData);
 
 		// 获取滤波后的ADC数据
@@ -74,19 +80,19 @@ void main(void)
 		            (uint16)normalized_data[SENSOR_HR];
 
 		// 通过串口输出七电感数据
-		sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d\n",
-		 (uint16)normalized_data[SENSOR_HL], 
-		 (uint16)normalized_data[SENSOR_VL], 
-		 (uint16)normalized_data[SENSOR_HML], 
-		 (uint16)normalized_data[SENSOR_HC],
-		 (uint16)normalized_data[SENSOR_HMR], 
-		 (uint16)normalized_data[SENSOR_VR], 
-		 (uint16)normalized_data[SENSOR_HR], 
-		//  track_type,
-		//  sum_value, 
-		//  (uint16)signal_strength_value,
-		  position);
-		uart_putstr(UART_4, g_TxData);
+//		sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+//		 (uint16)normalized_data[SENSOR_HL], 
+//		 (uint16)normalized_data[SENSOR_VL], 
+//		 (uint16)normalized_data[SENSOR_HML], 
+//		 (uint16)normalized_data[SENSOR_HC],
+//		 (uint16)normalized_data[SENSOR_HMR], 
+//		 (uint16)normalized_data[SENSOR_VR], 
+//		 (uint16)normalized_data[SENSOR_HR], 
+//		//  track_type,
+//		//  sum_value, 
+//		(uint16)signal_strength_value,
+//		  position);
+//		uart_putstr(UART_4, g_TxData);
 
 
 		//检查电磁保护
@@ -135,7 +141,7 @@ void main(void)
         //  value[6]);
 		//  uart_putstr(UART_4, g_TxData);
 
-		delay_ms(5);  
+//		delay_ms(5);  
 	}	
 }
 

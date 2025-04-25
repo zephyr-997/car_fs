@@ -569,16 +569,16 @@ int16 calculate_position_improved(void)
     if(pos < -100) pos = -100;
     
     // 直道状态下添加不灵敏区
-    if(is_straight_road) {
-        // 不灵敏区处理
-        if(pos > -10 && pos < 10) {
-            pos = 0;  // 小偏差直接归零
-        } else if(pos > 0) {
-            pos -= 5;  // 正值减少一些
-        } else {
-            pos += 5;  // 负值增加一些
-        }
-    }
+//    if(is_straight_road) {
+//        // 不灵敏区处理
+//        if(pos > -10 && pos < 10) {
+//            pos = 0;  // 小偏差直接归零
+//        } else if(pos > 0) {
+//            pos -= 5;  // 正值减少一些
+//        } else {
+//            pos += 5;  // 负值增加一些
+//        }
+//    }
     
     // 位置变化量限制，防止突变
     position_change = pos - last_pos;

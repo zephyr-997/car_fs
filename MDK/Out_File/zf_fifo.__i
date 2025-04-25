@@ -1,0 +1,1 @@
+"..\seekfree_libraries\zf_fifo.c" XSMALL INTR2 FLOAT64 WARNINGLEVEL (3) OPTIMIZE (0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\zf_fifo.lst) OBJECT(.\Out_File\zf_fifo.obj)

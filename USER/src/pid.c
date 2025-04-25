@@ -1,9 +1,9 @@
 #include "pid.h"
 
-PID_t LeftPID = { 5.4 , //kp
-				  0.52 , //ki
-				  3.0 , //kd
-				  0.7 , //kf
+PID_t LeftPID = { 7.1 , //kp
+				  0.71 , //ki
+				  3.5 , //kd
+				  0.6 , //kf
 	              0.0 , //上次误差
 				  0.0 , //上上次误差
 				  0.0 , //积分误差
@@ -14,10 +14,10 @@ PID_t LeftPID = { 5.4 , //kp
 				};//左轮速度环PID
 
 				  
-PID_t RightPID = { 5.8 , //kp
-				   0.425 , //ki
-				   3.0 , //kd
-				   1.4 , //kf
+PID_t RightPID = { 7.0 , //kp
+				   0.68 , //ki
+				   4.8 , //kd
+				   0.3 , //kf
 	               0.0 , //上次误差
 				   0.0 , //上上次误差
 				   0.0 , //积分误差
@@ -43,6 +43,11 @@ PID_t TurnPID = { 0.0 ,   //kp
 
 				
 float myfabs(float num)
+{
+	return (num > 0) ? num : -num;
+}
+
+int myabs(int num)
 {
 	return (num > 0) ? num : -num;
 }
@@ -98,6 +103,25 @@ float pid_increment_feedforward(PID_t* pid, float real, float target)
 	pid->preverror = pid->lasterror;
 	pid->lasterror = error;
 	pid->lasttarget = target;
+	
+	return pid->output;
+}
+
+
+float pid_poisitional_normal(PID_t* pid, float position)
+{
+	pid->output = pid->kp * position + pid->kd * (position - pid->lasterror);
+	pid->lasterror = position;
+	
+	//输出限幅
+	if (pid->output > pid->o_limit)
+	{
+		pid->output = pid->o_limit;
+	}
+	else if (pid->output < -pid->o_limit)
+	{
+		pid->output = -pid->o_limit;
+	}
 	
 	return pid->output;
 }
