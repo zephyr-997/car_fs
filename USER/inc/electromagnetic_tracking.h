@@ -19,7 +19,7 @@
 // 电感类型枚举
 typedef enum {
     SENSOR_HL  = 0,  // 左侧横向电感
-    SENSOR_VL  = 1,  // 左侧纵向电感
+    SENSOR_VL  = 1,  // 左侧纵向电感-8
     SENSOR_HML = 2,  // 左中横向电感
     SENSOR_HC  = 3,  // 中间横向电感
     SENSOR_HMR = 4,  // 右中横向电感

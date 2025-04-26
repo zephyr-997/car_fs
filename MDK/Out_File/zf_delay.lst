@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  zf_delay                                                           24/04/25  20:44:56  PAGE 1   
+C251 COMPILER V5.60.0,  zf_delay                                                           25/04/25  22:09:06  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_delay
 OBJECT MODULE PLACED IN .\Out_File\zf_delay.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\seekfree_libraries\zf_delay.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3) OP
-                    -TIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_p
-                    -eripheral;..\libraries) DEBUG PRINT(.\Out_File\zf_delay.lst) OBJECT(.\Out_File\zf_delay.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\seekfree_libraries\zf_delay.c XSMALL INTR2 FLOAT64 
+                    -WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libra
+                    -ries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\zf_delay.lst) TABS(2) OBJECT(.\Out_File\zf_delay.obj) 
 
 stmt  level    source
 
@@ -22,14 +22,14 @@ stmt  level    source
     8           * ��ӭ��λʹ�ò������������޸�����ʱ���뱣����
              -ɿƼ��İ�Ȩ������
     9           *
-   10           * @file                delay
-   11           * @company                     �ɶ���ɿƼ����޹�˾
-   12           * @author              ��ɿƼ�(QQ790875685)
-   13           * @version             �鿴doc��version�ļ� �汾˵��
-   14           * @Software            MDK FOR C251 V5.60
-   15           * @Target core         STC32G12K128
-   16           * @Taobao              https://seekfree.taobao.com/
-   17           * @date                2020-4-14
+   10           * @file          delay
+   11           * @company       �ɶ���ɿƼ����޹�˾
+   12           * @author        ��ɿƼ�(QQ790875685)
+   13           * @version       �鿴doc��version�ļ� �汾˵��
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC32G12K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-4-14
    18           ********************************************************************************************************
              -************/
    19          
@@ -52,38 +52,38 @@ stmt  level    source
              -------------
    34          void delay_init(void)
    35          {
-   36   1              zf_delay_ms = sys_clk / 6000;
-   37   1              zf_delay_us = sys_clk / 7000000;
-   38   1              if(sys_clk <= 12000000) zf_delay_us++;
+   36   1        zf_delay_ms = sys_clk / 6000;
+   37   1        zf_delay_us = sys_clk / 7000000;
+   38   1        if(sys_clk <= 12000000) zf_delay_us++;
    39   1      
    40   1      }
    41          
    42          //-------------------------------------------------------------------------------------------------------
              -------------
    43          //  @brief      ������ʱ����
-   44          //  @param      x               ��Ҫ��ʱ��ʱ�䣨ms��
+   44          //  @param      x             ��Ҫ��ʱ��ʱ�䣨ms��
    45          //  @return     void
    46          //  Sample usage:               �����û����ã��û���ʹ��h�ļ��еĺ�
              -����
    47          //-------------------------------------------------------------------------------------------------------
-C251 COMPILER V5.60.0,  zf_delay                                                           24/04/25  20:44:56  PAGE 2   
+C251 COMPILER V5.60.0,  zf_delay                                                           25/04/25  22:09:06  PAGE 2   
 
              -------------
    48          void delay_ms(uint16 ms)
    49          {
-   50   1              uint16 i;
-   51   1              do {
-   52   2                              i = zf_delay_ms;
-   53   2                              //i = sys_clk/6000;//����: ms,Ҫ��ʱ��ms��, ����ֻ֧��1~255ms. �Զ�
+   50   1        uint16 i;
+   51   1        do {
+   52   2            i = zf_delay_ms;
+   53   2            //i = sys_clk/6000;//����: ms,Ҫ��ʱ��ms��, ����ֻ֧��1~255ms. �Զ�
              -���Ӧ��ʱ��.
-   54   2                              while(--i);
-   55   2                 }while(--ms);
+   54   2            while(--i);
+   55   2           }while(--ms);
    56   1      }
    57          
    58          //-------------------------------------------------------------------------------------------------------
              -------------
    59          //  @brief      ������ʱ����(����һ����׼ȷ����ʱ)
-   60          //  @param      x               ��Ҫ��ʱ��ʱ�䣨us��
+   60          //  @param      x             ��Ҫ��ʱ��ʱ�䣨us��
    61          //  @return     void
    62          //  Sample usage:               �����û����ã��û���ʹ��h�ļ��еĺ�
              -����
@@ -91,13 +91,13 @@ stmt  level    source
              -------------
    64          void delay_us(uint32 us)
    65          {
-   66   1              uint16 i;
-   67   1              do {
-   68   2                              i = zf_delay_us;
-   69   2                              //i = sys_clk/6000;//����: ms,Ҫ��ʱ��ms��, ����ֻ֧��1~255ms. �Զ�
+   66   1        uint16 i;
+   67   1        do {
+   68   2            i = zf_delay_us;
+   69   2            //i = sys_clk/6000;//����: ms,Ҫ��ʱ��ms��, ����ֻ֧��1~255ms. �Զ�
              -���Ӧ��ʱ��.
-   70   2                              while(--i);
-   71   2                 }while(--us);
+   70   2            while(--i);
+   71   2           }while(--us);
    72   1      }
 
 

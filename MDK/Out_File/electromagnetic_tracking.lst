@@ -1,12 +1,12 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
 OBJECT MODULE PLACED IN .\Out_File\electromagnetic_tracking.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FLOAT64 WARNINGLEVEL
-                    -(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seek
-                    -free_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) OBJECT(.\Out_File\electromagnetic_tra
-                    -cking.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\electromagnetic_tracking.c XSMALL INTR2 FL
+                    -OAT64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree
+                    -_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\electromagnetic_tracking.lst) TABS(2) OBJECT(.\Ou
+                    -t_File\electromagnetic_tracking.obj) 
 
 stmt  level    source
 
@@ -21,9 +21,9 @@ stmt  level    source
     9          #define HISTORY_COUNT 5  //滤波次数
    10          
    11          uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
-   12          float result[SENSOR_COUNT] = {0};               //电存储每个电感滤波后的最终结果值（尚未归一化�
+   12          float result[SENSOR_COUNT] = {0};   //电存储每个电感滤波后的最终结果值（尚未归一化�
              -�，是连接滤波处理和归一化处理的中间变量
-   13          uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};          //累加的和
+   13          uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};        //累加的和
    14          
    15          // 递推均值滤波相关参数
    16          uint16 times = HISTORY_COUNT;  // 滤波次数
@@ -50,7 +50,7 @@ stmt  level    source
    35          
    36          
    37          //-----------------------------------------------------------------------------
-   38          // @brief       电磁传感器初始化
+   38          // @brief   电磁传感器初始化
    39          // @param   无
    40          // @return  无
    41          // @author  ZP
@@ -66,7 +66,7 @@ stmt  level    source
    51   1         adc_init(ADC_HC, 0);   // 中间横向电感
    52   1         adc_init(ADC_HMR, 0);  // 右中横向电感
    53   1         adc_init(ADC_VR, 0);   // 右侧纵向电感
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 2   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 2   
 
    54   1         adc_init(ADC_HR, 0);   // 右侧横向电感
    55   1         
@@ -83,7 +83,7 @@ stmt  level    source
    66   1      }
    67          
    68          //-----------------------------------------------------------------------------
-   69          // @brief       得到adc的值
+   69          // @brief   得到adc的值
    70          // @param   测的ADC/电感序号
    71          // @return  测出的adc值
    72          // @author  ZP
@@ -91,28 +91,28 @@ stmt  level    source
    74          //-----------------------------------------------------------------------------
    75          uint16 get_adc(uint16 i)
    76          {
-   77   1              switch(i){
-   78   2                      case 0:
-   79   2                              return adc_once(ADC_HL, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
-   80   2                      case 1:
-   81   2                              return adc_once(ADC_VL, ADC_10BIT);
-   82   2                      case 2:
-   83   2                              return adc_once(ADC_HML, ADC_10BIT);
-   84   2                      case 3:
-   85   2                              return adc_once(ADC_HC, ADC_10BIT); 
-   86   2                      case 4:
-   87   2                              return adc_once(ADC_HMR, ADC_10BIT);
-   88   2                      case 5:
-   89   2                              return adc_once(ADC_VR, ADC_10BIT);
-   90   2                      case 6:
-   91   2                              return adc_once(ADC_HR, ADC_10BIT);
-   92   2                      default:
-   93   2                              return 0;
-   94   2              }
+   77   1        switch(i){
+   78   2          case 0:
+   79   2            return adc_once(ADC_HL, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
+   80   2          case 1:
+   81   2            return adc_once(ADC_VL, ADC_10BIT);
+   82   2          case 2:
+   83   2            return adc_once(ADC_HML, ADC_10BIT);
+   84   2          case 3:
+   85   2            return adc_once(ADC_HC, ADC_10BIT); 
+   86   2          case 4:
+   87   2            return adc_once(ADC_HMR, ADC_10BIT);
+   88   2          case 5:
+   89   2            return adc_once(ADC_VR, ADC_10BIT);
+   90   2          case 6:
+   91   2            return adc_once(ADC_HR, ADC_10BIT);
+   92   2          default:
+   93   2            return 0;
+   94   2        }
    95   1      }
    96          
    97          //-----------------------------------------------------------------------------
-   98          // @brief       递推均值滤波
+   98          // @brief   递推均值滤波
    99          // @param   无
   100          // @return  无
   101          // @author  zp
@@ -134,7 +134,7 @@ stmt  level    source
   116   2              for(a = 0; a < i_num; a++)
   117   2              {
   118   3                  sum[a][0] = 0;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 3   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 3   
 
   119   3              }
   120   2              
@@ -172,7 +172,7 @@ stmt  level    source
   152          
   153          
   154          //-----------------------------------------------------------------------------
-  155          // @brief       中位值滤波，将每个电感的中位数作为结果
+  155          // @brief   中位值滤波，将每个电感的中位数作为结果
   156          // @param   无
   157          // @return  无
   158          // @author  ZP
@@ -185,10 +185,10 @@ stmt  level    source
   165          {
   166   1          uint16 temp = 0, a = 0, t = 0;
   167   1          uint16 mid_index = 0;  //中位数
-  168   1              uint16 i = 0; //用于循环
+  168   1        uint16 i = 0; //用于循环
   169   1          // 创建临时数组用于排序，避免修改原始数据
   170   1          uint16 sort_array[HISTORY_COUNT];  // 使用宏定义的常量而不是变量
-  171   1              
+  171   1        
   172   1          // 调用均值滤波获取新的采样值
   173   1          average_filter();
   174   1          
@@ -202,7 +202,7 @@ stmt  level    source
   182   3                  result[a] = adc_fliter_data[a][0];
   183   3              }
   184   2              
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 4   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 4   
 
   185   2              sample_count++;
   186   2              
@@ -257,7 +257,7 @@ stmt  level    source
   235          
   236          
   237          //-----------------------------------------------------------------------------
-  238          // @brief       更新每个电感的最大最小值，用于动态校准
+  238          // @brief   更新每个电感的最大最小值，用于动态校准
   239          // @param   无
   240          // @return  无
   241          // @author  ZP
@@ -270,7 +270,7 @@ stmt  level    source
   248   1          
   249   1          // 定期轻微衰减最大最小值，使系统能适应环境变化
   250   1          update_counter++;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 5   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 5   
 
   251   1          if(update_counter >= 1000)  // 每1000次调用执行一次衰减
   252   1          {
@@ -316,7 +316,7 @@ stmt  level    source
   292   1      }
   293          
   294          //-----------------------------------------------------------------------------
-  295          // @brief       归一化电感数据
+  295          // @brief   归一化电感数据
   296          // @param   无
   297          // @return  无
   298          // @author  ZP
@@ -338,7 +338,7 @@ stmt  level    source
   312   1          for(i = 0; i < SENSOR_COUNT; i++)
   313   1          {
   314   2              // 检查最大最小值差异是否足够大，防止除以接近0的值
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 6   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 6   
 
   315   2              if(max_value[i] - min_value[i] > 20) 
   316   2              {
@@ -375,7 +375,7 @@ stmt  level    source
   344   1      }
   345          
   346          //-----------------------------------------------------------------------------
-  347          // @brief       改进版计算位置（使用自适应差比和加权方法）
+  347          // @brief   改进版计算位置（使用自适应差比和加权方法）
   348          // @param   无
   349          // @return  计算得到的位置值，范围-100到100
   350          // @author  ZP
@@ -406,420 +406,388 @@ stmt  level    source
   375   1          static int16 last_pos = 0;   // 上一次位置值，用于滤波
   376   1          static int16 very_last_pos = 0;  // 上上次位置值，用于二次滤波
   377   1          static int16 very_very_last_pos = 0;  // 上上上次位置值，用于三次滤波
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 7   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 7   
 
   378   1          int16 pos = 0;               // 当前计算得到的位置值
-  379   1          static int16 max_change_rate = 10; // 允许的最大变化率
+  379   1          static int16 max_change_rate = 8; // 允许的最大变化率
   380   1          int16 position_change = 0;   // 位置变化量
-  381   1          static uint8 is_straight_road = 0;  // 记录是否处于直道模式
-  382   1              
-  383   1              // 位置计算（包含中心电感的贡献）
-  384   1          // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因�
+  381   1        
+  382   1        // 位置计算（包含中心电感的贡献）
+  383   1          // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因�
              -�
-  385   1          float center_correction = 0;
-  386   1          
-  387   1          // 计算各对电感的差值和和值
-  388   1          diff_outer = normalized_data[SENSOR_HL] - normalized_data[SENSOR_HR];
-  389   1          sum_outer = normalized_data[SENSOR_HL] + normalized_data[SENSOR_HR];
-  390   1          
-  391   1          diff_middle = normalized_data[SENSOR_HML] - normalized_data[SENSOR_HMR];
-  392   1          sum_middle = normalized_data[SENSOR_HML] + normalized_data[SENSOR_HMR];
-  393   1          
-  394   1          diff_vertical = normalized_data[SENSOR_VL] - normalized_data[SENSOR_VR];
-  395   1          sum_vertical = normalized_data[SENSOR_VL] + normalized_data[SENSOR_VR];
-  396   1          
-  397   1          // 获取中间电感值
-  398   1          center_value = normalized_data[SENSOR_HC];
-  399   1          
-  400   1          // 计算信号强度指标 - 所有电感平均值
-  401   1          signal_strength = (sum_outer + sum_middle + sum_vertical + center_value) / 7.0f;
-  402   1          signal_strength_value = signal_strength; // 保存信号强度指标
-  403   1      
-  404   1          // 增强直道判定
-  405   1          if(signal_strength > 70.0f && center_value > 60.0f) {
-  406   2              is_straight_road = 1;  // 设置直道标志
-  407   2          } else if(signal_strength < 60.0f || center_value < 40.0f) {
-  408   2              is_straight_road = 0;  // 清除直道标志
-  409   2          }
-  410   1          // 保持先前状态不变，防止频繁切换
-  411   1      
-  412   1          // 计算差比和，使用平滑过渡函数代替硬阈值，避免在临界值附近产生跳变
-  413   1          // 外侧电感平滑过渡
-  414   1          if(sum_outer > 12.0f)
-  415   1              ratio_outer = diff_outer / sum_outer;
-  416   1          else if(sum_outer < 5.0f)
-  417   1              ratio_outer = 0;
-  418   1          else
-  419   1              ratio_outer = (diff_outer / sum_outer) * (sum_outer - 5.0f) / 7.0f; // 5-12范围内线性过渡
-  420   1              
-  421   1          // 中间电感平滑过渡
-  422   1          if(sum_middle > 12.0f)
-  423   1              ratio_middle = diff_middle / sum_middle;
-  424   1          else if(sum_middle < 5.0f)
-  425   1              ratio_middle = 0;
-  426   1          else
-  427   1              ratio_middle = (diff_middle / sum_middle) * (sum_middle - 5.0f) / 7.0f; // 5-12范围内线性过
+  384   1          float center_correction = 0;
+  385   1          
+  386   1          // 计算各对电感的差值和和值
+  387   1          diff_outer = normalized_data[SENSOR_HL] - normalized_data[SENSOR_HR];
+  388   1          sum_outer = normalized_data[SENSOR_HL] + normalized_data[SENSOR_HR];
+  389   1          
+  390   1          diff_middle = normalized_data[SENSOR_HML] - normalized_data[SENSOR_HMR];
+  391   1          sum_middle = normalized_data[SENSOR_HML] + normalized_data[SENSOR_HMR];
+  392   1          
+  393   1          diff_vertical = normalized_data[SENSOR_VL] - normalized_data[SENSOR_VR];
+  394   1          sum_vertical = normalized_data[SENSOR_VL] + normalized_data[SENSOR_VR];
+  395   1          
+  396   1          // 获取中间电感值
+  397   1          center_value = normalized_data[SENSOR_HC];
+  398   1          
+  399   1          // 计算信号强度指标 - 所有电感平均值
+  400   1          signal_strength = (sum_outer + sum_middle + sum_vertical + center_value) / 7.0f;
+  401   1          signal_strength_value = signal_strength; // 保存信号强度指标
+  402   1      
+  403   1          // 计算差比和，使用平滑过渡函数代替硬阈值，避免在临界值附近产生跳变
+  404   1          // 外侧电感平滑过渡
+  405   1          if(sum_outer > 12.0f)
+  406   1              ratio_outer = diff_outer / sum_outer;
+  407   1          else if(sum_outer < 5.0f)
+  408   1              ratio_outer = 0;
+  409   1          else
+  410   1              ratio_outer = (diff_outer / sum_outer) * (sum_outer - 5.0f) / 7.0f; // 5-12范围内线性过渡
+  411   1              
+  412   1          // 中间电感平滑过渡
+  413   1          if(sum_middle > 12.0f)
+  414   1              ratio_middle = diff_middle / sum_middle;
+  415   1          else if(sum_middle < 5.0f)
+  416   1              ratio_middle = 0;
+  417   1          else
+  418   1              ratio_middle = (diff_middle / sum_middle) * (sum_middle - 5.0f) / 7.0f; // 5-12范围内线性过
              -渡
-  428   1          
-  429   1          // 纵向电感平滑过渡
-  430   1          if(sum_vertical > 12.0f)
-  431   1              ratio_vertical = diff_vertical / sum_vertical;
-  432   1          else if(sum_vertical < 5.0f)
-  433   1              ratio_vertical = 0;
-  434   1          else
-  435   1              ratio_vertical = (diff_vertical / sum_vertical) * (sum_vertical - 5.0f) / 7.0f; // 5-12范围内�
+  419   1          
+  420   1          // 纵向电感平滑过渡
+  421   1          if(sum_vertical > 12.0f)
+  422   1              ratio_vertical = diff_vertical / sum_vertical;
+  423   1          else if(sum_vertical < 5.0f)
+  424   1              ratio_vertical = 0;
+  425   1          else
+  426   1              ratio_vertical = (diff_vertical / sum_vertical) * (sum_vertical - 5.0f) / 7.0f; // 5-12范围内�
              -��性过渡
-  436   1          
-  437   1          // 赛道类型识别 - 需要根据七电感特征重新调整
-  438   1          // if(normalized_data[SENSOR_HML] > 60.0f && normalized_data[SENSOR_HMR] > 60.0f && 
-  439   1          //    normalized_data[SENSOR_HC] > 70.0f && // 中心电感强
-  440   1          //    normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HR] < 30.0f &&
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 8   
+  427   1          
+  428   1          // 赛道类型识别 - 需要根据七电感特征重新调整
+  429   1          // if(normalized_data[SENSOR_HML] > 60.0f && normalized_data[SENSOR_HMR] > 60.0f && 
+  430   1          //    normalized_data[SENSOR_HC] > 70.0f && // 中心电感强
+  431   1          //    normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HR] < 30.0f &&
+  432   1          //    sum_vertical > 80.0f)  // 垂直电感也有一定的值
+  433   1          // {
+  434   1          //     track_type = 1; // 十字路口
+  435   1          // }
+  436   1          // // 2. 环岛特征：一侧电感值很大，另一侧很小
+  437   1          // else if((normalized_data[SENSOR_HL] > 80.0f && normalized_data[SENSOR_HR] < 20.0f) ||
+  438   1          //         (normalized_data[SENSOR_HR] > 80.0f && normalized_data[SENSOR_HL] < 20.0f))
+  439   1          // {
+  440   1          //     track_type = 2; // 环岛
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 8   
 
-  441   1          //    sum_vertical > 80.0f)  // 垂直电感也有一定的值
-  442   1          // {
-  443   1          //     track_type = 1; // 十字路口
-  444   1          // }
-  445   1          // // 2. 环岛特征：一侧电感值很大，另一侧很小
-  446   1          // else if((normalized_data[SENSOR_HL] > 80.0f && normalized_data[SENSOR_HR] < 20.0f) ||
-  447   1          //         (normalized_data[SENSOR_HR] > 80.0f && normalized_data[SENSOR_HL] < 20.0f))
-  448   1          // {
-  449   1          //     track_type = 2; // 环岛
-  450   1              
-  451   1          //     // 环岛中可以使用垂直电感和中间电感判断更精确的位置
-  452   1          //     if(normalized_data[SENSOR_VL] > 70.0f && normalized_data[SENSOR_VR] < 30.0f)
-  453   1          //     {
-  454   1          //         // 左环岛
-  455   1          //     }
-  456   1          //     else if(normalized_data[SENSOR_VL] < 30.0f && normalized_data[SENSOR_VR] > 70.0f)
-  457   1          //     {
-  458   1          //         // 右环岛
-  459   1          //     }
-  460   1          // }
-  461   1          // // 3. 直角弯道特征：一侧横向和纵向电感值明显高于另一侧，同时信号强�
+  441   1              
+  442   1          //     // 环岛中可以使用垂直电感和中间电感判断更精确的位置
+  443   1          //     if(normalized_data[SENSOR_VL] > 70.0f && normalized_data[SENSOR_VR] < 30.0f)
+  444   1          //     {
+  445   1          //         // 左环岛
+  446   1          //     }
+  447   1          //     else if(normalized_data[SENSOR_VL] < 30.0f && normalized_data[SENSOR_VR] > 70.0f)
+  448   1          //     {
+  449   1          //         // 右环岛
+  450   1          //     }
+  451   1          // }
+  452   1          // // 3. 直角弯道特征：一侧横向和纵向电感值明显高于另一侧，同时信号强�
              -�适中
-  462   1          // else if(((normalized_data[SENSOR_HL] > 65.0f && normalized_data[SENSOR_VL] > 65.0f && 
-  463   1          //           normalized_data[SENSOR_HR] < 25.0f && normalized_data[SENSOR_VR] < 25.0f) || 
-  464   1          //          (normalized_data[SENSOR_HR] > 65.0f && normalized_data[SENSOR_VR] > 65.0f && 
-  465   1          //           normalized_data[SENSOR_HL] < 25.0f && normalized_data[SENSOR_VL] < 25.0f)) && 
-  466   1          //         normalized_data[SENSOR_HC] < 40.0f && // 中心电感较弱
-  467   1          //         signal_strength > 30.0f && signal_strength < 60.0f) // 信号强度适中
-  468   1          // {
-  469   1          //     track_type = 3; // 直角弯道
-  470   1          // }
-  471   1          
-  472   1          // 根据赛道类型和信号强度调整权重
-  473   1          switch(track_type)
-  474   1          {
-  475   2              case 0: // 普通赛道
-  476   2                  // 根据信号强度动态调整权重
-  477   2                  if(is_straight_road) // 使用直道标志而不是单独的信号强度判断
+  453   1          // else if(((normalized_data[SENSOR_HL] > 65.0f && normalized_data[SENSOR_VL] > 65.0f && 
+  454   1          //           normalized_data[SENSOR_HR] < 25.0f && normalized_data[SENSOR_VR] < 25.0f) || 
+  455   1          //          (normalized_data[SENSOR_HR] > 65.0f && normalized_data[SENSOR_VR] > 65.0f && 
+  456   1          //           normalized_data[SENSOR_HL] < 25.0f && normalized_data[SENSOR_VL] < 25.0f)) && 
+  457   1          //         normalized_data[SENSOR_HC] < 40.0f && // 中心电感较弱
+  458   1          //         signal_strength > 30.0f && signal_strength < 60.0f) // 信号强度适中
+  459   1          // {
+  460   1          //     track_type = 3; // 直角弯道
+  461   1          // }
+  462   1          
+  463   1          // 根据赛道类型和信号强度调整权重
+  464   1          switch(track_type)
+  465   1          {
+  466   2              case 0: // 普通赛道
+  467   2                  // 根据信号强度动态调整权重
+  468   2                  if(signal_strength > 38.0f) // 信号强，可能在直道
+  469   2                  {
+  470   3                      weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
+  471   3                      weight_middle = 0.40f; 
+  472   3                      weight_center = 0.30f;  // 中心电感
+  473   3                      weight_vertical = 0.15f;
+  474   3                      filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
+  475   3                      max_change_rate = 5;  // 直道大幅降低变化率限制
+  476   3                  }
+  477   2                  else if(signal_strength < 30.0f) // 信号弱，可能在弯道
   478   2                  {
-  479   3                      weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
-  480   3                      weight_middle = 0.40f; 
-  481   3                      weight_center = 0.30f;  // 中心电感
-  482   3                      weight_vertical = 0.15f;
-  483   3                      filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
-  484   3                      max_change_rate = 5;  // 直道大幅降低变化率限制
+  479   3                      weight_outer = 0.4f;
+  480   3                      weight_middle = 0.3f;
+  481   3                      weight_center = 0.1f;
+  482   3                      weight_vertical = 0.2f;
+  483   3                      filter_param = 0.4f;
+  484   3                      max_change_rate = 8;   // 弯道减小变化率
   485   3                  }
-  486   2                  else if(signal_strength < 30.0f) // 信号弱，可能在弯道
+  486   2                  else // 直角弯道可能有一定的信号强度
   487   2                  {
-  488   3                      weight_outer = 0.4f;
-  489   3                      weight_middle = 0.3f;
-  490   3                      weight_center = 0.1f;
-  491   3                      weight_vertical = 0.2f;
-  492   3                      filter_param = 0.4f;  // 弯道处提高滤波力度，平滑变化
-  493   3                      max_change_rate = 8;   // 弯道减小变化率
-  494   3                  }
-  495   2                  else
-  496   2                  {
-  497   3                      // 默认权重
-  498   3                      weight_outer = 0.3f;
-  499   3                      weight_middle = 0.4f;
-  500   3                      weight_center = 0.1f;
-  501   3                      weight_vertical = 0.2f;
-  502   3                      filter_param = 0.4f;
-  503   3                      max_change_rate = 10;
-  504   3                  }
-  505   2                  break;
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 9   
+  488   3                      // 默认权重
+  489   3                      weight_outer = 0.3f;
+  490   3                      weight_middle = 0.4f;
+  491   3                      weight_center = 0.15f;
+  492   3                      weight_vertical = 0.15f;
+  493   3                      filter_param = 0.4f;
+  494   3                      max_change_rate = 8;
+  495   3                  }
+  496   2                  break;
+  497   2                  
+  498   2              case 1: // 十字路口
+  499   2                  // 十字路口中心电感更重要
+  500   2                  weight_outer = 0.2f;
+  501   2                  weight_middle = 0.4f;
+  502   2                  weight_center = 0.2f;  // 十字路口中心电感给较大权重
+  503   2                  weight_vertical = 0.2f;
+  504   2                  filter_param = 0.4f;
+  505   2                  max_change_rate = 10;
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 9   
 
-  506   2                  
-  507   2              case 1: // 十字路口
-  508   2                  // 十字路口中心电感更重要
-  509   2                  weight_outer = 0.2f;
-  510   2                  weight_middle = 0.4f;
-  511   2                  weight_center = 0.2f;  // 十字路口中心电感给较大权重
-  512   2                  weight_vertical = 0.2f;
-  513   2                  filter_param = 0.4f;
-  514   2                  max_change_rate = 10;
-  515   2                  break;
-  516   2                  
-  517   2              case 2: // 环岛
-  518   2                  // 环岛更依赖外侧电感
-  519   2                  weight_outer = 0.5f;
-  520   2                  weight_middle = 0.3f;
-  521   2                  weight_center = 0.1f;
-  522   2                  weight_vertical = 0.1f;
-  523   2                  filter_param = 0.7f;
-  524   2                  max_change_rate = 12;
-  525   2                  break;
-  526   2                  
-  527   2              case 3: // 直角弯道
-  528   2                  // 直角弯道更依赖外侧和纵向电感
-  529   2                  weight_outer = 0.15f;      // 降低外侧电感权重
-  530   2                  weight_middle = 0.40f;     // 保持中间电感权重
-  531   2                  weight_center = 0.30f;     // 显著增加中心电感权重
-  532   2                  weight_vertical = 0.15f;   // 降低纵向电感权重
-  533   2                  filter_param = 0.6f;       // 响应要快一些
-  534   2                  max_change_rate = 18;      // 允许较大变化率以快速响应
-  535   2                  break;
-  536   2      
-  537   2              default:
-  538   2                  break;
-  539   2          }
-  540   1          
-  541   1          // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
-  542   1          if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
-  543   1          {
-  544   2              // 根据上一次位置判断偏离方向
-  545   2              if(last_pos > 0)
-  546   2                  return 100;  // 向右偏离
-  547   2              else
-  548   2                  return -100; // 向左偏离
-  549   2          }
-  550   1          
-  551   1          
+  506   2                  break;
+  507   2                  
+  508   2              case 2: // 环岛
+  509   2                  // 环岛更依赖外侧电感
+  510   2                  weight_outer = 0.5f;
+  511   2                  weight_middle = 0.3f;
+  512   2                  weight_center = 0.1f;
+  513   2                  weight_vertical = 0.1f;
+  514   2                  filter_param = 0.7f;
+  515   2                  max_change_rate = 12;
+  516   2                  break;
+  517   2                  
+  518   2              case 3: // 直角弯道
+  519   2                  // 直角弯道更依赖外侧和纵向电感
+  520   2                  weight_outer = 0.15f;      // 降低外侧电感权重
+  521   2                  weight_middle = 0.40f;     // 保持中间电感权重
+  522   2                  weight_center = 0.30f;     // 显著增加中心电感权重
+  523   2                  weight_vertical = 0.15f;   // 降低纵向电感权重
+  524   2                  filter_param = 0.6f;       // 响应要快一些
+  525   2                  max_change_rate = 18;      // 允许较大变化率以快速响应
+  526   2                  break;
+  527   2      
+  528   2              default:
+  529   2                  break;
+  530   2          }
+  531   1          
+  532   1          // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
+  533   1      //    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
+  534   1      //    {
+  535   1      //        // 根据上一次位置判断偏离方向
+  536   1      //        if(last_pos > 0)
+  537   1      //            return 100;  // 向右偏离
+  538   1      //        else
+  539   1      //            return -100; // 向左偏离
+  540   1      //    }
+  541   1          
+  542   1          // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
+  543   1          if(center_value > 40.0f) {
+  544   2              // 修正系数，当中心电感强度高时，修正系数大
+  545   2              center_correction = (center_value - 40.0f) / 60.0f * 0.5f;  // 最大修正50%
+  546   2          }
+  547   1          
+  548   1          // 三组差比和加权平均计算位置
+  549   1          pos = (int16)((ratio_outer * weight_outer + 
+  550   1                         ratio_middle * weight_middle + 
+  551   1                         ratio_vertical * weight_vertical) * 100.0f);
   552   1          
-  553   1          // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
-  554   1          if(center_value > 40.0f) { // 降低触发阈值从50到40
-  555   2              // 修正系数，当中心电感强度高时，修正系数大
-  556   2              center_correction = (center_value - 40.0f) / 60.0f * 0.5f;  // 最大修正50%
-  557   2          }
-  558   1          
-  559   1          // 三组差比和加权平均计算位置
-  560   1          pos = (int16)((ratio_outer * weight_outer + 
-  561   1                         ratio_middle * weight_middle + 
-  562   1                         ratio_vertical * weight_vertical) * 100.0f);
-  563   1          
-  564   1          // 应用中心电感修正 - 向中心线拉近
-  565   1          pos = (int16)(pos * (1.0f - center_correction));
+  553   1          // 应用中心电感修正 - 向中心线拉近
+  554   1          pos = (int16)(pos * (1.0f - center_correction));
+  555   1          
+  556   1          // 限制范围在-100到100之间
+  557   1          if(pos > 100) pos = 100;
+  558   1          if(pos < -100) pos = -100;
+  559   1          
+  560   1          // 位置变化量限制，防止突变
+  561   1          position_change = pos - last_pos;
+  562   1          if(position_change > max_change_rate)
+  563   1              pos = last_pos + max_change_rate;
+  564   1          else if(position_change < -max_change_rate)
+  565   1              pos = last_pos - max_change_rate;
   566   1          
-  567   1          // 限制范围在-100到100之间
-  568   1          if(pos > 100) pos = 100;
-  569   1          if(pos < -100) pos = -100;
-  570   1          
-  571   1          // 直道状态下添加不灵敏区
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 10  
+  567   1          // 应用低通滤波，平滑位置变化
+  568   1          pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
+  569   1          
+  570   1          // 如果信号强度高，增强滤波效果
+  571   1          if(signal_strength > 35.0f) {
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 10  
 
-  572   1      //    if(is_straight_road) {
-  573   1      //        // 不灵敏区处理
-  574   1      //        if(pos > -10 && pos < 10) {
-  575   1      //            pos = 0;  // 小偏差直接归零
-  576   1      //        } else if(pos > 0) {
-  577   1      //            pos -= 5;  // 正值减少一些
-  578   1      //        } else {
-  579   1      //            pos += 5;  // 负值增加一些
-  580   1      //        }
-  581   1      //    }
-  582   1          
-  583   1          // 位置变化量限制，防止突变
-  584   1          position_change = pos - last_pos;
-  585   1          if(position_change > max_change_rate)
-  586   1              pos = last_pos + max_change_rate;
-  587   1          else if(position_change < -max_change_rate)
-  588   1              pos = last_pos - max_change_rate;
-  589   1          
-  590   1          // 应用低通滤波
-  591   1          pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
-  592   1          
-  593   1          // 直道状态下应用二次滤波
-  594   1          if(is_straight_road) {
-  595   2              // 应用三点平均滤波，进一步平滑
-  596   2              pos = (pos + last_pos + very_last_pos) / 3;
-  597   2              
-  598   2              // 直道上检测连续变化方向是否一致，如果是震荡则抑制
-  599   2              if((pos > last_pos && last_pos < very_last_pos) || 
-  600   2                 (pos < last_pos && last_pos > very_last_pos)) {
-  601   3                  // 方向反复震荡，增强抑制
-  602   3                  pos = (pos + last_pos * 2 + very_last_pos + very_very_last_pos) / 5;
-  603   3              }
-  604   2          }
-  605   1          
-  606   1          // 更新历史位置值
-  607   1          very_very_last_pos = very_last_pos;
-  608   1          very_last_pos = last_pos;
-  609   1          last_pos = pos;
-  610   1          
-  611   1          return pos;
-  612   1      }
-  613          
-  614          
-  615          //-----------------------------------------------------------------------------
-  616          // @brief       电磁保护逻辑函数
-  617          // @param   无
-  618          // @return  保护触发标志位，1表示已触发保护
-  619          // @author  ZP
-  620          // Sample usage: protection_flag = check_electromagnetic_protection();
-  621          //-----------------------------------------------------------------------------
-  622          uint8 check_electromagnetic_protection(void)
-  623          {
-  624   1          // 在函数开始处声明所有变量
-  625   1          uint8 is_out_of_track = 0;    // 标记是否脱离赛道的标志位
-  626   1          uint16 sum_value = 0;         // 所有电感值的总和
-  627   1          uint16 threshold = 175;       // 阈值，需要根据七电感的实际情况调整（增加）
-  628   1          static uint8 out_of_track_count = 0;    // 连续检测到脱离赛道的次数计数器
-  629   1          static uint8 in_track_count = 0;        // 连续检测到在轨道上的次数计数器
-  630   1          static uint8 protection_triggered = 0;  // 保护触发标志位，1表示已触发保护
-  631   1          uint8 i;
-  632   1          uint8 trigger_reason = 0;     // 记录触发原因，用于调试
-  633   1          
-  634   1          // 计算所有电感的和值
-  635   1          for(i = 0; i < SENSOR_COUNT; i++)
-  636   1          {
-  637   2              sum_value += result[i];
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 11  
+  572   2              // 应用三点平均滤波，进一步平滑
+  573   2              pos = (pos + last_pos + very_last_pos) / 3;
+  574   2          }
+  575   1          
+  576   1          // 更新历史位置值
+  577   1          very_very_last_pos = very_last_pos;
+  578   1          very_last_pos = last_pos;
+  579   1          last_pos = pos;
+  580   1          
+  581   1          return pos;
+  582   1      }
+  583          
+  584          
+  585          //-----------------------------------------------------------------------------
+  586          // @brief   电磁保护逻辑函数
+  587          // @param   无
+  588          // @return  保护触发标志位，1表示已触发保护
+  589          // @author  ZP
+  590          // Sample usage: protection_flag = check_electromagnetic_protection();
+  591          //-----------------------------------------------------------------------------
+  592          uint8 check_electromagnetic_protection(void)
+  593          {
+  594   1          // 在函数开始处声明所有变量
+  595   1          uint8 is_out_of_track = 0;    // 标记是否脱离赛道的标志位
+  596   1          uint16 sum_value = 0;         // 所有电感值的总和
+  597   1          uint16 threshold = 175;       // 阈值，需要根据七电感的实际情况调整（增加）
+  598   1          static uint8 out_of_track_count = 0;    // 连续检测到脱离赛道的次数计数器
+  599   1          static uint8 in_track_count = 0;        // 连续检测到在轨道上的次数计数器
+  600   1          static uint8 protection_triggered = 0;  // 保护触发标志位，1表示已触发保护
+  601   1          uint8 i;
+  602   1          uint8 trigger_reason = 0;     // 记录触发原因，用于调试
+  603   1          
+  604   1          // 计算所有电感的和值
+  605   1          for(i = 0; i < SENSOR_COUNT; i++)
+  606   1          {
+  607   2              sum_value += result[i];
+  608   2          }
+  609   1          
+  610   1          // 判断是否脱离赛道的条件
+  611   1          // 1. 所有电感值总和过小，说明可能脱离赛道
+  612   1          if(sum_value < threshold)
+  613   1          {
+  614   2              is_out_of_track = 1;
+  615   2              trigger_reason = 1;
+  616   2          }
+  617   1          
+  618   1          // 2. 归一化后的值都很小，说明可能脱离赛道
+  619   1          if(normalized_data[SENSOR_HL] < 5.0f && normalized_data[SENSOR_VL] < 5.0f && 
+  620   1             normalized_data[SENSOR_HML] < 5.0f && normalized_data[SENSOR_HC] < 5.0f && 
+  621   1             normalized_data[SENSOR_HMR] < 5.0f && normalized_data[SENSOR_VR] < 5.0f && 
+  622   1             normalized_data[SENSOR_HR] < 5.0f)
+  623   1          {
+  624   2              is_out_of_track = 1;
+  625   2              trigger_reason = 2;
+  626   2          }
+  627   1          
+  628   1          // 3. 位置偏差过大，说明可能偏离赛道太多
+  629   1          if(position < -90 || position > 90)
+  630   1          {
+  631   2              // 只有当电感值总和也较小时才判断为出赛道
+  632   2              if(sum_value < threshold * 2)
+  633   2              {
+  634   3                  is_out_of_track = 1;
+  635   3                  trigger_reason = 3;
+  636   3              }
+  637   2          }
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 11  
 
-  638   2          }
-  639   1          
-  640   1          // 判断是否脱离赛道的条件
-  641   1          // 1. 所有电感值总和过小，说明可能脱离赛道
-  642   1          if(sum_value < threshold)
-  643   1          {
-  644   2              is_out_of_track = 1;
-  645   2              trigger_reason = 1;
-  646   2          }
-  647   1          
-  648   1          // 2. 归一化后的值都很小，说明可能脱离赛道
-  649   1          if(normalized_data[SENSOR_HL] < 5.0f && normalized_data[SENSOR_VL] < 5.0f && 
-  650   1             normalized_data[SENSOR_HML] < 5.0f && normalized_data[SENSOR_HC] < 5.0f && 
-  651   1             normalized_data[SENSOR_HMR] < 5.0f && normalized_data[SENSOR_VR] < 5.0f && 
-  652   1             normalized_data[SENSOR_HR] < 5.0f)
-  653   1          {
-  654   2              is_out_of_track = 1;
-  655   2              trigger_reason = 2;
-  656   2          }
-  657   1          
-  658   1          // 3. 位置偏差过大，说明可能偏离赛道太多
-  659   1          if(position < -90 || position > 90)
-  660   1          {
-  661   2              // 只有当电感值总和也较小时才判断为出赛道
-  662   2              if(sum_value < threshold * 2)
-  663   2              {
-  664   3                  is_out_of_track = 1;
-  665   3                  trigger_reason = 3;
-  666   3              }
-  667   2          }
-  668   1          
-  669   1          // 连续检测逻辑，防止偶然的低值导致误判
-  670   1          if(is_out_of_track)
-  671   1          {
-  672   2              out_of_track_count++;
-  673   2              in_track_count = 0;  // 重置在轨道上的计数
-  674   2              
-  675   2              if(out_of_track_count >= 5 && !protection_triggered)  // 连续5次检测到脱离赛道才触发
+  638   1          
+  639   1          // 连续检测逻辑，防止偶然的低值导致误判
+  640   1          if(is_out_of_track)
+  641   1          {
+  642   2              out_of_track_count++;
+  643   2              in_track_count = 0;  // 重置在轨道上的计数
+  644   2              
+  645   2              if(out_of_track_count >= 5 && !protection_triggered)  // 连续5次检测到脱离赛道才触发
              -保护
-  676   2              {
-  677   3                  protection_triggered = 1;
-  678   3                  // 这里可以输出触发保护的信息，用于调试
-  679   3                  // sprintf(g_TxData, "Protection triggered! Reason: %d, Sum: %d\n", trigger_reason, sum_value
+  646   2              {
+  647   3                  protection_triggered = 1;
+  648   3                  // 这里可以输出触发保护的信息，用于调试
+  649   3                  // sprintf(g_TxData, "Protection triggered! Reason: %d, Sum: %d\n", trigger_reason, sum_value
              -);
-  680   3                  // uart_putstr(UART_4, g_TxData);
-  681   3              }
-  682   2          }
-  683   1          else
-  684   1          {
-  685   2              // 如果检测正常，计数器增加
-  686   2              in_track_count++;
-  687   2              if(out_of_track_count > 0)
-  688   2                  out_of_track_count--;
-  689   2                  
-  690   2              // 自动恢复机制：连续20次检测到正常，则解除保护状态
-  691   2              if(in_track_count >= 20 && protection_triggered)
-  692   2              {
-  693   3                  protection_triggered = 0;
-  694   3                  out_of_track_count = 0;
-  695   3                  in_track_count = 0;
-  696   3                  // 可以输出自动恢复的信息，用于调试
-  697   3                  // sprintf(g_TxData, "Protection auto reset!\n");
-  698   3                  // uart_putstr(UART_4, g_TxData);
-  699   3              }
-  700   2          }
-  701   1          
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 12  
+  650   3                  // uart_putstr(UART_4, g_TxData);
+  651   3              }
+  652   2          }
+  653   1          else
+  654   1          {
+  655   2              // 如果检测正常，计数器增加
+  656   2              in_track_count++;
+  657   2              if(out_of_track_count > 0)
+  658   2                  out_of_track_count--;
+  659   2                  
+  660   2              // 自动恢复机制：连续20次检测到正常，则解除保护状态
+  661   2              if(in_track_count >= 20 && protection_triggered)
+  662   2              {
+  663   3                  protection_triggered = 0;
+  664   3                  out_of_track_count = 0;
+  665   3                  in_track_count = 0;
+  666   3                  // 可以输出自动恢复的信息，用于调试
+  667   3                  // sprintf(g_TxData, "Protection auto reset!\n");
+  668   3                  // uart_putstr(UART_4, g_TxData);
+  669   3              }
+  670   2          }
+  671   1          
+  672   1          return protection_triggered;
+  673   1      }
+  674          
+  675          // 显示电磁传感器数据
+  676          void display_electromagnetic_data(void)
+  677          {
+  678   1          // 显示原始滤波数据和归一化数据
+  679   1          ips114_showstr_simspi(0,0,"HL:");   
+  680   1          ips114_showuint16_simspi(3*8, 0, result[SENSOR_HL]);
+  681   1          ips114_showstr_simspi(9*8,0,"N:");
+  682   1          ips114_showfloat_simspi(11*8, 0, normalized_data[SENSOR_HL], 2, 2);
+  683   1          
+  684   1          ips114_showstr_simspi(0,1,"VL:");  
+  685   1          ips114_showuint16_simspi(3*8, 1, result[SENSOR_VL]);
+  686   1          ips114_showstr_simspi(9*8,1,"N:");
+  687   1          ips114_showfloat_simspi(11*8, 1, normalized_data[SENSOR_VL], 2, 2);
+  688   1          
+  689   1          ips114_showstr_simspi(0,2,"HML:");  
+  690   1          ips114_showuint16_simspi(4*8, 2, result[SENSOR_HML]);
+  691   1          ips114_showstr_simspi(9*8,2,"N:");
+  692   1          ips114_showfloat_simspi(11*8, 2, normalized_data[SENSOR_HML], 2, 2);
+  693   1          
+  694   1          ips114_showstr_simspi(0,3,"HC:");   
+  695   1          ips114_showuint16_simspi(3*8, 3, result[SENSOR_HC]);
+  696   1          ips114_showstr_simspi(9*8,3,"N:");
+  697   1          ips114_showfloat_simspi(11*8, 3, normalized_data[SENSOR_HC], 2, 2);
+  698   1          
+  699   1          ips114_showstr_simspi(0,4,"HMR:");   
+  700   1          ips114_showuint16_simspi(4*8, 4, result[SENSOR_HMR]);
+  701   1          ips114_showstr_simspi(9*8,4,"N:");
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           25/04/25  22:33:12  PAGE 12  
 
-  702   1          return protection_triggered;
-  703   1      }
-  704          
-  705          // 显示电磁传感器数据
-  706          void display_electromagnetic_data(void)
-  707          {
-  708   1          // 显示原始滤波数据和归一化数据
-  709   1          ips114_showstr_simspi(0,0,"HL:");   
-  710   1          ips114_showuint16_simspi(3*8, 0, result[SENSOR_HL]);
-  711   1          ips114_showstr_simspi(9*8,0,"N:");
-  712   1          ips114_showfloat_simspi(11*8, 0, normalized_data[SENSOR_HL], 2, 2);
+  702   1          ips114_showfloat_simspi(11*8, 4, normalized_data[SENSOR_HMR], 2, 2);
+  703   1          
+  704   1          ips114_showstr_simspi(0,5,"VR:");   
+  705   1          ips114_showuint16_simspi(3*8, 5, result[SENSOR_VR]);
+  706   1          ips114_showstr_simspi(9*8,5,"N:");
+  707   1          ips114_showfloat_simspi(11*8, 5, normalized_data[SENSOR_VR], 2, 2);
+  708   1          
+  709   1          ips114_showstr_simspi(0,6,"HR:");   
+  710   1          ips114_showuint16_simspi(3*8, 6, result[SENSOR_HR]);
+  711   1          ips114_showstr_simspi(9*8,6,"N:");
+  712   1          ips114_showfloat_simspi(11*8, 6, normalized_data[SENSOR_HR], 2, 2);
   713   1          
-  714   1          ips114_showstr_simspi(0,1,"VL:");  
-  715   1          ips114_showuint16_simspi(3*8, 1, result[SENSOR_VL]);
-  716   1          ips114_showstr_simspi(9*8,1,"N:");
-  717   1          ips114_showfloat_simspi(11*8, 1, normalized_data[SENSOR_VL], 2, 2);
-  718   1          
-  719   1          ips114_showstr_simspi(0,2,"HML:");  
-  720   1          ips114_showuint16_simspi(4*8, 2, result[SENSOR_HML]);
-  721   1          ips114_showstr_simspi(9*8,2,"N:");
-  722   1          ips114_showfloat_simspi(11*8, 2, normalized_data[SENSOR_HML], 2, 2);
-  723   1          
-  724   1          ips114_showstr_simspi(0,3,"HC:");   
-  725   1          ips114_showuint16_simspi(3*8, 3, result[SENSOR_HC]);
-  726   1          ips114_showstr_simspi(9*8,3,"N:");
-  727   1          ips114_showfloat_simspi(11*8, 3, normalized_data[SENSOR_HC], 2, 2);
-  728   1          
-  729   1          ips114_showstr_simspi(0,4,"HMR:");   
-  730   1          ips114_showuint16_simspi(4*8, 4, result[SENSOR_HMR]);
-  731   1          ips114_showstr_simspi(9*8,4,"N:");
-  732   1          ips114_showfloat_simspi(11*8, 4, normalized_data[SENSOR_HMR], 2, 2);
-  733   1          
-  734   1          ips114_showstr_simspi(0,5,"VR:");   
-  735   1          ips114_showuint16_simspi(3*8, 5, result[SENSOR_VR]);
-  736   1          ips114_showstr_simspi(9*8,5,"N:");
-  737   1          ips114_showfloat_simspi(11*8, 5, normalized_data[SENSOR_VR], 2, 2);
-  738   1          
-  739   1          ips114_showstr_simspi(0,6,"HR:");   
-  740   1          ips114_showuint16_simspi(3*8, 6, result[SENSOR_HR]);
-  741   1          ips114_showstr_simspi(9*8,6,"N:");
-  742   1          ips114_showfloat_simspi(11*8, 6, normalized_data[SENSOR_HR], 2, 2);
-  743   1          
-  744   1          // 显示位置和差比和数据
-  745   1          ips114_showstr_simspi(0,7,"Pos:");
-  746   1          ips114_showint16_simspi(5*8, 7, position);
-  747   1          
-  748   1          // 显示保护状态
-  749   1          ips114_showstr_simspi(10*8,7,"P:");
-  750   1          ips114_showuint8_simspi(12*8, 7, protection_flag);
-  751   1      } 
+  714   1          // 显示位置和差比和数据
+  715   1          ips114_showstr_simspi(0,7,"Pos:");
+  716   1          ips114_showint16_simspi(5*8, 7, position);
+  717   1          
+  718   1          // 显示保护状态
+  719   1          ips114_showstr_simspi(10*8,7,"P:");
+  720   1          ips114_showuint8_simspi(12*8, 7, protection_flag);
+  721   1      } 
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =      5611     ------
+  code size            =      5383     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =       397     ------
+  edata size           =       396     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           24/04/25  23:36:03  PAGE 13  
-
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =       437     ------
+  hconst size          =       432     ------
 End of Module Information.
 
 

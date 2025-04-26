@@ -6,7 +6,7 @@ void key_task(void)
 {
 	if (key[0].flag == 1)
 	{
-		P52 = !P52;
+		protection_flag = 1;
 		
 		key[0].flag = 0;
 	}

@@ -376,9 +376,8 @@ int16 calculate_position_improved(void)
     static int16 very_last_pos = 0;  // 上上次位置值，用于二次滤波
     static int16 very_very_last_pos = 0;  // 上上上次位置值，用于三次滤波
     int16 pos = 0;               // 当前计算得到的位置值
-    static int16 max_change_rate = 10; // 允许的最大变化率
+    static int16 max_change_rate = 8; // 允许的最大变化率
     int16 position_change = 0;   // 位置变化量
-    static uint8 is_straight_road = 0;  // 记录是否处于直道模式
 	
 	// 位置计算（包含中心电感的贡献）
     // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因子
@@ -400,14 +399,6 @@ int16 calculate_position_improved(void)
     // 计算信号强度指标 - 所有电感平均值
     signal_strength = (sum_outer + sum_middle + sum_vertical + center_value) / 7.0f;
     signal_strength_value = signal_strength; // 保存信号强度指标
-
-    // 增强直道判定
-    if(signal_strength > 70.0f && center_value > 60.0f) {
-        is_straight_road = 1;  // 设置直道标志
-    } else if(signal_strength < 60.0f || center_value < 40.0f) {
-        is_straight_road = 0;  // 清除直道标志
-    }
-    // 保持先前状态不变，防止频繁切换
 
     // 计算差比和，使用平滑过渡函数代替硬阈值，避免在临界值附近产生跳变
     // 外侧电感平滑过渡
@@ -474,7 +465,7 @@ int16 calculate_position_improved(void)
     {
         case 0: // 普通赛道
             // 根据信号强度动态调整权重
-            if(is_straight_road) // 使用直道标志而不是单独的信号强度判断
+            if(signal_strength > 38.0f) // 信号强，可能在直道
             {
                 weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
                 weight_middle = 0.40f; 
@@ -489,18 +480,18 @@ int16 calculate_position_improved(void)
                 weight_middle = 0.3f;
                 weight_center = 0.1f;
                 weight_vertical = 0.2f;
-                filter_param = 0.4f;  // 弯道处提高滤波力度，平滑变化
+                filter_param = 0.4f;
                 max_change_rate = 8;   // 弯道减小变化率
             }
-            else
+            else // 直角弯道可能有一定的信号强度
             {
                 // 默认权重
                 weight_outer = 0.3f;
                 weight_middle = 0.4f;
-                weight_center = 0.1f;
-                weight_vertical = 0.2f;
+                weight_center = 0.15f;
+                weight_vertical = 0.15f;
                 filter_param = 0.4f;
-                max_change_rate = 10;
+                max_change_rate = 8;
             }
             break;
             
@@ -539,19 +530,17 @@ int16 calculate_position_improved(void)
     }
     
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
-    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
-    {
-        // 根据上一次位置判断偏离方向
-        if(last_pos > 0)
-            return 100;  // 向右偏离
-        else
-            return -100; // 向左偏离
-    }
-    
-    
+//    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
+//    {
+//        // 根据上一次位置判断偏离方向
+//        if(last_pos > 0)
+//            return 100;  // 向右偏离
+//        else
+//            return -100; // 向左偏离
+//    }
     
     // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
-    if(center_value > 40.0f) { // 降低触发阈值从50到40
+    if(center_value > 40.0f) {
         // 修正系数，当中心电感强度高时，修正系数大
         center_correction = (center_value - 40.0f) / 60.0f * 0.5f;  // 最大修正50%
     }
@@ -568,18 +557,6 @@ int16 calculate_position_improved(void)
     if(pos > 100) pos = 100;
     if(pos < -100) pos = -100;
     
-    // 直道状态下添加不灵敏区
-//    if(is_straight_road) {
-//        // 不灵敏区处理
-//        if(pos > -10 && pos < 10) {
-//            pos = 0;  // 小偏差直接归零
-//        } else if(pos > 0) {
-//            pos -= 5;  // 正值减少一些
-//        } else {
-//            pos += 5;  // 负值增加一些
-//        }
-//    }
-    
     // 位置变化量限制，防止突变
     position_change = pos - last_pos;
     if(position_change > max_change_rate)
@@ -587,20 +564,13 @@ int16 calculate_position_improved(void)
     else if(position_change < -max_change_rate)
         pos = last_pos - max_change_rate;
     
-    // 应用低通滤波
+    // 应用低通滤波，平滑位置变化
     pos = (int16)(filter_param * pos + (1-filter_param) * last_pos);
     
-    // 直道状态下应用二次滤波
-    if(is_straight_road) {
+    // 如果信号强度高，增强滤波效果
+    if(signal_strength > 35.0f) {
         // 应用三点平均滤波，进一步平滑
         pos = (pos + last_pos + very_last_pos) / 3;
-        
-        // 直道上检测连续变化方向是否一致，如果是震荡则抑制
-        if((pos > last_pos && last_pos < very_last_pos) || 
-           (pos < last_pos && last_pos > very_last_pos)) {
-            // 方向反复震荡，增强抑制
-            pos = (pos + last_pos * 2 + very_last_pos + very_very_last_pos) / 5;
-        }
     }
     
     // 更新历史位置值

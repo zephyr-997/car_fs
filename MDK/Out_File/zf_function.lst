@@ -1,11 +1,12 @@
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 1   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_function
 OBJECT MODULE PLACED IN .\Out_File\zf_function.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\seekfree_libraries\zf_function.c XSMALL INTR2 FLOAT64 WARNINGLEVEL(3)
-                    - OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfre
-                    -e_peripheral;..\libraries) DEBUG PRINT(.\Out_File\zf_function.lst) OBJECT(.\Out_File\zf_function.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\seekfree_libraries\zf_function.c XSMALL INTR2 FLOAT
+                    -64 WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_li
+                    -braries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\zf_function.lst) TABS(2) OBJECT(.\Out_File\zf_functi
+                    -on.obj) 
 
 stmt  level    source
 
@@ -65,9 +66,9 @@ stmt  level    source
    49          uint32 func_get_greatest_common_divisor (uint32 num1, uint32 num2)
    50          {
    51   1          while(num1 != num2)
-   52   1          {
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 2   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 2   
 
+   52   1          {
    53   2              if(num1 > num2)
    54   2              {
    55   3                  num1 = num1 - num2;
@@ -107,8 +108,8 @@ stmt  level    source
    85          {
    86   1          uint8 sign = 0;                                                             // ±ê¼Ç·ûºÅ 0-ÕýÊý 1-¸ºÊý
    87   1          int32 temp = 0;                                                             // ÁÙÊ±¼ÆËã±äÁ¿
-   88   1              //zf_assert(str != NULL);
-   89   1              do
+   88   1        //zf_assert(str != NULL);
+   89   1        do
    90   1          {
    91   2              if(NULL == str)
    92   2              {
@@ -133,9 +134,9 @@ stmt  level    source
   111   2      
   112   2              if(sign)
   113   2              {
-  114   3                  temp = -temp;
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 3   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 3   
 
+  114   3                  temp = -temp;
   115   3              }
   116   2          }while(0);
   117   1          return temp;
@@ -201,11 +202,11 @@ stmt  level    source
   171          // ±¸×¢ÐÅÏ¢     
   172          //-------------------------------------------------------------------------------------------------------
              -------------
-  173          uint32 func_str_to_uint (char *str)
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 4   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 4   
 
+  173          uint32 func_str_to_uint (char *str)
   174          {
-  175   1              uint32 temp = 0;                                                            // ÁÙÊ±¼ÆËã±äÁ¿
+  175   1        uint32 temp = 0;                                                            // ÁÙÊ±¼ÆËã±äÁ¿
   176   1          //zf_assert(str != NULL);
   177   1      
   178   1          do
@@ -240,9 +241,9 @@ stmt  level    source
   205   1          int8 data_temp[16];                                                         // »º³åÇø
   206   1          uint8 temp_bit = 0;                                                              // Êý×ÖÎ»Êý
   207   1          
-  208   1              //zf_assert(str != NULL);
+  208   1        //zf_assert(str != NULL);
   209   1          
-  210   1              do
+  210   1        do
   211   1          {
   212   2              if(NULL == str)
   213   2              {
@@ -269,9 +270,9 @@ stmt  level    source
   231   3                  temp_bit --;
   232   3              }
   233   2          }while(0);
-  234   1      }
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 5   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 5   
 
+  234   1      }
   235          
   236          //-------------------------------------------------------------------------------------------------------
              -------------
@@ -289,9 +290,9 @@ stmt  level    source
   247   1          float temp_point = 0.0;                                                     // ÁÙÊ±¼ÆËã±äÁ¿ Ð¡Êý²¿·Ö
   248   1          float point_bit = 1;                                                        // Ð¡ÊýÀÛ¼Æ³ýÊý
   249   1          
-  250   1              //zf_assert(str != NULL);
+  250   1        //zf_assert(str != NULL);
   251   1          
-  252   1              do
+  252   1        do
   253   1          {
   254   2              if(NULL == str)
   255   2              {
@@ -337,9 +338,9 @@ stmt  level    source
   294   1      }
   295          
   296          //-------------------------------------------------------------------------------------------------------
-             -------------
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 6   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 6   
 
+             -------------
   297          // º¯Êý¼ò½é     ¸¡µãÊý×Ö×ª×Ö·û´®
   298          // ²ÎÊýËµÃ÷     *str            ×Ö·û´®Ö¸Õë
   299          // ²ÎÊýËµÃ÷     number          ´«ÈëµÄÊý¾Ý
@@ -358,9 +359,9 @@ stmt  level    source
   310   1          int data_temp_point[6];                                                     // Ð¡Êý×Ö·û»º³å
   311   1          uint8 temp_bit = point_bit;                                                      // ×ª»»¾«¶ÈÎ»Êý
   312   1          
-  313   1              //zf_assert(str != NULL);
+  313   1        //zf_assert(str != NULL);
   314   1          
-  315   1              do
+  315   1        do
   316   1          {
   317   2              if(NULL == str)
   318   2              {
@@ -405,9 +406,9 @@ stmt  level    source
              -µÐ´Èë×Ö·û´® µÃµ½ÕýÐòÊýÖµ
   354   3                  temp_bit --;
   355   3              }
-  356   2      
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 7   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 7   
 
+  356   2      
   357   2              // Ð¡Êý²¿·Ö×ªÎª×Ö·û´®
   358   2              if(point_bit != 0)
   359   2              {
@@ -453,9 +454,9 @@ stmt  level    source
   395   1          double temp_point = 0.0;                                                    // ÁÙÊ±¼ÆËã±äÁ¿ Ð¡Êý²¿·Ö
   396   1          double point_bit = 1;                                                       // Ð¡ÊýÀÛ¼Æ³ýÊý
   397   1          
-  398   1              //zf_assert(str != NULL);
+  398   1        //zf_assert(str != NULL);
   399   1          
-  400   1              do
+  400   1        do
   401   1          {
   402   2              if(NULL == str)
   403   2              {
@@ -473,9 +474,9 @@ stmt  level    source
   415   3              }
   416   2      
   417   2              // ÌáÈ¡ÕûÊý²¿·Ö
-  418   2              while(('0' <= *str) && ('9' >= *str))                                   // È·¶¨ÕâÊÇ¸öÊý×Ö
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 8   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 8   
 
+  418   2              while(('0' <= *str) && ('9' >= *str))                                   // È·¶¨ÕâÊÇ¸öÊý×Ö
   419   2              {
   420   3                  temp = temp * 10 + ((uint8)(*str) - 0x30);                          // ½«ÊýÖµÌáÈ¡³öÀ´
   421   3                  str ++;
@@ -523,9 +524,9 @@ stmt  level    source
   459   1          int data_temp_point[9];                                                     // Ð¡Êý×Ö·û»º³å
   460   1          uint8 temp_bit = point_bit;                                                      // ×ª»»¾«¶ÈÎ»Êý
   461   1          
-  462   1              //zf_assert(str != NULL);
+  462   1        //zf_assert(str != NULL);
   463   1          
-  464   1              do
+  464   1        do
   465   1          {
   466   2              if(NULL == str)
   467   2              {
@@ -541,9 +542,9 @@ stmt  level    source
   476   3              }
   477   2              else if(0.0 == number)                                                  // Èç¹ûÊÇ¸ö 0
   478   2              {
-  479   3                  *str ++ = '0';
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 9   
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 9   
 
+  479   3                  *str ++ = '0';
   480   3                  *str ++ = '.';
   481   3                  *str = '0';
   482   3                  break;
@@ -609,17 +610,17 @@ stmt  level    source
   536          // ±¸×¢ÐÅÏ¢     
   537          //-------------------------------------------------------------------------------------------------------
              -------------
-  538          uint32 func_str_to_hex (char *str)
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 10  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 10  
 
+  538          uint32 func_str_to_hex (char *str)
   539          {
   540   1          uint32 str_len = strlen(str);                                               // ×Ö·û´®³¤
   541   1          uint32 result_data = 0;                                                     // ½á¹û»º´æ
   542   1          uint8 temp = 0;                                                             // ¼ÆËã±äÁ¿
   543   1          uint8 flag = 0;                                                             // ±êÖ¾Î»
   544   1      
-  545   1              //zf_assert(str != NULL);
-  546   1              
+  545   1        //zf_assert(str != NULL);
+  546   1        
   547   1          do
   548   1          {
   549   2              if(NULL == str)
@@ -677,16 +678,16 @@ stmt  level    source
   598          {
   599   1          const char hex_index[16] = {
   600   1              '0', '1', '2', '3',
-  601   1              '4', '5', '6', '7',
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 11  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 11  
 
+  601   1              '4', '5', '6', '7',
   602   1              '8', '9', 'A', 'B',
   603   1              'C', 'D', 'E', 'F'};
   604   1          int8 data_temp[12];                                                         // »º³åÇø
   605   1          uint8 temp_bit = 0;                                                              // Êý×ÖÎ»Êý
   606   1      
   607   1          //zf_assert(str != NULL);
-  608   1                      
+  608   1          
   609   1          *str++ = '0';
   610   1          *str++ = 'x';
   611   1          do
@@ -745,9 +746,9 @@ stmt  level    source
   659          //            neg_dat = -neg_dat;
   660          //        }
   661          //        while(1)
-  662          //        {
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 12  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 12  
 
+  662          //        {
   663          //            *p = neg_dat%radix + '0';
   664          //            neg_dat = neg_dat/radix;
   665          //            valid_num ++;
@@ -813,9 +814,9 @@ stmt  level    source
   723          
   724          ////-----------------------------------------------------------------------------------------------------
              ---------------
-  725          //// º¯Êý¼ò½é     sprintf º¯ÊýÊµÏÖ
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 13  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 13  
 
+  725          //// º¯Êý¼ò½é     sprintf º¯ÊýÊµÏÖ
   726          //// ²ÎÊýËµÃ÷     *buff           »º³åÇø
   727          //// ²ÎÊýËµÃ÷     *format         Ô´×Ö·û´®
   728          //// ²ÎÊýËµÃ÷     ...             ¿É±ä²ÎÊýÁÐ±í
@@ -827,8 +828,8 @@ stmt  level    source
   733          //uint32 zf_sprintf (int8 *buff, const int8 *format, ...)
   734          //{
   735          //    uint32 buff_len = 0;
-  736          //      va_list arg;
-  737          //      va_start(arg, format);
+  736          //  va_list arg;
+  737          //  va_start(arg, format);
   738          
   739          //    while (*format)
   740          //    {
@@ -881,9 +882,9 @@ stmt  level    source
   787          //                    {
   788          //                        vstr[vlen] = '-';
   789          //                        vlen ++;
-  790          //                    }
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 14  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 14  
 
+  790          //                    }
   791          //                    printf_reverse_order(vstr, vlen);
   792          //                    memcpy(buff, vstr, vlen);
   793          //                    buff += vlen;
@@ -949,9 +950,9 @@ stmt  level    source
   853          //                        int8 vstr[33];
   854          //                        uint32 ival = (uint32)va_arg(arg, uint32);
   855          //                        uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
-  856          
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 15  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 15  
 
+  856          
   857          //                        printf_reverse_order(vstr, vlen);
   858          //                        memcpy(buff, vstr, vlen);
   859          //                        buff += vlen;
@@ -1018,9 +1019,9 @@ Module Information          Static   Overlayable
   code size            =      3552     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
-  idata size           =    ------     ------
-C251 COMPILER V5.60.0,  zf_function                                                        24/04/25  20:44:58  PAGE 16  
+C251 COMPILER V5.60.0,  zf_function                                                        25/04/25  22:09:08  PAGE 16  
 
+  idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------

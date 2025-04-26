@@ -279,7 +279,10 @@ void TM2_Isr() interrupt 12
 	
 	//计算转向环pid,右正
 //	turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
-	turn_pid = pid_poisitional_normal(&TurnPID, position);
+	
+	if (protection_flag == 1)
+	{
+		turn_pid = pid_poisitional_normal(&TurnPID, position * 0.01);
 	
 	//更新卡尔曼滤波的值
 //	Kalman_Predict(&imu693_kf, turn_pid);
@@ -289,11 +292,28 @@ void TM2_Isr() interrupt 12
 //	g_RightPoint = g_SpeedPoint + turn_pid;
 	
 	//
-	if(myabs(g_LeftPoint - g_RightPoint) <= 150)
-	{
+	
+	
 		g_LeftPoint -= turn_pid;
 		g_RightPoint += turn_pid;
-	}
+		
+		if (g_LeftPoint > 150)
+		{
+			g_LeftPoint = 150;
+		}
+		if (g_RightPoint < -150)
+		{
+			g_RightPoint = -150;
+		}
+		if (g_LeftPoint > 150)
+		{
+			g_LeftPoint = 150;
+		}
+		if (g_RightPoint < -150)
+		{
+			g_RightPoint = -150;
+		}
+	
 	
 	//计算速度环pid
 	left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
@@ -313,6 +333,7 @@ void TM2_Isr() interrupt 12
 	// }
 	
 	set_motor_pwm(g_DutyLeft , g_DutyRight);
+	}
 }
 
 
