@@ -195,7 +195,7 @@
             <uocRom>0</uocRom>
             <uocXRAM>0</uocXRAM>
             <uSrcBin>1</uSrcBin>
-            <uFrame4>0</uFrame4>
+            <uFrame4>1</uFrame4>
             <hadIRAM>1</hadIRAM>
             <hadXRAM>1</hadXRAM>
             <hadIROM>1</hadIROM>
@@ -262,7 +262,7 @@
             <uAlias>1</uAlias>
             <uRentF>0</uRentF>
             <uUch>0</uUch>
-            <uFlt64>1</uFlt64>
+            <uFlt64>0</uFlt64>
             <Fuzzy>3</Fuzzy>
             <Optim>0</Optim>
             <wLevel>3</wLevel>

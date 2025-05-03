@@ -1,44 +1,44 @@
 #include "pid.h"
 
-PID_t LeftPID = { 7.1 , //kp
-				  0.71 , //ki
-				  3.5 , //kd
-				  0.6 , //kf
-	              0.0 , //上次误差
-				  0.0 , //上上次误差
-				  0.0 , //积分误差
-				  0.0 , //上次目标值
-				  0.0 , //pid输出
-				  0   , //积分限幅
-				  0     //输出限幅
+PID_t LeftPID = { 0.0f , //kp
+				  0.0f , //ki
+				  0.0f , //kd
+				  0.0f , //kf
+	              0.0f , //上次误差
+				  0.0f , //上上次误差
+				  0.0f , //积分误差
+				  0.0f , //上次目标值
+				  0.0f , //pid输出
+				  0.0f , //积分限幅
+				  0.0f   //输出限幅
 				};//左轮速度环PID
 
 				  
-PID_t RightPID = { 7.0 , //kp
-				   0.68 , //ki
-				   4.8 , //kd
-				   0.3 , //kf
-	               0.0 , //上次误差
-				   0.0 , //上上次误差
-				   0.0 , //积分误差
-				   0.0 , //上次目标值
-	               0.0 , //pid输出
-				   0   , //积分限幅
-				   0     //输出限幅
+PID_t RightPID = { 0.0f , //kp
+				   0.0f , //ki
+				   0.0f , //kd
+				   0.0f , //kf
+	               0.0f , //上次误差
+				   0.0f , //上上次误差
+				   0.0f , //积分误差
+				   0.0f , //上次目标值
+	               0.0f , //pid输出
+				   0.0f , //积分限幅
+				   0.0f   //输出限幅
 				 };//右轮速度环PID
 
 
-PID_t TurnPID = { 0.0 ,   //kp
-				  0.0 ,   //ki
-				  0.0 ,   //kd
-				  0.0 ,   //kf
-	              0.0 ,   //上次误差
-				  0.0 ,   //上上次误差
-				  0.0 ,   //积分误差
-				  0.0 ,   //上次目标值
-	              0.0 ,   //pid输出
-				  0.0 ,   //积分限幅
-				  900.0   //输出限幅
+PID_t TurnPID = { 0.0f ,   //kp
+				  0.0f ,   //ki
+				  0.0f ,   //kd
+				  0.0f ,   //kf
+	              0.0f ,   //上次误差
+				  0.0f ,   //上上次误差
+				  0.0f ,   //积分误差
+				  0.0f ,   //上次目标值
+	              0.0f ,   //pid输出
+				  0.0f ,   //积分限幅
+				  900.0f   //输出限幅
 				};//转向环PID
 
 				
@@ -56,9 +56,7 @@ int myabs(int num)
 //位置式PID（带前馈）
 float pid_poisitional_feedforward(PID_t* pid, float real, float target)
 {
-	int error = 0;
-	
-	error = target - real;
+	float error = target - real;
 	pid->interror += error;
 	
 	//积分限幅
@@ -94,10 +92,8 @@ float pid_poisitional_feedforward(PID_t* pid, float real, float target)
 //增量式PID（带前馈）
 float pid_increment_feedforward(PID_t* pid, float real, float target)
 {
-	int error;
-	
-	error = target - real;
-	
+	float error = target - real;
+
 	pid->output += pid->kp * (error - pid->lasterror) + pid->ki * error + pid->kd * (error - 2 * pid->lasterror + pid->preverror) + pid->kf * (target - pid->lasttarget);
 	
 	pid->preverror = pid->lasterror;
@@ -130,7 +126,7 @@ float pid_poisitional_normal(PID_t* pid, float position)
 //魔改位置式pid（加二次项）
 float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
 {
-	int error = position;
+	float error = position;
 	
 	pid->output = (pid->kp * error) + (pid->kp * pid->kp * error * myfabs(error)) + (pid->kd * (error - pid->lasterror) + (pid->kd * pid->kd * GyroZ));
 	pid->lasterror = error;

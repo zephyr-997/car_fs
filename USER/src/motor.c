@@ -13,7 +13,7 @@ void motor_init(void)
 }
 
 
-void set_motor_pwm(int32_t left_duty, int32_t right_duty)
+void set_motor_pwm(int left_duty, int right_duty)
 {
 	// 左轮PWM限幅并输出
 	if(left_duty >= 0)

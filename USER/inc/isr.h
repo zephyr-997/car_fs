@@ -22,7 +22,7 @@
 
 
 extern int g_SpeedPoint;
-extern int16_t g_DutyLeft, g_DutyRight;
+extern int g_DutyLeft, g_DutyRight;
 extern float left_pid, right_pid;
                           
 extern float Gyro_Z, filtered_GyroZ;
@@ -32,6 +32,7 @@ extern int g_LeftPoint;
 extern int g_RightPoint;
 
 extern int flag;
-
+extern int turnflag;
+extern uint8_t startKeyFlag, uartSendFlag;
 
 #endif
