@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  key                                                                03/05/25  13:44:10  PAGE 1   
+C251 COMPILER V5.60.0,  key                                                                05/05/25  20:38:45  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE key
 OBJECT MODULE PLACED IN .\Out_File\key.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\key.c XSMALL WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR
-                    -(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\libraries) DEBUG
-                    - PRINT(.\Out_File\key.lst) OBJECT(.\Out_File\key.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\key.c XSMALL WARNINGLEVEL(3) OPTIMIZE(0,SP
+                    -EED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;.
+                    -.\libraries) DEBUG PRINT(.\Out_File\key.lst) TABS(2) OBJECT(.\Out_File\key.obj) 
 
 stmt  level    source
 
@@ -15,46 +15,46 @@ stmt  level    source
     4          
     5          void key_task(void)
     6          {
-    7   1              if (key[0].flag == 1)
-    8   1              {
-    9   2                      if (startKeyFlag == 1)
-   10   2                      {
-   11   3                              set_motor_pwm(0, 0);
-   12   3                              
-   13   3                              TurnPID.lasterror = TurnPID.interror = 0;
+    7   1        if (key[0].flag == 1)
+    8   1        {
+    9   2          if (startKeyFlag == 1)
+   10   2          {
+   11   3            set_motor_pwm(0, 0);
+   12   3            
+   13   3            TurnPID.lasterror = TurnPID.interror = 0;
    14   3      
-   15   3                              LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
-   16   3                              
-   17   3                              RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
-   18   3                              
-   19   3                              uartSendFlag = startKeyFlag = 0;
-   20   3                      }
-   21   2                      else
-   22   2                      {
-   23   3                              delay_ms(2000);
-   24   3                              uartSendFlag = startKeyFlag = 1;
-   25   3                      }
-   26   2                      
-   27   2                      key[0].flag = 0;
-   28   2              }
-   29   1              if (key[1].flag == 1)
-   30   1              {
+   15   3            LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
+   16   3            
+   17   3            RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+   18   3            
+   19   3            uartSendFlag = startKeyFlag = 0;
+   20   3          }
+   21   2          else
+   22   2          {
+   23   3            delay_ms(2000);
+   24   3            uartSendFlag = startKeyFlag = 1;
+   25   3          }
+   26   2          
+   27   2          key[0].flag = 0;
+   28   2        }
+   29   1        if (key[1].flag == 1)
+   30   1        {
    31   2      
-   32   2                      
-   33   2                      key[1].flag = 0;
-   34   2              }
-   35   1              if (key[2].flag == 1)
-   36   1              {
+   32   2          
+   33   2          key[1].flag = 0;
+   34   2        }
+   35   1        if (key[2].flag == 1)
+   36   1        {
    37   2      
-   38   2                      
-   39   2                      key[2].flag = 0;
-   40   2              }
-   41   1              if (key[3].flag == 1)
-   42   1              {
+   38   2          
+   39   2          key[2].flag = 0;
+   40   2        }
+   41   1        if (key[3].flag == 1)
+   42   1        {
    43   2      
-   44   2                      
-   45   2                      key[3].flag = 0;
-   46   2              }
+   44   2          
+   45   2          key[3].flag = 0;
+   46   2        }
    47   1      }
 
 
@@ -67,7 +67,7 @@ Module Information          Static   Overlayable
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-C251 COMPILER V5.60.0,  key                                                                03/05/25  13:44:10  PAGE 2   
+C251 COMPILER V5.60.0,  key                                                                05/05/25  20:38:45  PAGE 2   
 
   edata size           =        12     ------
   bit size             =    ------     ------

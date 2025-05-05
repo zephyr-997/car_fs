@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  filter                                                             03/05/25  13:44:10  PAGE 1   
+C251 COMPILER V5.60.0,  filter                                                             05/05/25  20:38:43  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE filter
 OBJECT MODULE PLACED IN .\Out_File\filter.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\filter.c XSMALL WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INC
-                    -DIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\libraries) DE
-                    -BUG PRINT(.\Out_File\filter.lst) OBJECT(.\Out_File\filter.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\filter.c XSMALL WARNINGLEVEL(3) OPTIMIZE(0
+                    -,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_periphera
+                    -l;..\libraries) DEBUG PRINT(.\Out_File\filter.lst) TABS(2) OBJECT(.\Out_File\filter.obj) 
 
 stmt  level    source
 

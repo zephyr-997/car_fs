@@ -1,11 +1,11 @@
-C251 COMPILER V5.60.0,  motor                                                              03/05/25  13:44:10  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              05/05/25  20:38:44  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
 OBJECT MODULE PLACED IN .\Out_File\motor.obj
-COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE ..\USER\src\motor.c XSMALL WARNINGLEVEL(3) OPTIMIZE(0,SPEED) BROWSE INCD
-                    -IR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\libraries) DEB
-                    -UG PRINT(.\Out_File\motor.lst) OBJECT(.\Out_File\motor.obj) 
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\USER\src\motor.c XSMALL WARNINGLEVEL(3) OPTIMIZE(0,
+                    -SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral
+                    -;..\libraries) DEBUG PRINT(.\Out_File\motor.lst) TABS(2) OBJECT(.\Out_File\motor.obj) 
 
 stmt  level    source
 
@@ -14,63 +14,63 @@ stmt  level    source
     3          
     4          void motor_init(void)
     5          {
-    6   1              //左轮初始化
-    7   1              pwm_init(PWMA_CH1P_P60, MOTOR_PWM_FREQ, 0);
-    8   1              pwm_init(PWMA_CH2P_P62, MOTOR_PWM_FREQ, 0);
-    9   1              
-   10   1              //右轮初始化
-   11   1              pwm_init(PWMA_CH3P_P64, MOTOR_PWM_FREQ, 0);
-   12   1              pwm_init(PWMA_CH4P_P66, MOTOR_PWM_FREQ, 0);
+    6   1        //左轮初始化
+    7   1        pwm_init(PWMA_CH1P_P60, MOTOR_PWM_FREQ, 0);
+    8   1        pwm_init(PWMA_CH2P_P62, MOTOR_PWM_FREQ, 0);
+    9   1        
+   10   1        //右轮初始化
+   11   1        pwm_init(PWMA_CH3P_P64, MOTOR_PWM_FREQ, 0);
+   12   1        pwm_init(PWMA_CH4P_P66, MOTOR_PWM_FREQ, 0);
    13   1      }
    14          
    15          
    16          void set_motor_pwm(int left_duty, int right_duty)
    17          {
-   18   1              // 左轮PWM限幅并输出
-   19   1              if(left_duty >= 0)
-   20   1              {
-   21   2                      if (left_duty > MOTOR_PWM_LIMIT)
-   22   2                      {
-   23   3                              left_duty = MOTOR_PWM_LIMIT;
-   24   3                      }
-   25   2              
-   26   2                      pwm_duty(PWMA_CH1P_P60, left_duty);
-   27   2                      pwm_duty(PWMA_CH2P_P62, 0);
-   28   2              }
-   29   1              else
-   30   1              {
-   31   2                      if (left_duty < -MOTOR_PWM_LIMIT)
-   32   2                      {
-   33   3                              left_duty = -MOTOR_PWM_LIMIT;
-   34   3                      }
-   35   2              
-   36   2                      pwm_duty(PWMA_CH1P_P60, 0);
-   37   2                      pwm_duty(PWMA_CH2P_P62, -left_duty);
-   38   2              }
-   39   1              
-   40   1              // 右轮PWM限幅并输出
-   41   1              if (right_duty >= 0)
-   42   1              {
-   43   2                      if (right_duty > MOTOR_PWM_LIMIT)
-   44   2                      {
-   45   3                              right_duty = MOTOR_PWM_LIMIT;
-   46   3                      }
-   47   2                      
-   48   2                      pwm_duty(PWMA_CH3P_P64, right_duty);
-   49   2                      pwm_duty(PWMA_CH4P_P66, 0);
-   50   2              }
-   51   1              else    
-   52   1              {
-   53   2                      if (right_duty < -MOTOR_PWM_LIMIT)
-   54   2                      {
-   55   3                              right_duty = -MOTOR_PWM_LIMIT;
-   56   3                      }
-   57   2                      
-C251 COMPILER V5.60.0,  motor                                                              03/05/25  13:44:10  PAGE 2   
+   18   1        // 左轮PWM限幅并输出
+   19   1        if(left_duty >= 0)
+   20   1        {
+   21   2          if (left_duty > MOTOR_PWM_LIMIT)
+   22   2          {
+   23   3            left_duty = MOTOR_PWM_LIMIT;
+   24   3          }
+   25   2        
+   26   2          pwm_duty(PWMA_CH1P_P60, left_duty);
+   27   2          pwm_duty(PWMA_CH2P_P62, 0);
+   28   2        }
+   29   1        else
+   30   1        {
+   31   2          if (left_duty < -MOTOR_PWM_LIMIT)
+   32   2          {
+   33   3            left_duty = -MOTOR_PWM_LIMIT;
+   34   3          }
+   35   2        
+   36   2          pwm_duty(PWMA_CH1P_P60, 0);
+   37   2          pwm_duty(PWMA_CH2P_P62, -left_duty);
+   38   2        }
+   39   1        
+   40   1        // 右轮PWM限幅并输出
+   41   1        if (right_duty >= 0)
+   42   1        {
+   43   2          if (right_duty > MOTOR_PWM_LIMIT)
+   44   2          {
+   45   3            right_duty = MOTOR_PWM_LIMIT;
+   46   3          }
+   47   2          
+   48   2          pwm_duty(PWMA_CH3P_P64, right_duty);
+   49   2          pwm_duty(PWMA_CH4P_P66, 0);
+   50   2        }
+   51   1        else  
+   52   1        {
+   53   2          if (right_duty < -MOTOR_PWM_LIMIT)
+   54   2          {
+   55   3            right_duty = -MOTOR_PWM_LIMIT;
+   56   3          }
+   57   2          
+C251 COMPILER V5.60.0,  motor                                                              05/05/25  20:38:44  PAGE 2   
 
-   58   2                      pwm_duty(PWMA_CH3P_P64, 0);
-   59   2                      pwm_duty(PWMA_CH4P_P66, -right_duty);
-   60   2              }
+   58   2          pwm_duty(PWMA_CH3P_P64, 0);
+   59   2          pwm_duty(PWMA_CH4P_P66, -right_duty);
+   60   2        }
    61   1      }
 
 

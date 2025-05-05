@@ -58,26 +58,27 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%d,%f\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,g_DutyLeft,left_pid,position,turn_pid);
-			uart_putstr(UART_4, g_TxData);
+			// sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%d,%f\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,g_DutyLeft,left_pid,position,turn_pid);
+			// uart_putstr(UART_4, g_TxData);
 			
-//		sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
-//		uart_putstr(UART_4, g_TxData);
+			// sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
+			// uart_putstr(UART_4, g_TxData);
 			
 			// 通过串口输出七电感数据
-//			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d\n",
-//			 (uint16)normalized_data[SENSOR_HL], 
-//			 (uint16)normalized_data[SENSOR_VL], 
-//			 (uint16)normalized_data[SENSOR_HML], 
-//			 (uint16)normalized_data[SENSOR_HC],
-//			 (uint16)normalized_data[SENSOR_HMR], 
-//			 (uint16)normalized_data[SENSOR_VR], 
-//			 (uint16)normalized_data[SENSOR_HR], 
-//			  position,
-//			 (uint16)signal_strength_value);
-//			//  track_type,
-//			//  sum_value, 
-//			uart_putstr(UART_4, g_TxData);
+			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+			 (uint16)normalized_data[SENSOR_HL], 
+			 (uint16)normalized_data[SENSOR_VL], 
+			 (uint16)normalized_data[SENSOR_HML], 
+			 (uint16)normalized_data[SENSOR_HC],
+			 (uint16)normalized_data[SENSOR_HMR], 
+			 (uint16)normalized_data[SENSOR_VR], 
+			 (uint16)normalized_data[SENSOR_HR], 
+			  position,
+			 //(uint16)signal_strength_value,
+			  track_type,
+			  track_route,
+			  track_route_status); 
+			uart_putstr(UART_4, g_TxData);
 			
 			
 		}
@@ -100,7 +101,7 @@ void main(void)
 //		            (uint16)normalized_data[SENSOR_HR];
 
 
-		//检查电磁保护
+		//检查电磁保护	
 		// protection_flag = check_electromagnetic_protection();
 		// check_electromagnetic_protection();
 
@@ -127,26 +128,26 @@ void main(void)
 		/*调试功能*/
 
 		// 读取七电感ADC值（用于调试）
-//		value[0] = adc_once(ADC_HL,  ADC_10BIT);
-//		value[1] = adc_once(ADC_VL,  ADC_10BIT);
-//		value[2] = adc_once(ADC_HML, ADC_10BIT);
-//		value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-//		value[4] = adc_once(ADC_HMR, ADC_10BIT);
-//		value[5] = adc_once(ADC_VR,  ADC_10BIT);
-//		value[6] = adc_once(ADC_HR,  ADC_10BIT);	
+		// value[0] = adc_once(ADC_HL,  ADC_10BIT);
+		// value[1] = adc_once(ADC_VL,  ADC_10BIT);
+		// value[2] = adc_once(ADC_HML, ADC_10BIT);
+		// value[3] = adc_once(ADC_HC,  ADC_10BIT); 
+		// value[4] = adc_once(ADC_HMR, ADC_10BIT);
+		// value[5] = adc_once(ADC_VR,  ADC_10BIT);
+		// value[6] = adc_once(ADC_HR,  ADC_10BIT);	
 
-//		// 通过串口输出七电感原始数据
-//		sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
-//		 value[0], 
-//		 value[1], 
-//		 value[2], 
-//		 value[3], 
-//		 value[4],
-//		 value[5],
-//         value[6]);
-//		 uart_putstr(UART_4, g_TxData);
+		// // 通过串口输出七电感原始数据
+		// sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
+		//  value[0], 
+		//  value[1], 
+		//  value[2], 
+		//  value[3], 
+		//  value[4],
+		//  value[5],
+        //  value[6]);
+		//  uart_putstr(UART_4, g_TxData);
 
-//		delay_ms(5);  
+		// delay_ms(5);  
 	}	
 }
 

@@ -1,0 +1,1 @@
+"..\USER\src\main.c" XSMALL WARNINGLEVEL (3) OPTIMIZE (0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\main.lst) TABS (2) OBJECT(.\Out_File\main.obj)
