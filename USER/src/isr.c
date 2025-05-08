@@ -287,8 +287,8 @@ void TM2_Isr() interrupt 12
 
 	if (startKeyFlag == 1)
 	{
-		if (track_type == 0 || (track_type == 3 && track_route_status == 2))//普通直线或者圆环内部
-		{
+//		if (track_type == 0 || (track_type == 3 && track_route_status == 2))//普通直线或者圆环内部
+//		{
 			/* 5ms算一次内环，15ms算一次外环 */
 			turn_count++;
 			if (turn_count >= 3)
@@ -310,56 +310,56 @@ void TM2_Isr() interrupt 12
 				g_RightPoint = g_SpeedPoint * (1 - k);
 			}
 			
-		}
-		else if (track_type == 3 && track_route_status == 1)//圆环准备入环
-		{
-			if (track_route == 1)//左环
-			{
-				g_LeftPoint = g_SpeedPoint * 0.8;
-				g_RightPoint = g_SpeedPoint * 1.2;
-			}
-			else if (track_route == 2)//右环
-			{
-				g_LeftPoint = g_SpeedPoint * 1.2;
-				g_RightPoint = g_SpeedPoint * 0.8;
-			}
-			
-			g_IntEncoderL += g_EncoderLeft;
-			g_IntEncoderR += g_EncoderRight;
-			
-			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 15800)
-			{
-				track_route_status = 2;
-				
-				g_IntEncoderL = g_IntEncoderR = 0;
-				
-				P52 = 1;
-			}
-		}
-		else if (track_type == 3 && track_route_status == 3)//圆环准备出环
-		{
-			if (track_route == 1)//左环
-			{
-				g_LeftPoint = g_SpeedPoint * 0.8;
-				g_RightPoint = g_SpeedPoint * 1.2;
-			}
-			else if (track_route == 2)//右环
-			{
-				g_LeftPoint = g_SpeedPoint * 1.2;
-				g_RightPoint = g_SpeedPoint * 0.8;
-			}
-			
-			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 16200)
-			{
-				track_type = 0;
-				track_route = 0;
-				track_route_status = 0;
-				
-				g_IntEncoderL = g_IntEncoderR = 0;
-				
-				P52 = 1;
-			}
-		}
+//		}
+//		else if (track_type == 3 && track_route_status == 1)//圆环准备入环
+//		{
+//			if (track_route == 1)//左环
+//			{
+//				g_LeftPoint = g_SpeedPoint * 0.8;
+//				g_RightPoint = g_SpeedPoint * 1.2;
+//			}
+//			else if (track_route == 2)//右环
+//			{
+//				g_LeftPoint = g_SpeedPoint * 1.2;
+//				g_RightPoint = g_SpeedPoint * 0.8;
+//			}
+//			
+//			g_IntEncoderL += g_EncoderLeft;
+//			g_IntEncoderR += g_EncoderRight;
+//			
+//			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 15800)
+//			{
+//				track_route_status = 2;
+//				
+//				g_IntEncoderL = g_IntEncoderR = 0;
+//				
+//				P52 = 1;
+//			}
+//		}
+//		else if (track_type == 3 && track_route_status == 3)//圆环准备出环
+//		{
+//			if (track_route == 1)//左环
+//			{
+//				g_LeftPoint = g_SpeedPoint * 0.8;
+//				g_RightPoint = g_SpeedPoint * 1.2;
+//			}
+//			else if (track_route == 2)//右环
+//			{
+//				g_LeftPoint = g_SpeedPoint * 1.2;
+//				g_RightPoint = g_SpeedPoint * 0.8;
+//			}
+//			
+//			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 16200)
+//			{
+//				track_type = 0;
+//				track_route = 0;
+//				track_route_status = 0;
+//				
+//				g_IntEncoderL = g_IntEncoderR = 0;
+//				
+//				P52 = 1;
+//			}
+//		}
 		
 		//计算速度环pid
 		left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
@@ -369,7 +369,18 @@ void TM2_Isr() interrupt 12
 		g_DutyLeft = (int32_t)left_pid;
 		g_DutyRight = (int32_t)right_pid;
 	
-		set_motor_pwm(g_DutyLeft, g_DutyRight);
+		if (protection_flag == 1)
+		{
+			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
+			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+			uartSendFlag = 0;
+			
+			set_motor_pwm(0, 0);
+		}
+		else
+		{
+			set_motor_pwm(g_DutyLeft, g_DutyRight);
+		}
 	}
 }
 

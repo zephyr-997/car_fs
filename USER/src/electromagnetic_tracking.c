@@ -25,7 +25,7 @@ float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 // uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
 // uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
 uint16 min_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {940, 930, 840, 700, 830, 920, 950};  // 每个电感的最大值
+uint16 max_value[SENSOR_COUNT] = {860, 920, 780, 700, 780, 920, 860};  // 每个电感的最大值
 
 // 电感位置计算相关变量
 float signal_strength_value = 0;   // 信号强度指标
@@ -419,28 +419,28 @@ int16 calculate_position_improved(void)
 
     // 计算差比和，使用平滑过渡函数代替硬阈值，避免在临界值附近产生跳变
     // 外侧电感平滑过渡
-    if(sum_outer > 12.0f)
+    if(sum_outer > 16.0f)
         ratio_outer = diff_outer / sum_outer;
-    else if(sum_outer < 5.0f)
+    else if(sum_outer < 3.0f)
         ratio_outer = 0;
     else
-        ratio_outer = (diff_outer / sum_outer) * (sum_outer - 5.0f) / 7.0f; // 5-12范围内线性过渡
+        ratio_outer = (diff_outer / sum_outer) * (sum_outer - 3.0f) / 7.0f; // 5-12范围内线性过渡
         
     // 中间电感平滑过渡
-    if(sum_middle > 12.0f)
+    if(sum_middle > 16.0f)
         ratio_middle = diff_middle / sum_middle;
-    else if(sum_middle < 5.0f)
+    else if(sum_middle < 3.0f)
         ratio_middle = 0;
     else
-        ratio_middle = (diff_middle / sum_middle) * (sum_middle - 5.0f) / 7.0f; // 5-12范围内线性过渡
+        ratio_middle = (diff_middle / sum_middle) * (sum_middle - 3.0f) / 7.0f; // 5-12范围内线性过渡
     
     // 纵向电感平滑过渡
-    if(sum_vertical > 12.0f)
+    if(sum_vertical > 16.0f)
         ratio_vertical = diff_vertical / sum_vertical;
-    else if(sum_vertical < 5.0f)
+    else if(sum_vertical < 3.0f)
         ratio_vertical = 0;
     else
-        ratio_vertical = (diff_vertical / sum_vertical) * (sum_vertical - 5.0f) / 7.0f; // 5-12范围内线性过渡
+        ratio_vertical = (diff_vertical / sum_vertical) * (sum_vertical - 3.0f) / 7.0f; // 5-12范围内线性过渡
     
 	
 	
@@ -458,14 +458,19 @@ int16 calculate_position_improved(void)
                 normalized_data[SENSOR_HC] < 70.0f && // 中心电感较弱
                 signal_strength > 28.0f && signal_strength < 55.0f) // 信号强度适中
         {
-            //track_type = 1; // 直角弯道
+            track_type = 1; // 直角弯道
+			P26 = 0;
         }
 
         if((normalized_data[SENSOR_HL] > 90.0f && normalized_data[SENSOR_HR] < 40.0f)  ||
                 (normalized_data[SENSOR_HR] > 99.0f && normalized_data[SENSOR_HL] < 20.0f) )
         {
-            track_type = 3; // 环岛
+            //track_type = 3; // 环岛
         }
+		if (normalized_data[SENSOR_HC] > 90 && normalized_data[SENSOR_HML] > 90 && normalized_data[SENSOR_HMR] > 90)
+		{
+			track_type = 2; //十字
+		}
     }
 	else if (track_type == 1) //直角
 	{
@@ -478,7 +483,21 @@ int16 calculate_position_improved(void)
 		{
 			track_type_zj = 2; //右转
 		}
+		if (track_type_zj != 0)
+		{
+			if (normalized_data[SENSOR_VR] < 20.0f && normalized_data[SENSOR_VL] < 20.0f)
+			{
+				track_type = 0;
+				track_type_zj = 0;
+				P26 = 1;
+			}		
+		}
 		
+	}
+	else if (track_type == 2) //十字
+    {
+		P26 = 0;
+	
 	}
     else if (track_type == 3) //圆环
     {
@@ -544,19 +563,19 @@ int16 calculate_position_improved(void)
 //    }
     
     // 根据赛道类型和信号强度调整权重
-//    switch(track_type)
-//    {
-//        case 0: // 普通赛道
-//            // 根据信号强度动态调整权重
-//            if(signal_strength > 38.0f) // 信号强，可能在直道
-//            {
-//                weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
-//                weight_middle = 0.40f; 
-//                weight_center = 0.30f;  // 中心电感
-//                weight_vertical = 0.15f;
-//                filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
-//                max_change_rate = 5;  // 直道大幅降低变化率限制
-//            }
+    switch(track_type)
+    {
+        case 0: // 普通赛道
+            // 根据信号强度动态调整权重
+            if(signal_strength > 38.0f) // 信号强，可能在直道
+            {
+                weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
+                weight_middle = 0.40f; 
+                weight_center = 0.30f;  // 中心电感
+                weight_vertical = 0.15f;
+                filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
+                max_change_rate = 5;  // 直道大幅降低变化率限制
+            }
 //            else if(signal_strength < 30.0f) // 信号弱，可能在弯道
 //            {
 //                weight_outer = 0.4f;
@@ -576,18 +595,18 @@ int16 calculate_position_improved(void)
 //                filter_param = 0.4f;
 //                max_change_rate = 8;
 //            }
-//            break;
-//            
-//        case 1: // 直角弯道
-//            // 直角弯道更依赖外侧和纵向电感
-//            weight_outer = 0.15f;      // 降低外侧电感权重
-//            weight_middle = 0.40f;     // 保持中间电感权重
-//            weight_center = 0.30f;     // 显著增加中心电感权重
-//            weight_vertical = 0.15f;   // 降低纵向电感权重
-//            filter_param = 0.6f;       // 响应要快一些
-//            max_change_rate = 18;      // 允许较大变化率以快速响应
-//            break;
-//            
+            break;
+            
+        case 1: // 直角弯道
+            // 直角弯道更依赖外侧和纵向电感
+            weight_outer = 0.1f;      // 降低外侧电感权重
+            weight_middle = 0.3f;     // 保持中间电感权重
+            weight_center = 0.20f;     // 显著增加中心电感权重
+            weight_vertical = 0.40f;   // 降低纵向电感权重
+            filter_param = 0.6f;       // 响应要快一些
+            max_change_rate = 18;      // 允许较大变化率以快速响应
+            break;
+            
 //        case 2: // 十字路口
 //            // 十字路口中心电感更重要
 //            weight_outer = 0.2f;
@@ -597,20 +616,20 @@ int16 calculate_position_improved(void)
 //            filter_param = 0.4f;
 //            max_change_rate = 10;
 //            break;
-//            
+            
 //        case 3: // 环岛
 //            // 环岛更依赖外侧电感
-//            weight_outer = 0.5f;
-//            weight_middle = 0.3f;
-//            weight_center = 0.1f;
+//            weight_outer = 0.1f;
+//            weight_middle = 0.35f;
+//            weight_center = 0.45f;
 //            weight_vertical = 0.1f;
 //            filter_param = 0.7f;
 //            max_change_rate = 12;
 //            break;
 
-//        default:
-//            break;
-//    }
+        default:
+            break;
+    }
     
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
 //    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
@@ -684,75 +703,79 @@ uint8 check_electromagnetic_protection(void)
     uint8 i;
     uint8 trigger_reason = 0;     // 记录触发原因，用于调试
     
-    // 计算所有电感的和值
-    for(i = 0; i < SENSOR_COUNT; i++)
-    {
-        sum_value += result[i];
-    }
-    
-    // 判断是否脱离赛道的条件
-    // 1. 所有电感值总和过小，说明可能脱离赛道
-    if(sum_value < threshold)
-    {
-        is_out_of_track = 1;
-        trigger_reason = 1;
-    }
-    
-    // 2. 归一化后的值都很小，说明可能脱离赛道
-    if(normalized_data[SENSOR_HL] < 5.0f && normalized_data[SENSOR_VL] < 5.0f && 
-       normalized_data[SENSOR_HML] < 5.0f && normalized_data[SENSOR_HC] < 5.0f && 
-       normalized_data[SENSOR_HMR] < 5.0f && normalized_data[SENSOR_VR] < 5.0f && 
-       normalized_data[SENSOR_HR] < 5.0f)
-    {
-        is_out_of_track = 1;
-        trigger_reason = 2;
-    }
-    
-    // 3. 位置偏差过大，说明可能偏离赛道太多
-    if(position < -90 || position > 90)
-    {
-        // 只有当电感值总和也较小时才判断为出赛道
-        if(sum_value < threshold * 2)
-        {
-            is_out_of_track = 1;
-            trigger_reason = 3;
-        }
-    }
-    
-    // // 连续检测逻辑，防止偶然的低值导致误判
-    if(is_out_of_track)
-    {
-        out_of_track_count++;
-        in_track_count = 0;  // 重置在轨道上的计数
-        
-        if(out_of_track_count >= 5 && !protection_triggered)  // 连续5次检测到脱离赛道才触发保护
-        {
-            protection_triggered = 1;
-            // 这里可以输出触发保护的信息，用于调试
-            sprintf(g_TxData, "Protection triggered! Reason: %d, Sum: %d\n", trigger_reason, sum_value);
-            uart_putstr(UART_4, g_TxData);
-        }
-    }
-    // else
-    // {
-    //     // 如果检测正常，计数器增加
-    //     in_track_count++;
-    //     if(out_of_track_count > 0)
-    //         out_of_track_count--;
-            
-    //     // 自动恢复机制：连续20次检测到正常，则解除保护状态
-    //     if(in_track_count >= 20 && protection_triggered)
-    //     {
-    //         protection_triggered = 0;
-    //         out_of_track_count = 0;
-    //         in_track_count = 0;
-    //         // 可以输出自动恢复的信息，用于调试
-    //         // sprintf(g_TxData, "Protection auto reset!\n");
-    //         // uart_putstr(UART_4, g_TxData);
-    //     }
-    // }
-    
-    return protection_triggered;
+    if (startKeyFlag == 1)
+	{
+		// 计算所有电感的和值
+		for(i = 0; i < SENSOR_COUNT; i++)
+		{
+			sum_value += result[i];
+		}
+		
+		// 判断是否脱离赛道的条件
+		// 1. 所有电感值总和过小，说明可能脱离赛道
+		if(sum_value < threshold)
+		{
+			is_out_of_track = 1;
+			trigger_reason = 1;
+		}
+		
+		// 2. 归一化后的值都很小，说明可能脱离赛道
+		if(normalized_data[SENSOR_HL] < 5.0f && normalized_data[SENSOR_VL] < 5.0f && 
+		   normalized_data[SENSOR_HML] < 5.0f && normalized_data[SENSOR_HC] < 5.0f && 
+		   normalized_data[SENSOR_HMR] < 5.0f && normalized_data[SENSOR_VR] < 5.0f && 
+		   normalized_data[SENSOR_HR] < 5.0f)
+		{
+			is_out_of_track = 1;
+			trigger_reason = 2;
+		}
+		
+		// 3. 位置偏差过大，说明可能偏离赛道太多
+		if(position < -90 || position > 90)
+		{
+			// 只有当电感值总和也较小时才判断为出赛道
+			if(sum_value < threshold * 2)
+			{
+				is_out_of_track = 1;
+				trigger_reason = 3;
+			}
+		}
+		
+		// // 连续检测逻辑，防止偶然的低值导致误判
+		if(is_out_of_track)
+		{
+			out_of_track_count++;
+			in_track_count = 0;  // 重置在轨道上的计数
+			
+			if(out_of_track_count >= 5 && !protection_triggered)  // 连续5次检测到脱离赛道才触发保护
+			{
+				protection_triggered = 1;
+				// 这里可以输出触发保护的信息，用于调试
+	////            sprintf(g_TxData, "Protection triggered! Reason: %d, Sum: %d\n", trigger_reason, sum_value);
+	////            uart_putstr(UART_4, g_TxData);
+			}
+		}
+		// else
+		// {
+		//     // 如果检测正常，计数器增加
+		//     in_track_count++;
+		//     if(out_of_track_count > 0)
+		//         out_of_track_count--;
+				
+		//     // 自动恢复机制：连续20次检测到正常，则解除保护状态
+		//     if(in_track_count >= 20 && protection_triggered)
+		//     {
+		//         protection_triggered = 0;
+		//         out_of_track_count = 0;
+		//         in_track_count = 0;
+		//         // 可以输出自动恢复的信息，用于调试
+		//         // sprintf(g_TxData, "Protection auto reset!\n");
+		//         // uart_putstr(UART_4, g_TxData);
+		//     }
+		// }
+		
+		return protection_triggered;
+	}
+	return 0;
 }
 
 // 显示电磁传感器数据
