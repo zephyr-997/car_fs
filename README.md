@@ -49,6 +49,8 @@ This is a car project.
 
     17. 赛道元素识别1.0
 
+    18. 开启保护函数
+
 
 二、TIPS:
 

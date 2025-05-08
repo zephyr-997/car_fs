@@ -81,30 +81,17 @@ void main(void)
 //			uart_putstr(UART_4, g_TxData);
 		}
 		
-		// 获取滤波后的ADC数据
-		//average_filter();  // 使用递推均值滤波获取电感数据
-		
-		
-		
-//		mid_filter();      // 使用中位值滤波获取电感数据
+		// 获取滤波后的ADC数据		
+		mid_filter();      // 使用中位值滤波获取电感数据
 
 //		// 归一化电感数据
-//		normalize_sensors();
+		normalize_sensors();
 		
 //		// 计算位置偏差
-//		position = calculate_position_improved();
+		position = calculate_position_improved();
 		
-
-		// 计算所有电感值的总和
-//		sum_value = (uint16)normalized_data[SENSOR_HL] + (uint16)normalized_data[SENSOR_VL] + 
-//		            (uint16)normalized_data[SENSOR_HML] + (uint16)normalized_data[SENSOR_HC] + 
-//		            (uint16)normalized_data[SENSOR_HMR] + (uint16)normalized_data[SENSOR_VR] + 
-//		            (uint16)normalized_data[SENSOR_HR];
-
-
 		//检查电磁保护	
-		// protection_flag = check_electromagnetic_protection();
-		// check_electromagnetic_protection();
+		protection_flag = check_electromagnetic_protection();
 
 		// if(protection_flag)
 		// {
@@ -129,26 +116,33 @@ void main(void)
 		/*调试功能*/
 
 		 //读取七电感ADC值（用于调试）
-		 value[0] = adc_once(ADC_HL,  ADC_10BIT);
-		 value[1] = adc_once(ADC_VL,  ADC_10BIT);
-		 value[2] = adc_once(ADC_HML, ADC_10BIT);
-		 value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-		 value[4] = adc_once(ADC_HMR, ADC_10BIT);
-		 value[5] = adc_once(ADC_VR,  ADC_10BIT);
-		 value[6] = adc_once(ADC_HR,  ADC_10BIT);	
+		//  value[0] = adc_once(ADC_HL,  ADC_10BIT);
+		//  value[1] = adc_once(ADC_VL,  ADC_10BIT);
+		//  value[2] = adc_once(ADC_HML, ADC_10BIT);
+		//  value[3] = adc_once(ADC_HC,  ADC_10BIT); 
+		//  value[4] = adc_once(ADC_HMR, ADC_10BIT);
+		//  value[5] = adc_once(ADC_VR,  ADC_10BIT);
+		//  value[6] = adc_once(ADC_HR,  ADC_10BIT);	
+
+		// 计算所有电感值的总和
+//		sum_value = (uint16)normalized_data[SENSOR_HL] + (uint16)normalized_data[SENSOR_VL] + 
+//		            (uint16)normalized_data[SENSOR_HML] + (uint16)normalized_data[SENSOR_HC] + 
+//		            (uint16)normalized_data[SENSOR_HMR] + (uint16)normalized_data[SENSOR_VR] + 
+//		            (uint16)normalized_data[SENSOR_HR];
+
 
 		 // 通过串口输出七电感原始数据
-		 sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
-		  value[0], 
-		  value[1], 
-		  value[2], 
-		  value[3], 
-		  value[4],
-		  value[5],
-          value[6]);
-		  uart_putstr(UART_4, g_TxData);
+		//  sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
+		//   value[0], 
+		//   value[1], 
+		//   value[2], 
+		//   value[3], 
+		//   value[4],
+		//   value[5],
+        //   value[6]);
+		//   uart_putstr(UART_4, g_TxData);
 
-		 delay_ms(5);
+		//  delay_ms(5);
 		
 		
 	}	

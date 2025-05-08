@@ -41,7 +41,7 @@ uint8 track_route_status = 0; //1-入环，2-环中，3-出环
 
 
 // 电磁保护逻辑变量,0表示未保护，1表示保护
-uint8 protection_flag = 1;
+uint8 protection_flag = 0;
 
 
 
@@ -719,7 +719,7 @@ uint8 check_electromagnetic_protection(void)
         }
     }
     
-    // 连续检测逻辑，防止偶然的低值导致误判
+    // // 连续检测逻辑，防止偶然的低值导致误判
     if(is_out_of_track)
     {
         out_of_track_count++;
@@ -729,28 +729,28 @@ uint8 check_electromagnetic_protection(void)
         {
             protection_triggered = 1;
             // 这里可以输出触发保护的信息，用于调试
-            // sprintf(g_TxData, "Protection triggered! Reason: %d, Sum: %d\n", trigger_reason, sum_value);
-            // uart_putstr(UART_4, g_TxData);
+            sprintf(g_TxData, "Protection triggered! Reason: %d, Sum: %d\n", trigger_reason, sum_value);
+            uart_putstr(UART_4, g_TxData);
         }
     }
-    else
-    {
-        // 如果检测正常，计数器增加
-        in_track_count++;
-        if(out_of_track_count > 0)
-            out_of_track_count--;
+    // else
+    // {
+    //     // 如果检测正常，计数器增加
+    //     in_track_count++;
+    //     if(out_of_track_count > 0)
+    //         out_of_track_count--;
             
-        // 自动恢复机制：连续20次检测到正常，则解除保护状态
-        if(in_track_count >= 20 && protection_triggered)
-        {
-            protection_triggered = 0;
-            out_of_track_count = 0;
-            in_track_count = 0;
-            // 可以输出自动恢复的信息，用于调试
-            // sprintf(g_TxData, "Protection auto reset!\n");
-            // uart_putstr(UART_4, g_TxData);
-        }
-    }
+    //     // 自动恢复机制：连续20次检测到正常，则解除保护状态
+    //     if(in_track_count >= 20 && protection_triggered)
+    //     {
+    //         protection_triggered = 0;
+    //         out_of_track_count = 0;
+    //         in_track_count = 0;
+    //         // 可以输出自动恢复的信息，用于调试
+    //         // sprintf(g_TxData, "Protection auto reset!\n");
+    //         // uart_putstr(UART_4, g_TxData);
+    //     }
+    // }
     
     return protection_triggered;
 }
