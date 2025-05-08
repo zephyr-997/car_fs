@@ -2,6 +2,7 @@
 
 
 int g_EncoderLeft = 0, g_EncoderRight = 0;
+int g_IntEncoderL = 0, g_IntEncoderR = 0;
 
 
 void encoder_init(void)

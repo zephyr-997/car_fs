@@ -7,6 +7,7 @@
 #define  RIGHT_DIR   P53
 
 extern int g_EncoderLeft, g_EncoderRight;
+extern int g_IntEncoderL, g_IntEncoderR;
 
 void encoder_init(void);
 int get_left_encoder(void);

@@ -56,7 +56,7 @@ void uart4_interrupt_callback(void);
 
 // 全局变量定义
 float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还需转化再赋给电机
-int g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
+int32_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
 float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
 int g_SpeedPoint = 30;
@@ -65,7 +65,7 @@ int g_RightPoint = 0;                            // 右轮目标速度
 int count = 0, flag = 0;
 int turn_count = 0;
 
-int k = 0;
+float k = 0;
 int turnflag = 0;
 uint8_t startKeyFlag = 0, uartSendFlag = 1;
 
@@ -252,6 +252,14 @@ void TM1_Isr() interrupt 3
 			break;
 		}
 	}
+	
+	/* 普通定时功能，备用 */
+	count++;
+	if (count >= 300)
+	{
+		flag = 1;
+		count = 0;
+	}
 }
 
 
@@ -260,15 +268,6 @@ void TM1_Isr() interrupt 3
 void TM2_Isr() interrupt 12
 {
 	TIM2_CLEAR_FLAG;  //清除中断标志
-	
-	/* 普通定时功能，备用 */
-	count++;
-	if (count >= 100)
-	{
-		flag = 1;
-		count = 0;
-	}
-	
 	
 	//读取并清除编码器的值
 	g_EncoderLeft = get_left_encoder();
@@ -283,54 +282,89 @@ void TM2_Isr() interrupt 12
 	
 	//对Gyro_Z进行卡尔曼滤波
 //	filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
+	
+//	Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波的值
 
 	if (startKeyFlag == 1)
 	{
-		/* 5ms算一次内环，15ms算一次外环 */
-		turn_count++;
-		if (turn_count >= 3)
+		if (track_type == 0 || (track_type == 3 && track_route_status == 2))//普通直线或者圆环内部
 		{
-			turn_pid = pid_poisitional_normal(&TurnPID, position);
-			turn_count = 0;
+			/* 5ms算一次内环，15ms算一次外环 */
+			turn_count++;
+			if (turn_count >= 3)
+			{
+				turn_pid = pid_poisitional_normal(&TurnPID, position);
+				turn_count = 0;
+			}
+			
+			if(turn_pid >= 0) // 左转
+			{
+				k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
+				g_LeftPoint = g_SpeedPoint * (1 - k);
+				g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+			}
+			else // 右转
+			{
+				k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
+				g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+				g_RightPoint = g_SpeedPoint * (1 - k);
+			}
+			
 		}
-	
-	
-	//更新卡尔曼滤波的值
-//	Kalman_Predict(&imu693_kf, turn_pid);
-
-		if(turn_pid >= 0) // 左转
+		else if (track_type == 3 && track_route_status == 1)//圆环准备入环
 		{
-			k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
-			g_LeftPoint = g_SpeedPoint * (1 - k);
-			g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+			if (track_route == 1)//左环
+			{
+				g_LeftPoint = g_SpeedPoint * 0.97;
+				g_RightPoint = g_SpeedPoint * 1.03;
+			}
+			else if (track_route == 2)//右环
+			{
+				g_LeftPoint = g_SpeedPoint * 1.03;
+				g_RightPoint = g_SpeedPoint * 0.97;
+			}
+			
+			g_IntEncoderL += g_EncoderLeft;
+			g_IntEncoderR += g_EncoderRight;
+			
+			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 15800)
+			{
+				track_route_status = 2;
+				P52 = 1;
+			}
 		}
-		else // 右转
+		else if (track_type == 3 && track_route_status == 3)//圆环准备出环
 		{
-			k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
-			g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-			g_RightPoint = g_SpeedPoint * (1 - k);
+			if (track_route == 1)//左环
+			{
+				g_LeftPoint = g_SpeedPoint * 0.97;
+				g_RightPoint = g_SpeedPoint * 1.03;
+			}
+			else if (track_route == 2)//右环
+			{
+				g_LeftPoint = g_SpeedPoint * 1.03;
+				g_RightPoint = g_SpeedPoint * 0.97;
+			}
+			
+			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 16200)
+			{
+				track_type = 0;
+				track_route = 0;
+				track_route_status = 0;
+				P52 = 1;
+			}
 		}
-
+		
 		//计算速度环pid
 		left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
 		right_pid = pid_increment_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
 		
 		//转int
-		g_DutyLeft = (int)left_pid;
-		g_DutyRight = (int)right_pid;
-		
-		
-		if (protection_flag == 0)
-		{
-			set_motor_pwm(g_DutyLeft, g_DutyRight);
-		}
-		else
-		{
-			set_motor_pwm(0, 0);
-		}
+		g_DutyLeft = (int32_t)left_pid;
+		g_DutyRight = (int32_t)right_pid;
+	
+		set_motor_pwm(g_DutyLeft, g_DutyRight);
 	}
-	
-	
 }
 
 

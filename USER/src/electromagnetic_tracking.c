@@ -31,10 +31,14 @@ uint16 max_value[SENSOR_COUNT] = {940, 930, 840, 700, 830, 920, 950};  // 每个
 float signal_strength_value = 0;   // 信号强度指标
 int16 position = 0;
 float filter_param = 0.4f;   // 滤波系数，可调
-uint8 track_type = 0;        // 赛道类型：0-普通，1-直角弯道，2-十字，3-环岛
-uint8 track_type_last = 0;   // 上一次的赛道类型
-uint8 track_route = 0; // 1-左转，2-右环
+
+
+// 赛道信息相关标志位
+uint8 track_type = 0;         // 赛道类型：0-普通，1-直角弯道，2-十字，3-环岛
+uint8 track_type_zj = 0;	  //1-左直角，2-右直角
+uint8 track_route = 0; 		  //1-左环，2-右环
 uint8 track_route_status = 0; //1-入环，2-环中，3-出环
+
 
 // 电磁保护逻辑变量,0表示未保护，1表示保护
 uint8 protection_flag = 1;
@@ -386,6 +390,9 @@ int16 calculate_position_improved(void)
     static int16 max_change_rate = 8; // 允许的最大变化率
     int16 position_change = 0;   // 位置变化量
 	
+	
+	
+	
 	// 位置计算（包含中心电感的贡献）
     // 中心电感越大，位置越接近中心线，这里直接将中心电感作为位置修正因子
     float center_correction = 0;
@@ -406,6 +413,9 @@ int16 calculate_position_improved(void)
     // 计算信号强度指标 - 所有电感平均值
     signal_strength = (sum_outer + sum_middle + sum_vertical + center_value) / 7.0f;
     signal_strength_value = signal_strength; // 保存信号强度指标
+
+
+
 
     // 计算差比和，使用平滑过渡函数代替硬阈值，避免在临界值附近产生跳变
     // 外侧电感平滑过渡
@@ -432,27 +442,42 @@ int16 calculate_position_improved(void)
     else
         ratio_vertical = (diff_vertical / sum_vertical) * (sum_vertical - 5.0f) / 7.0f; // 5-12范围内线性过渡
     
+	
+	
+	
     // 赛道类型识别 - 根据七电感特征判断
     // 1. 直角弯道特征：一侧横向和纵向电感值明显高于另一侧，同时信号强度适中
     if (track_type == 0)
     {
         if(((normalized_data[SENSOR_HL] > 15.0f && normalized_data[SENSOR_VL] > 65.0f && 
-                normalized_data[SENSOR_HR] < 15.0f && normalized_data[SENSOR_VR] < 10.0f) || 
-                (normalized_data[SENSOR_HR] > 90.0f && normalized_data[SENSOR_VR] > 80.0f && 
-                normalized_data[SENSOR_HL] < 10.0f && normalized_data[SENSOR_VL] < 20.0f)) && 
+                normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) || 
+                (normalized_data[SENSOR_VR] > 70.0f && 
+                normalized_data[SENSOR_HL] < 20.0f && normalized_data[SENSOR_VL] < 15.0f)) && 
                 normalized_data[SENSOR_HC] < 70.0f && // 中心电感较弱
-                signal_strength > 30.0f && signal_strength < 60.0f) // 信号强度适中
+                signal_strength > 28.0f && signal_strength < 55.0f) // 信号强度适中
         {
             track_type = 1; // 直角弯道
         }
 
-        if((normalized_data[SENSOR_HL] > 99.0f && normalized_data[SENSOR_HR] < 35.0f)  ||
+        if((normalized_data[SENSOR_HL] > 90.0f && normalized_data[SENSOR_HR] < 40.0f)  ||
                 (normalized_data[SENSOR_HR] > 99.0f && normalized_data[SENSOR_HL] < 20.0f) )
         {
             track_type = 3; // 环岛
-
         }
     }
+	else if (track_type == 1) //直角
+	{
+		if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
+		{
+			track_type_zj = 1; //左转
+			
+		}
+		else if (normalized_data[SENSOR_VR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f )
+		{
+			track_type_zj = 2; //右转
+		}
+		
+	}
     else if (track_type == 3) //圆环
     {
         // 环岛中可以使用纵向电感和中间电感判断更精确的位置
@@ -462,6 +487,7 @@ int16 calculate_position_improved(void)
             // 左环岛
             track_route = 1;
             track_route_status = 1;//入环
+			P52 = 0;
 
         }
         else if(normalized_data[SENSOR_VL] < 10.0f && normalized_data[SENSOR_VR] > 40.0f && track_route == 0)
@@ -469,21 +495,24 @@ int16 calculate_position_improved(void)
             // 右环岛
             track_route = 2;
             track_route_status = 1;//入环
+			P52 = 0;
         }
 
-        if (track_route == 2 && track_route_status == 1) // 右环岛&&出环
+        if (track_route == 2 && track_route_status == 2) // 右环岛&&出环
         {
            if (normalized_data[SENSOR_HL] > 80.0f && normalized_data[SENSOR_VL] > 80.0f && normalized_data[SENSOR_HMR] > 99.0f && normalized_data[SENSOR_HR] < 50.0f)
             {
                 track_route_status = 3;
+				P52 = 0;
             }  
            
         }
-        else if (track_route == 1 && track_route_status == 1) // 右环岛&&出环
+        else if (track_route == 1 && track_route_status == 2) // 右环岛&&出环
         {
            if (normalized_data[SENSOR_HR] > 60.0f && normalized_data[SENSOR_VR] > 60.0f && normalized_data[SENSOR_HML] > 99.0f && normalized_data[SENSOR_HL] < 50.0f)
             {
                 track_route_status = 3;
+				P52 = 0;
             }  
         }
         
@@ -503,81 +532,82 @@ int16 calculate_position_improved(void)
 
 
     
-    if(normalized_data[SENSOR_HC] < 2.0f && normalized_data[SENSOR_HMR] < 2.0f && normalized_data[SENSOR_HML] < 2.0f)
-    {
-        track_type = 0;
-        track_route = 0;
-        track_route_status = 0;
-    }
+//    if(normalized_data[SENSOR_HC] < 2.0f && normalized_data[SENSOR_HMR] < 2.0f && normalized_data[SENSOR_HML] < 2.0f)
+//    {
+//        track_type = 0;
+//        track_route = 0;
+//        track_route_status = 0;
+//		track_type_zj = 0;
+//    }
     
     // 根据赛道类型和信号强度调整权重
-    switch(track_type)
-    {
-        case 0: // 普通赛道
-            // 根据信号强度动态调整权重
-            if(signal_strength > 38.0f) // 信号强，可能在直道
-            {
-                weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
-                weight_middle = 0.40f; 
-                weight_center = 0.30f;  // 中心电感
-                weight_vertical = 0.15f;
-                filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
-                max_change_rate = 5;  // 直道大幅降低变化率限制
-            }
-            else if(signal_strength < 30.0f) // 信号弱，可能在弯道
-            {
-                weight_outer = 0.4f;
-                weight_middle = 0.3f;
-                weight_center = 0.1f;
-                weight_vertical = 0.2f;
-                filter_param = 0.4f;
-                max_change_rate = 8;   // 弯道减小变化率
-            }
-            else // 直角弯道可能有一定的信号强度
-            {
-                // 默认权重
-                weight_outer = 0.3f;
-                weight_middle = 0.4f;
-                weight_center = 0.15f;
-                weight_vertical = 0.15f;
-                filter_param = 0.4f;
-                max_change_rate = 8;
-            }
-            break;
-            
-        case 1: // 直角弯道
-            // 直角弯道更依赖外侧和纵向电感
-            weight_outer = 0.15f;      // 降低外侧电感权重
-            weight_middle = 0.40f;     // 保持中间电感权重
-            weight_center = 0.30f;     // 显著增加中心电感权重
-            weight_vertical = 0.15f;   // 降低纵向电感权重
-            filter_param = 0.6f;       // 响应要快一些
-            max_change_rate = 18;      // 允许较大变化率以快速响应
-            break;
-            
-        case 2: // 十字路口
-            // 十字路口中心电感更重要
-            weight_outer = 0.2f;
-            weight_middle = 0.4f;
-            weight_center = 0.2f;  // 十字路口中心电感给较大权重
-            weight_vertical = 0.2f;
-            filter_param = 0.4f;
-            max_change_rate = 10;
-            break;
-            
-        case 3: // 环岛
-            // 环岛更依赖外侧电感
-            weight_outer = 0.5f;
-            weight_middle = 0.3f;
-            weight_center = 0.1f;
-            weight_vertical = 0.1f;
-            filter_param = 0.7f;
-            max_change_rate = 12;
-            break;
+//    switch(track_type)
+//    {
+//        case 0: // 普通赛道
+//            // 根据信号强度动态调整权重
+//            if(signal_strength > 38.0f) // 信号强，可能在直道
+//            {
+//                weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
+//                weight_middle = 0.40f; 
+//                weight_center = 0.30f;  // 中心电感
+//                weight_vertical = 0.15f;
+//                filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
+//                max_change_rate = 5;  // 直道大幅降低变化率限制
+//            }
+//            else if(signal_strength < 30.0f) // 信号弱，可能在弯道
+//            {
+//                weight_outer = 0.4f;
+//                weight_middle = 0.3f;
+//                weight_center = 0.1f;
+//                weight_vertical = 0.2f;
+//                filter_param = 0.4f;
+//                max_change_rate = 8;   // 弯道减小变化率
+//            }
+//            else // 直角弯道可能有一定的信号强度
+//            {
+//                // 默认权重
+//                weight_outer = 0.3f;
+//                weight_middle = 0.4f;
+//                weight_center = 0.15f;
+//                weight_vertical = 0.15f;
+//                filter_param = 0.4f;
+//                max_change_rate = 8;
+//            }
+//            break;
+//            
+//        case 1: // 直角弯道
+//            // 直角弯道更依赖外侧和纵向电感
+//            weight_outer = 0.15f;      // 降低外侧电感权重
+//            weight_middle = 0.40f;     // 保持中间电感权重
+//            weight_center = 0.30f;     // 显著增加中心电感权重
+//            weight_vertical = 0.15f;   // 降低纵向电感权重
+//            filter_param = 0.6f;       // 响应要快一些
+//            max_change_rate = 18;      // 允许较大变化率以快速响应
+//            break;
+//            
+//        case 2: // 十字路口
+//            // 十字路口中心电感更重要
+//            weight_outer = 0.2f;
+//            weight_middle = 0.4f;
+//            weight_center = 0.2f;  // 十字路口中心电感给较大权重
+//            weight_vertical = 0.2f;
+//            filter_param = 0.4f;
+//            max_change_rate = 10;
+//            break;
+//            
+//        case 3: // 环岛
+//            // 环岛更依赖外侧电感
+//            weight_outer = 0.5f;
+//            weight_middle = 0.3f;
+//            weight_center = 0.1f;
+//            weight_vertical = 0.1f;
+//            filter_param = 0.7f;
+//            max_change_rate = 12;
+//            break;
 
-        default:
-            break;
-    }
+//        default:
+//            break;
+//    }
     
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
 //    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)

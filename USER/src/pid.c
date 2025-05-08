@@ -10,7 +10,7 @@ PID_t LeftPID = { 0.0f , //kp
 				  0.0f , //上次目标值
 				  0.0f , //pid输出
 				  0.0f , //积分限幅
-				  0.0f   //输出限幅
+				  20000.0f   //输出限幅
 				};//左轮速度环PID
 
 				  
@@ -24,7 +24,7 @@ PID_t RightPID = { 0.0f , //kp
 				   0.0f , //上次目标值
 	               0.0f , //pid输出
 				   0.0f , //积分限幅
-				   0.0f   //输出限幅
+				   20000.0f   //输出限幅
 				 };//右轮速度环PID
 
 
@@ -99,6 +99,15 @@ float pid_increment_feedforward(PID_t* pid, float real, float target)
 	pid->preverror = pid->lasterror;
 	pid->lasterror = error;
 	pid->lasttarget = target;
+	
+	if (pid->output > pid->o_limit)
+	{
+		pid->output = pid->o_limit;
+	}
+	else if (pid->output < -pid->o_limit)
+	{
+		pid->output = -pid->o_limit;
+	}
 	
 	return pid->output;
 }
