@@ -449,6 +449,8 @@ int16 calculate_position_improved(void)
     // 1. 直角弯道特征：一侧横向和纵向电感值明显高于另一侧，同时信号强度适中
     if (track_type == 0)
     {
+		P52 = 1;
+		
         if(((normalized_data[SENSOR_HL] > 15.0f && normalized_data[SENSOR_VL] > 65.0f && 
                 normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) || 
                 (normalized_data[SENSOR_VR] > 70.0f && 
@@ -456,7 +458,7 @@ int16 calculate_position_improved(void)
                 normalized_data[SENSOR_HC] < 70.0f && // 中心电感较弱
                 signal_strength > 28.0f && signal_strength < 55.0f) // 信号强度适中
         {
-            track_type = 1; // 直角弯道
+            //track_type = 1; // 直角弯道
         }
 
         if((normalized_data[SENSOR_HL] > 90.0f && normalized_data[SENSOR_HR] < 40.0f)  ||
@@ -480,6 +482,7 @@ int16 calculate_position_improved(void)
 	}
     else if (track_type == 3) //圆环
     {
+		P52 = 0;
         // 环岛中可以使用纵向电感和中间电感判断更精确的位置
 
         if(normalized_data[SENSOR_VL] > 50.0f && normalized_data[SENSOR_VR] < 32.0f && track_route == 0)

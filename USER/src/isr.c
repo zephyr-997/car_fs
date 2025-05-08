@@ -315,13 +315,13 @@ void TM2_Isr() interrupt 12
 		{
 			if (track_route == 1)//左环
 			{
-				g_LeftPoint = g_SpeedPoint * 0.97;
-				g_RightPoint = g_SpeedPoint * 1.03;
+				g_LeftPoint = g_SpeedPoint * 0.8;
+				g_RightPoint = g_SpeedPoint * 1.2;
 			}
 			else if (track_route == 2)//右环
 			{
-				g_LeftPoint = g_SpeedPoint * 1.03;
-				g_RightPoint = g_SpeedPoint * 0.97;
+				g_LeftPoint = g_SpeedPoint * 1.2;
+				g_RightPoint = g_SpeedPoint * 0.8;
 			}
 			
 			g_IntEncoderL += g_EncoderLeft;
@@ -330,6 +330,9 @@ void TM2_Isr() interrupt 12
 			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 15800)
 			{
 				track_route_status = 2;
+				
+				g_IntEncoderL = g_IntEncoderR = 0;
+				
 				P52 = 1;
 			}
 		}
@@ -337,13 +340,13 @@ void TM2_Isr() interrupt 12
 		{
 			if (track_route == 1)//左环
 			{
-				g_LeftPoint = g_SpeedPoint * 0.97;
-				g_RightPoint = g_SpeedPoint * 1.03;
+				g_LeftPoint = g_SpeedPoint * 0.8;
+				g_RightPoint = g_SpeedPoint * 1.2;
 			}
 			else if (track_route == 2)//右环
 			{
-				g_LeftPoint = g_SpeedPoint * 1.03;
-				g_RightPoint = g_SpeedPoint * 0.97;
+				g_LeftPoint = g_SpeedPoint * 1.2;
+				g_RightPoint = g_SpeedPoint * 0.8;
 			}
 			
 			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 16200)
@@ -351,6 +354,9 @@ void TM2_Isr() interrupt 12
 				track_type = 0;
 				track_route = 0;
 				track_route_status = 0;
+				
+				g_IntEncoderL = g_IntEncoderR = 0;
+				
 				P52 = 1;
 			}
 		}
