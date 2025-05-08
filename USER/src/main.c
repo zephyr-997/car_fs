@@ -18,10 +18,8 @@ void main(void)
 	motor_init();
 	encoder_init();
 	
-	P26 = 1;
-	
-	//state = imu963ra_init();
-	//Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+	imu963ra_init();
+	Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
 	
 	// ips114_clear_simspi(WHITE);	 //清屏
 	delay_ms(100); // 延时等待系统稳定
@@ -60,27 +58,27 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-//			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,position,(int)turn_pid,g_DutyLeft,g_DutyRight);
+			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,position,(int)turn_pid,g_DutyLeft,g_DutyRight);
+			uart_putstr(UART_4, g_TxData);
+			
+//			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
 			
-			// sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
-			// uart_putstr(UART_4, g_TxData);
-			
 			// 通过串口输出七电感数据
-			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-			 (uint16)normalized_data[SENSOR_HL], 
-			 (uint16)normalized_data[SENSOR_VL], 
-			 (uint16)normalized_data[SENSOR_HML], 
-			 (uint16)normalized_data[SENSOR_HC],
-			 (uint16)normalized_data[SENSOR_HMR], 
-			 (uint16)normalized_data[SENSOR_VR], 
-			 (uint16)normalized_data[SENSOR_HR], 
-			  position,
-			 (uint16)signal_strength_value,
-			  track_type,
-			  //track_route,
-			  track_type_zj); 
-			uart_putstr(UART_4, g_TxData);
+//			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+//			 (uint16)normalized_data[SENSOR_HL], 
+//			 (uint16)normalized_data[SENSOR_VL], 
+//			 (uint16)normalized_data[SENSOR_HML], 
+//			 (uint16)normalized_data[SENSOR_HC],
+//			 (uint16)normalized_data[SENSOR_HMR], 
+//			 (uint16)normalized_data[SENSOR_VR], 
+//			 (uint16)normalized_data[SENSOR_HR], 
+//			  position,
+//			 (uint16)signal_strength_value,
+//			  track_type,
+//			  //track_route,
+//			  track_type_zj); 
+//			uart_putstr(UART_4, g_TxData);
 		}
 		
 		// 获取滤波后的ADC数据		

@@ -273,17 +273,11 @@ void TM2_Isr() interrupt 12
 	g_EncoderLeft = get_left_encoder();
 	g_EncoderRight = get_right_encoder();
 	
-	/*
-		读取角速度并转化为实际物理数据
-		当突然左转，Gyro_Z为正值；突然右转，Gyro_Z为负值
-	*/
-//	imu963ra_get_gyro();
-//	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
+	imu963ra_get_gyro();
+	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
 	
-	//对Gyro_Z进行卡尔曼滤波
-//	filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);
 	
-//	Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波的值
+	
 
 	if (startKeyFlag == 1)
 	{
@@ -293,7 +287,11 @@ void TM2_Isr() interrupt 12
 			turn_count++;
 			if (turn_count >= 3)
 			{
-				turn_pid = pid_poisitional_normal(&TurnPID, position);
+				filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
+//				turn_pid = pid_poisitional_normal(&TurnPID, position);
+				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+				Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
+				
 				turn_count = 0;
 			}
 			
@@ -373,7 +371,7 @@ void TM2_Isr() interrupt 12
 		{
 			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
 			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
-			uartSendFlag = 0;
+//			uartSendFlag = 0;
 			
 			set_motor_pwm(0, 0);
 		}
