@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              05/05/25  20:38:44  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              09/05/25  21:10:30  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -24,7 +24,7 @@ stmt  level    source
    13   1      }
    14          
    15          
-   16          void set_motor_pwm(int left_duty, int right_duty)
+   16          void set_motor_pwm(int32_t left_duty, int32_t right_duty)
    17          {
    18   1        // 左轮PWM限幅并输出
    19   1        if(left_duty >= 0)
@@ -34,8 +34,8 @@ stmt  level    source
    23   3            left_duty = MOTOR_PWM_LIMIT;
    24   3          }
    25   2        
-   26   2          pwm_duty(PWMA_CH1P_P60, left_duty);
-   27   2          pwm_duty(PWMA_CH2P_P62, 0);
+   26   2          pwm_duty(PWMA_CH1P_P60, 0);
+   27   2          pwm_duty(PWMA_CH2P_P62, left_duty);
    28   2        }
    29   1        else
    30   1        {
@@ -44,8 +44,8 @@ stmt  level    source
    33   3            left_duty = -MOTOR_PWM_LIMIT;
    34   3          }
    35   2        
-   36   2          pwm_duty(PWMA_CH1P_P60, 0);
-   37   2          pwm_duty(PWMA_CH2P_P62, -left_duty);
+   36   2          pwm_duty(PWMA_CH1P_P60, -left_duty);
+   37   2          pwm_duty(PWMA_CH2P_P62, 0);
    38   2        }
    39   1        
    40   1        // 右轮PWM限幅并输出
@@ -58,32 +58,36 @@ stmt  level    source
    47   2          
    48   2          pwm_duty(PWMA_CH3P_P64, right_duty);
    49   2          pwm_duty(PWMA_CH4P_P66, 0);
-   50   2        }
-   51   1        else  
-   52   1        {
-   53   2          if (right_duty < -MOTOR_PWM_LIMIT)
-   54   2          {
-   55   3            right_duty = -MOTOR_PWM_LIMIT;
-   56   3          }
-   57   2          
-C251 COMPILER V5.60.0,  motor                                                              05/05/25  20:38:44  PAGE 2   
+   50   2          
+   51   2          
+   52   2        }
+   53   1        else  
+   54   1        {
+   55   2          if (right_duty < -MOTOR_PWM_LIMIT)
+   56   2          {
+   57   3            right_duty = -MOTOR_PWM_LIMIT;
+C251 COMPILER V5.60.0,  motor                                                              09/05/25  21:10:30  PAGE 2   
 
-   58   2          pwm_duty(PWMA_CH3P_P64, 0);
-   59   2          pwm_duty(PWMA_CH4P_P66, -right_duty);
-   60   2        }
-   61   1      }
+   58   3          }
+   59   2          
+   60   2          pwm_duty(PWMA_CH3P_P64, 0);
+   61   2          pwm_duty(PWMA_CH4P_P66, -right_duty);
+   62   2          
+   63   2          
+   64   2        }
+   65   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       286     ------
+  code size            =       270     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =         4     ------
+  edata size           =         8     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------

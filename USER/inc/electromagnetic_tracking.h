@@ -50,6 +50,8 @@ extern float signal_strength_value;            // 信号强度指标
 //电磁位置计算变量
 extern float filter_param;   // 滤波系数，可调
 extern uint8 track_type;        // 赛道类型：0-普通，1-十字，2-环岛，3-直角弯道
+extern uint8 track_type_last;         // 赛道类型：0-普通，1-直角弯道，2-十字圆环，3-环岛
+
 extern uint8 track_route;      // 赛道路径：1-左转，2-右转
 extern uint8 track_route_status;
 extern uint8 track_type_zj;

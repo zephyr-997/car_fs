@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  encoder                                                            05/05/25  20:38:43  PAGE 1   
+C251 COMPILER V5.60.0,  encoder                                                            09/05/25  21:10:29  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE encoder
@@ -11,53 +11,54 @@ stmt  level    source
 
     1          #include "encoder.h"
     2          
-    3          
+    3          int g_encoleft_init = 0, g_encoright_init = 0;
     4          int g_EncoderLeft = 0, g_EncoderRight = 0;
-    5          
+    5          int g_IntEncoderL = 0, g_IntEncoderR = 0;
     6          
-    7          void encoder_init(void)
-    8          {
-    9   1        ctimer_count_init(CTIM0_P34);
-   10   1        ctimer_count_init(CTIM3_P04);
-   11   1      }
-   12          
+    7          
+    8          void encoder_init(void)
+    9          {
+   10   1        ctimer_count_init(CTIM0_P34);
+   11   1        ctimer_count_init(CTIM3_P04);
+   12   1      }
    13          
-   14          int get_left_encoder(void)
-   15          {
-   16   1        int encoder_left;
-   17   1        
-   18   1        if(LEFT_DIR == 1)
-   19   1        {
-   20   2          encoder_left = ctimer_count_read(CTIM0_P34);
-   21   2        }
-   22   1        else
-   23   1        {
-   24   2          encoder_left = ctimer_count_read(CTIM0_P34) * -1;
-   25   2        }
-   26   1        
-   27   1        ctimer_count_clean(CTIM0_P34);
-   28   1        
-   29   1        return encoder_left;
-   30   1      }
-   31          
+   14          
+   15          int get_left_encoder(void)
+   16          {
+   17   1        int encoder_left;
+   18   1        
+   19   1        if(LEFT_DIR == 1)
+   20   1        {
+   21   2          encoder_left = ctimer_count_read(CTIM0_P34);
+   22   2        }
+   23   1        else
+   24   1        {
+   25   2          encoder_left = ctimer_count_read(CTIM0_P34) * -1;
+   26   2        }
+   27   1        
+   28   1        ctimer_count_clean(CTIM0_P34);
+   29   1        
+   30   1        return encoder_left;
+   31   1      }
    32          
-   33          int get_right_encoder(void)
-   34          {
-   35   1        int encoder_right;
-   36   1        
-   37   1        if(RIGHT_DIR == 1)
-   38   1        {
-   39   2          encoder_right = ctimer_count_read(CTIM3_P04) * -1;
-   40   2        }
-   41   1        else
-   42   1        {
-   43   2          encoder_right = ctimer_count_read(CTIM3_P04);
-   44   2        }
-   45   1        
-   46   1        ctimer_count_clean(CTIM3_P04);
-   47   1        
-   48   1        return encoder_right;
-   49   1      }
+   33          
+   34          int get_right_encoder(void)
+   35          {
+   36   1        int encoder_right;
+   37   1        
+   38   1        if(RIGHT_DIR == 1)
+   39   1        {
+   40   2          encoder_right = ctimer_count_read(CTIM3_P04) * -1;
+   41   2        }
+   42   1        else
+   43   1        {
+   44   2          encoder_right = ctimer_count_read(CTIM3_P04);
+   45   2        }
+   46   1        
+   47   1        ctimer_count_clean(CTIM3_P04);
+   48   1        
+   49   1        return encoder_right;
+   50   1      }
 
 
 Module Information          Static   Overlayable
@@ -66,12 +67,12 @@ Module Information          Static   Overlayable
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
-  pdata size           =    ------     ------
-C251 COMPILER V5.60.0,  encoder                                                            05/05/25  20:38:43  PAGE 2   
+C251 COMPILER V5.60.0,  encoder                                                            09/05/25  21:10:29  PAGE 2   
 
+  pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =         8     ------
+  edata size           =        16     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
@@ -79,7 +80,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        12     ------
+  hconst size          =        36     ------
 End of Module Information.
 
 

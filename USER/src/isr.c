@@ -26,7 +26,6 @@
 #include "key.h"
 #include "electromagnetic_tracking.h"
 
-
 //void  INT0_Isr()  interrupt 0;
 //void  TM0_Isr()   interrupt 1;
 //void  INT1_Isr()  interrupt 2;
@@ -68,6 +67,11 @@ int turn_count = 0;
 float k = 0;
 int turnflag = 0;
 uint8_t startKeyFlag = 0, uartSendFlag = 1;
+
+// 蜂鸣器控制相关变量
+uint8_t beep_flag = 0;          // 蜂鸣器开启标志，1表示开启
+uint16_t beep_count = 0;        // 蜂鸣器计时计数器
+
 
 //UART1中断
 void UART1_Isr() interrupt 4
@@ -255,11 +259,36 @@ void TM1_Isr() interrupt 3
 	
 	/* 普通定时功能，备用 */
 	count++;
-	if (count >= 300)
+	if (count >= 300) //3s
 	{
 		flag = 1;
 		count = 0;
 	}
+
+    /* 检测赛道类型变化并控制蜂鸣器 */
+    if (track_type != track_type_last)
+    {
+        // 赛道类型发生变化，启动蜂鸣器
+        beep_flag = 1;
+        beep_count = 0;  // 重置计数器
+        P26 = 0;  // 打开蜂鸣器
+        
+        // 更新上一次赛道类型
+        track_type_last = track_type;
+    }
+    
+    /* 蜂鸣器计时控制 */
+    if (beep_flag)
+    {
+        beep_count++;
+        // 10ms * 20 = 200ms
+        if (beep_count >= 20)
+        {
+            beep_count = 0;
+            beep_flag = 0;
+            P26 = 1;  // 关闭蜂鸣器
+        }
+    }	
 }
 
 //定时器2中断

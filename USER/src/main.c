@@ -67,8 +67,8 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,position,(int)turn_pid,g_DutyLeft,g_DutyRight);
-			uart_putstr(UART_4, g_TxData);
+			// sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,position,(int)turn_pid,g_DutyLeft,g_DutyRight);
+			// uart_putstr(UART_4, g_TxData);
 			
 //			sprintf(g_TxData,"%d,%d,%d,%d\n",g_encoleft_init,g_encoright_init,g_EncoderLeft,g_EncoderRight);
 //			uart_putstr(UART_4, g_TxData);
@@ -77,20 +77,20 @@ void main(void)
 //			uart_putstr(UART_4, g_TxData);
 			
 			// 通过串口输出七电感数据
-//			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-//			 (uint16)normalized_data[SENSOR_HL], 
-//			 (uint16)normalized_data[SENSOR_VL], 
-//			 (uint16)normalized_data[SENSOR_HML], 
-//			 (uint16)normalized_data[SENSOR_HC],
-//			 (uint16)normalized_data[SENSOR_HMR], 
-//			 (uint16)normalized_data[SENSOR_VR], 
-//			 (uint16)normalized_data[SENSOR_HR], 
-//			  position,
-//			 (uint16)signal_strength_value,
-//			  track_type,
-//			  //track_route,
-//			  track_type_zj); 
-//			uart_putstr(UART_4, g_TxData);
+			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+			 (uint16)normalized_data[SENSOR_HL], 
+			 (uint16)normalized_data[SENSOR_VL], 
+			 (uint16)normalized_data[SENSOR_HML], 
+			 (uint16)normalized_data[SENSOR_HC],
+			 (uint16)normalized_data[SENSOR_HMR], 
+			 (uint16)normalized_data[SENSOR_VR], 
+			 (uint16)normalized_data[SENSOR_HR], 
+			  position,
+			 (uint16)signal_strength_value,
+			  track_type,
+			  //track_route,
+			  track_type_zj); 
+			uart_putstr(UART_4, g_TxData);
 		}
 		
 		// 获取滤波后的ADC数据		
