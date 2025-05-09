@@ -15,16 +15,30 @@ typedef struct {
 } KalmanFilter;
 
 
+typedef struct {
+	float alpha;
+	float output;
+	float lastoutput;
+} LowPassFilter;
+
+
 extern const float imu693kf_Q;
 extern const float imu693kf_R;
 
 
 extern KalmanFilter imu693_kf;
 
+extern LowPassFilter leftSpeedFilt;
+extern LowPassFilter rightSpeedFilt;
+
 
 void Kalman_Init(KalmanFilter* kf, float F, float B, float Q, float R, float initial_x);
 void Kalman_Predict(KalmanFilter* kf, float u);
 float Kalman_Update(KalmanFilter* kf, float z);
+
+
+void LowPass_init(LowPassFilter* instance, float alpha);
+float LowPass_Filter(LowPassFilter* instance, float input);
 
 
 #endif

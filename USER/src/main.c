@@ -3,29 +3,38 @@
 void main(void)
 {
 	int state = 5;
-	uint16 sum_value = 0; //
-	uint16 value[7] = {0}; //调试用数组
+	uint16 sum_value = 0;    //
+	uint16 value[7] = {0};   //调试用数组
 	
 	board_init();			
-	electromagnetic_init();  // 初始化电磁传感器
+	electromagnetic_init();  //初始化电磁传感器
 	
 	// ips114_init_simspi();					
 	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
-	
-	pit_timer_ms(TIM_1, 10);
-	pit_timer_ms(TIM_2, 5);
 	
 	motor_init();
 	encoder_init();
 	
 	imu963ra_init();
+	
+	pid_init(&LeftPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f);
+	pid_init(&RightPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f);
+	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+	
+	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
+	LowPass_init(&rightSpeedFilt, 0.556);
+	
 	Kalman_Init(&imu693_kf, 0.98, 0.02, imu693kf_Q, imu693kf_R, 0.0);
+	
+	pit_timer_ms(TIM_1, 10);
+	pit_timer_ms(TIM_2, 5);
 	
 	// ips114_clear_simspi(WHITE);	 //清屏
 	delay_ms(100); // 延时等待系统稳定
 	
     while(1)
 	{
+		
 		/* 串口接收 */
 		if(g_RxPointer != 0)
 		{
@@ -60,6 +69,9 @@ void main(void)
 		{
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,position,(int)turn_pid,g_DutyLeft,g_DutyRight);
 			uart_putstr(UART_4, g_TxData);
+			
+//			sprintf(g_TxData,"%d,%d,%d,%d\n",g_encoleft_init,g_encoright_init,g_EncoderLeft,g_EncoderRight);
+//			uart_putstr(UART_4, g_TxData);
 			
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
@@ -143,7 +155,6 @@ void main(void)
 //		  uart_putstr(UART_4, g_TxData);
 
 //		  delay_ms(5);
-		
 		
 	}	
 }

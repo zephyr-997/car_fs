@@ -59,7 +59,7 @@ float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还�
 int32_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
 float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
-int g_SpeedPoint = 30;
+int g_SpeedPoint = 50;
 int g_LeftPoint = 0;                             // 左轮目标速度                  
 int g_RightPoint = 0;                            // 右轮目标速度             
 int count = 0, flag = 0;
@@ -262,25 +262,25 @@ void TM1_Isr() interrupt 3
 	}
 }
 
-
-
 //定时器2中断
 void TM2_Isr() interrupt 12
 {
 	TIM2_CLEAR_FLAG;  //清除中断标志
 	
 	//读取并清除编码器的值
-	g_EncoderLeft = get_left_encoder();
-	g_EncoderRight = get_right_encoder();
+	g_encoleft_init = get_left_encoder();
+	g_encoright_init = get_right_encoder();
 	
 	imu963ra_get_gyro();
 	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
 	
-	
-	
 
 	if (startKeyFlag == 1)
 	{
+		//对编码器的值进行滤波
+		g_EncoderLeft = LowPass_Filter(&leftSpeedFilt, g_encoleft_init);
+		g_EncoderRight = LowPass_Filter(&rightSpeedFilt, g_encoright_init);
+		
 //		if (track_type == 0 || (track_type == 3 && track_route_status == 2))//普通直线或者圆环内部
 //		{
 			/* 5ms算一次内环，15ms算一次外环 */
@@ -288,8 +288,10 @@ void TM2_Isr() interrupt 12
 			if (turn_count >= 3)
 			{
 				filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
+				
 //				turn_pid = pid_poisitional_normal(&TurnPID, position);
 				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+				
 				Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
 				
 				turn_count = 0;
@@ -371,7 +373,7 @@ void TM2_Isr() interrupt 12
 		{
 			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
 			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
-//			uartSendFlag = 0;
+			uartSendFlag = 0;
 			
 			set_motor_pwm(0, 0);
 		}

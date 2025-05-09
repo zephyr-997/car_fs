@@ -6,6 +6,7 @@
 #define  LEFT_DIR    P35
 #define  RIGHT_DIR   P53
 
+extern int g_encoleft_init, g_encoright_init;
 extern int g_EncoderLeft, g_EncoderRight;
 extern int g_IntEncoderL, g_IntEncoderR;
 
