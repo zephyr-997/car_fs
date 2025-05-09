@@ -467,10 +467,11 @@ int16 calculate_position_improved(void)
         {
             //track_type = 3; // 环岛
         }
-//		if (normalized_data[SENSOR_HC] > 90 && normalized_data[SENSOR_HML] > 90 && normalized_data[SENSOR_HMR] > 90)
-//		{
-//			track_type = 2; //十字
-//		}
+		if ((normalized_data[SENSOR_HC] > 90 && normalized_data[SENSOR_HML] > 90 && normalized_data[SENSOR_HMR] < 30 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 75) || 
+                (normalized_data[SENSOR_HC] > 90 && normalized_data[SENSOR_HML] > 90 && normalized_data[SENSOR_HMR] < 30 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 75))
+		{
+			track_type = 2; //十字
+		}
     }
 	else if (track_type == 1) //直角
 	{
@@ -494,13 +495,13 @@ int16 calculate_position_improved(void)
 		}
 		
 	}
-//	else if (track_type == 2) //十字
-//    {
-//		P26 = 0;
-//		
-//	
-//	
-//	}
+	else if (track_type == 2) //十字
+   {
+    
+		
+	
+	
+	}
     else if (track_type == 3) //圆环
     {
 		P52 = 0;
