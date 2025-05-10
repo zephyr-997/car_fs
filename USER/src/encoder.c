@@ -5,10 +5,19 @@ int g_EncoderLeft = 0, g_EncoderRight = 0;
 int g_IntEncoderL = 0, g_IntEncoderR = 0;
 
 
+EncoderDebo_t EncoderDeboL, EncoderDeboR;
+
+
 void encoder_init(void)
 {
 	ctimer_count_init(CTIM0_P34);
 	ctimer_count_init(CTIM3_P04);
+	
+	EncoderDeboL.encoderlast = 0;
+	EncoderDeboL.count = 0;
+	
+	EncoderDeboR.encoderlast = 0;
+	EncoderDeboR.count = 0;
 }
 
 
@@ -47,4 +56,25 @@ int get_right_encoder(void)
 	ctimer_count_clean(CTIM3_P04);
 	
 	return encoder_right;
+}
+
+int encoder_debounce(EncoderDebo_t* instance, int encoder)
+{
+	if (myabs(encoder - instance->encoderlast) > 20 && instance->count >= 5)
+	{
+		encoder = instance->encoderlast;
+		instance->count = 0;
+	}
+	else
+	{
+		instance->encoderlast = encoder;
+		
+		instance->count++;
+		if (instance->count >= 10000)
+		{
+			instance->count = 0;
+		}
+	}
+	
+	return encoder;
 }

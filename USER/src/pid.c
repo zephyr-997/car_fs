@@ -1,47 +1,10 @@
 #include "pid.h"
 
-PID_t LeftPID = { 0.0f , //kp
-				  0.0f , //ki
-				  0.0f , //kd
-				  0.0f , //kf
-	              0.0f , //上次误差
-				  0.0f , //上上次误差
-				  0.0f , //积分误差
-				  0.0f , //上次目标值
-				  0.0f , //pid输出
-				  0.0f , //积分限幅
-				  5100.0f   //输出限幅
-				};//左轮速度环PID
 
-				  
-PID_t RightPID = { 0.0f , //kp
-				   0.0f , //ki
-				   0.0f , //kd
-				   0.0f , //kf
-	               0.0f , //上次误差
-				   0.0f , //上上次误差
-				   0.0f , //积分误差
-				   0.0f , //上次目标值
-	               0.0f , //pid输出
-				   0.0f , //积分限幅
-				   5100.0f   //输出限幅
-				 };//右轮速度环PID
+PID_t LeftPID;//左轮速度环PID	  
+PID_t RightPID;//右轮速度环PID
+PID_t TurnPID;//转向环PID
 
-
-PID_t TurnPID = { 0.0f ,   //kp
-				  0.0f ,   //ki
-				  0.0f ,   //kd
-				  0.0f ,   //kf
-	              0.0f ,   //上次误差
-				  0.0f ,   //上上次误差
-				  0.0f ,   //积分误差
-				  0.0f ,   //上次目标值
-	              0.0f ,   //pid输出
-				  0.0f ,   //积分限幅
-				  900.0f   //输出限幅
-				};//转向环PID
-
-				
 float myfabs(float num)
 {
 	return (num > 0) ? num : -num;
@@ -62,6 +25,7 @@ void pid_init(PID_t* pid, float kp, float ki, float kd, float kf, float i_limit,
 	pid->i_limit = i_limit;
 	pid->o_limit = o_limit;	
 	
+	pid->error = 0.0f;
 	pid->lasterror = 0.0f;
 	pid->preverror = 0.0f;
 	pid->interror = 0.0f;
@@ -77,8 +41,8 @@ void pid_init(PID_t* pid, float kp, float ki, float kd, float kf, float i_limit,
 //位置式PID（带前馈）
 float pid_poisitional_feedforward(PID_t* pid, float real, float target)
 {
-	float error = target - real;
-	pid->interror += error;
+	pid->error = target - real;
+	pid->interror += pid->error;
 	
 	//积分限幅
 	if (pid->interror > pid->i_limit)
@@ -91,9 +55,9 @@ float pid_poisitional_feedforward(PID_t* pid, float real, float target)
 	}
 	
 	//线性、积分、微分、前馈共同作用
-	pid->output = pid->kp * error + pid->ki * pid->interror + pid->kd * (error - pid->lasterror) + pid->kf * (target - pid->lasttarget);
+	pid->output = pid->kp * pid->error + pid->ki * pid->interror + pid->kd * (pid->error - pid->lasterror) + pid->kf * (target - pid->lasttarget);
 	
-	pid->lasterror = error;
+	pid->lasterror = pid->error;
 	pid->lasttarget = target;
 	
 	//输出限幅
@@ -113,16 +77,16 @@ float pid_poisitional_feedforward(PID_t* pid, float real, float target)
 //增量式PID（带前馈）
 float pid_increment_feedforward(PID_t* pid, float real, float target)
 {
-	float error = target - real;
+	pid->error = target - real;
 	
-	pid->p_out = pid->kp * (error - pid->lasterror);
-	pid->i_out = pid->ki * error;
-	pid->d_out = pid->kd * (error - 2 * pid->lasterror + pid->preverror);
+	pid->p_out = pid->kp * (pid->error - pid->lasterror);
+	pid->i_out = pid->ki * pid->error;
+	pid->d_out = pid->kd * (pid->error - 2 * pid->lasterror + pid->preverror);
 
 	pid->output += pid->p_out + pid->i_out + pid->d_out + pid->kf * (target - pid->lasttarget);
 	
 	pid->preverror = pid->lasterror;
-	pid->lasterror = error;
+	pid->lasterror = pid->error;
 	pid->lasttarget = target;
 	
 	if (pid->output > pid->o_limit)
@@ -140,8 +104,14 @@ float pid_increment_feedforward(PID_t* pid, float real, float target)
 
 float pid_poisitional_normal(PID_t* pid, float position)
 {
-	pid->output = pid->kp * position + pid->kd * (position - pid->lasterror);
-	pid->lasterror = position;
+	pid->error = position;
+	
+	pid->p_out = pid->kp * pid->error;
+	pid->d_out = pid->kd * (pid->error - pid->lasterror);
+
+	pid->output = pid->p_out + pid->d_out;
+
+	pid->lasterror = pid->error;
 	
 	//输出限幅
 	if (pid->output > pid->o_limit)
@@ -160,10 +130,11 @@ float pid_poisitional_normal(PID_t* pid, float position)
 //魔改位置式pid（加二次项）
 float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
 {
-	float error = position;
+	pid->p_out = (pid->kp * position) + (pid->kp * pid->kp * position * myfabs(position));
+	pid->d_out = (pid->kd * (position - pid->lasterror) + (pid->kd * pid->kd * GyroZ));
 	
-	pid->output = (pid->kp * error) + (pid->kp * pid->kp * error * myfabs(error)) + (pid->kd * (error - pid->lasterror) + (pid->kd * pid->kd * GyroZ));
-	pid->lasterror = error;
+	pid->output = pid->p_out + pid->d_out;
+	pid->lasterror = position;
 	
 	//输出限幅
 	if (pid->output > pid->o_limit)

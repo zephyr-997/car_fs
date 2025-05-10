@@ -1,5 +1,7 @@
 #include "headfile.h"
 
+extern uint8_t track_ten_cnt;
+
 void main(void)
 {
 	int state = 5;
@@ -17,9 +19,9 @@ void main(void)
 	
 	imu963ra_init();
 	
-	pid_init(&LeftPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f);
-	pid_init(&RightPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f);
-	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&LeftPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
+	pid_init(&RightPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
+	pid_init(&TurnPID, 1.45f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);
@@ -67,8 +69,27 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-			// sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",g_LeftPoint,g_EncoderLeft,g_RightPoint,g_EncoderRight,position,(int)turn_pid,g_DutyLeft,g_DutyRight);
-			// uart_putstr(UART_4, g_TxData);
+//			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",
+//					g_LeftPoint,
+//					g_EncoderLeft,
+//					g_RightPoint,
+//					g_EncoderRight,
+//					position,
+//					(int)turn_pid,
+//					g_DutyLeft,
+//					g_DutyRight);
+//			uart_putstr(UART_4, g_TxData);
+					
+//			sprintf(g_TxData,"%.2f,%.2f,%.2f,%.4f,%.4f,%.4f,%.4f\n",
+//					(float)g_LeftPoint,
+//					(float)g_EncoderLeft,
+//					(float)g_DutyLeft,
+//					LeftPID.error,
+//					LeftPID.lasterror,
+//					LeftPID.p_out,
+//					LeftPID.output
+//			);
+//			uart_putstr(UART_4, g_TxData);
 			
 //			sprintf(g_TxData,"%d,%d,%d,%d\n",g_encoleft_init,g_encoright_init,g_EncoderLeft,g_EncoderRight);
 //			uart_putstr(UART_4, g_TxData);
@@ -86,23 +107,23 @@ void main(void)
 			 (uint16)normalized_data[SENSOR_VR], 
 			 (uint16)normalized_data[SENSOR_HR], 
 			  position,
-			 (uint16)signal_strength_value,
+			 (uint16)track_ten_flag,
 			  track_type,
 			  //track_route,
-			  track_type_zj); 
+			  track_ten_cnt); 
 			uart_putstr(UART_4, g_TxData);
 		}
 		
 		// 获取滤波后的ADC数据		
 		mid_filter();      // 使用中位值滤波获取电感数据
 
-//		// 归一化电感数据
+		// 归一化电感数组
 		normalize_sensors();
 		
-//		// 计算位置偏差
+		// 计算位置偏差
 		position = calculate_position_improved();
 		
-		//检查电磁保护	
+		//检查电磁保护
 		protection_flag = check_electromagnetic_protection();
 
 		// if(protection_flag)
@@ -113,11 +134,9 @@ void main(void)
 		// 	// 显示保护触发信息
 		// 	ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
 			
-		// 	// 永久停止或等待重置
+		// 	// 永久停车或等待重置
 		// 	while(1)                                                               
 		// 	{
-		// 		// 可以添加重置逻辑，例如按键检测
-		// 		// 如果需要重新启动，可以在这里添加条件
 		// 		delay_ms(100);
 		// 	}
 		// }
@@ -126,15 +145,15 @@ void main(void)
 //		display_electromagnetic_data();
 
 		/*调试功能*/
-
+#if 0
 		 //读取七电感ADC值（用于调试）
-//		  value[0] = adc_once(ADC_HL,  ADC_10BIT);
-//		 value[1] = adc_once(ADC_VL,  ADC_10BIT);
-//		 value[2] = adc_once(ADC_HML, ADC_10BIT);
-//		 value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-//		value[4] = adc_once(ADC_HMR, ADC_10BIT);
-//		  value[5] = adc_once(ADC_VR,  ADC_10BIT);
-//		 value[6] = adc_once(ADC_HR,  ADC_10BIT);	
+		  value[0] = adc_once(ADC_HL,  ADC_10BIT);
+		  value[1] = adc_once(ADC_VL,  ADC_10BIT);
+		  value[2] = adc_once(ADC_HML, ADC_10BIT);
+		  value[3] = adc_once(ADC_HC,  ADC_10BIT); 
+	      value[4] = adc_once(ADC_HMR, ADC_10BIT);
+		  value[5] = adc_once(ADC_VR,  ADC_10BIT);
+		  value[6] = adc_once(ADC_HR,  ADC_10BIT);	
 
 		// 计算所有电感值的总和
 //		sum_value = (uint16)normalized_data[SENSOR_HL] + (uint16)normalized_data[SENSOR_VL] + 
@@ -144,18 +163,19 @@ void main(void)
 
 
 		 // 通过串口输出七电感原始数据
-//		  sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
-//		  value[0], 
-//		  value[1], 
-//		  value[2], 
-//		  value[3], 
-//		  value[4],
-//		  value[5],
-//          value[6]);
-//		  uart_putstr(UART_4, g_TxData);
+		  sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
+		  value[0], 
+		  value[1], 
+		  value[2], 
+		  value[3], 
+		  value[4],
+		  value[5],
+          value[6]);
+		  uart_putstr(UART_4, g_TxData);
 
-//		  delay_ms(5);
-		
+		  delay_ms(5);
+#endif	
+
 	}	
 }
 

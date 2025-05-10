@@ -58,7 +58,7 @@ float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还�
 int32_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
 float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
-int g_SpeedPoint = 50;
+int g_SpeedPoint = 30;
 int g_LeftPoint = 0;                             // 左轮目标速度                  
 int g_RightPoint = 0;                            // 右轮目标速度             
 int count = 0, flag = 0;
@@ -71,7 +71,11 @@ uint8_t startKeyFlag = 0, uartSendFlag = 1;
 // 蜂鸣器控制相关变量
 uint8_t beep_flag = 0;          // 蜂鸣器开启标志，1表示开启
 uint16_t beep_count = 0;        // 蜂鸣器计时计数器
+uint8_t track_ten_cnt = 0;    //出入环重复判定计时器
 
+
+extern uint8 track_ten_flag;
+extern uint8 ten_change_flag;
 
 //UART1中断
 void UART1_Isr() interrupt 4
@@ -259,7 +263,7 @@ void TM1_Isr() interrupt 3
 	
 	/* 普通定时功能，备用 */
 	count++;
-	if (count >= 300) //3s
+	if (count >= 50)
 	{
 		flag = 1;
 		count = 0;
@@ -289,6 +293,18 @@ void TM1_Isr() interrupt 3
             P26 = 1;  // 关闭蜂鸣器
         }
     }	
+	
+	/* 出入十字圆环计时判定 */
+	if (ten_change_flag == 1)
+	{
+		track_ten_cnt++;
+		if (track_ten_cnt >= 200)
+		{
+			track_ten_flag = 1;
+			track_ten_cnt = 0;
+			ten_change_flag = 0;
+		}
+	}
 }
 
 //定时器2中断
@@ -310,6 +326,11 @@ void TM2_Isr() interrupt 12
 		g_EncoderLeft = LowPass_Filter(&leftSpeedFilt, g_encoleft_init);
 		g_EncoderRight = LowPass_Filter(&rightSpeedFilt, g_encoright_init);
 		
+		//对编码器的值进行消刺
+		g_EncoderLeft = encoder_debounce(&EncoderDeboL, g_EncoderLeft);
+		g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
+		
+		
 //		if (track_type == 0 || (track_type == 3 && track_route_status == 2))//普通直线或者圆环内部
 //		{
 			/* 5ms算一次内环，15ms算一次外环 */
@@ -318,8 +339,8 @@ void TM2_Isr() interrupt 12
 			{
 				filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
 				
-//				turn_pid = pid_poisitional_normal(&TurnPID, position);
-				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+				turn_pid = pid_poisitional_normal(&TurnPID, position);
+//				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
 				
 				Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
 				

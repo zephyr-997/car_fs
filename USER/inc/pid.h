@@ -10,6 +10,7 @@ typedef struct
 	float kd;
 	float kf;     //前馈
 	
+	float error;
 	float lasterror;
 	float preverror;
 	float interror;

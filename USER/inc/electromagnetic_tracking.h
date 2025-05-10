@@ -55,6 +55,7 @@ extern uint8 track_type_last;         // 赛道类型：0-普通，1-直角弯�
 extern uint8 track_route;      // 赛道路径：1-左转，2-右转
 extern uint8 track_route_status;
 extern uint8 track_type_zj;
+extern uint8 track_ten_flag;
 // 调试相关函数
 void display_electromagnetic_data(void);       // 显示电磁传感器数据
 

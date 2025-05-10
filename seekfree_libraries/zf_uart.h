@@ -50,8 +50,8 @@
 
 
 //自定义数据
-#define UART_TX_LENGTH   100
-#define UART_RX_LENGTH   100
+#define UART_TX_LENGTH   200
+#define UART_RX_LENGTH   200
 
 
 //此枚举定义不允许用户修改
