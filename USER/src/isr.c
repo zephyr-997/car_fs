@@ -286,7 +286,7 @@ void TM1_Isr() interrupt 3
     {
         beep_count++;
         // 10ms * 20 = 200ms
-        if (beep_count >= 20)
+        if (beep_count >= 10)
         {
             beep_count = 0;
             beep_flag = 0;
@@ -298,7 +298,7 @@ void TM1_Isr() interrupt 3
 	if (ten_change_flag == 1)
 	{
 		track_ten_cnt++;
-		if (track_ten_cnt >= 200)
+		if (track_ten_cnt >= 150)
 		{
 			track_ten_flag = 1;
 			track_ten_cnt = 0;
@@ -331,34 +331,34 @@ void TM2_Isr() interrupt 12
 		g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
 		
 		
-//		if (track_type == 0 || (track_type == 3 && track_route_status == 2))//普通直线或者圆环内部
+//		if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者圆环内部
 //		{
-			/* 5ms算一次内环，15ms算一次外环 */
-			turn_count++;
-			if (turn_count >= 3)
-			{
-				filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
+				/* 5ms算一次内环，15ms算一次外环 */
+				turn_count++;
+				if (turn_count >= 3)
+				{
+					filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
+					
+					turn_pid = pid_poisitional_normal(&TurnPID, position);
+	//				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+					
+					Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
+					
+					turn_count = 0;
+				}
 				
-				turn_pid = pid_poisitional_normal(&TurnPID, position);
-//				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
-				
-				Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
-				
-				turn_count = 0;
-			}
-			
-			if(turn_pid >= 0) // 左转
-			{
-				k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
-				g_LeftPoint = g_SpeedPoint * (1 - k);
-				g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-			}
-			else // 右转
-			{
-				k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
-				g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-				g_RightPoint = g_SpeedPoint * (1 - k);
-			}
+				if(turn_pid >= 0) // 左转
+				{
+					k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
+					g_LeftPoint = g_SpeedPoint * (1 - k);
+					g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+				}
+				else // 右转
+				{
+					k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
+					g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+					g_RightPoint = g_SpeedPoint * (1 - k);
+				}
 			
 //		}
 //		else if (track_type == 3 && track_route_status == 1)//圆环准备入环
@@ -374,8 +374,7 @@ void TM2_Isr() interrupt 12
 //				g_RightPoint = g_SpeedPoint * 0.8;
 //			}
 //			
-//			g_IntEncoderL += g_EncoderLeft;
-//			g_IntEncoderR += g_EncoderRight;
+//			g_intencoder += (g_EncoderLeft + g_EncoderRight) / 2;
 //			
 //			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 15800)
 //			{

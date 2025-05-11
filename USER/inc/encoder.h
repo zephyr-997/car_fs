@@ -21,7 +21,7 @@ extern EncoderDebo_t EncoderDeboL, EncoderDeboR;
 
 extern int g_encoleft_init, g_encoright_init;
 extern int g_EncoderLeft, g_EncoderRight;
-extern int g_IntEncoderL, g_IntEncoderR;
+extern int g_intencoder;
 
 
 void encoder_init(void);

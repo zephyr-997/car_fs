@@ -107,7 +107,7 @@ void main(void)
 			 (uint16)normalized_data[SENSOR_VR], 
 			 (uint16)normalized_data[SENSOR_HR], 
 			  position,
-			 (uint16)track_ten_flag,
+			 (uint16)signal_strength_value,
 			  track_type,
 			  //track_route,
 			  track_ten_cnt); 

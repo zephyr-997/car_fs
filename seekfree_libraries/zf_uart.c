@@ -343,7 +343,7 @@ void uart4_interrupt_callback(void)
 		else if (strncmp(g_RxData, "outer", 5) == 0)
 		{
 			sscanf(g_RxData, "outer:%f", &weight_value);
-			track_weights[WEIGHT_CROSS].weight_outer = weight_value;
+			track_weights[WEIGHT_ROUNDABOUT].weight_outer = weight_value;
 			
 			// sprintf(g_TxData, "outer:%f\n", track_weights[WEIGHT_CROSS].weight_outer);
 			// uart_putstr(UART_4, g_TxData);
@@ -351,27 +351,28 @@ void uart4_interrupt_callback(void)
 		else if (strncmp(g_RxData, "middle", 6) == 0)
 		{
 			sscanf(g_RxData, "middle:%f", &weight_value);
-			track_weights[WEIGHT_CROSS].weight_middle = weight_value;
+			track_weights[WEIGHT_ROUNDABOUT].weight_middle = weight_value;
 			
 			// sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
-			// uart_putstr(UART_4, g_TxData);
-		}
-		else if (strncmp(g_RxData, "center", 6) == 0)
-		{
-			sscanf(g_RxData, "center:%f", &weight_value);
-			track_weights[WEIGHT_CROSS].weight_center = weight_value;
-			
-			// sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
 			// uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "vertical", 8) == 0)
 		{
 			sscanf(g_RxData, "vertical:%f", &weight_value);
-			track_weights[WEIGHT_CROSS].weight_vertical = weight_value;
+			track_weights[WEIGHT_ROUNDABOUT].weight_vertical = weight_value;
 			
 			// sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
 			// uart_putstr(UART_4, g_TxData);
 		}
+		// else if (strncmp(g_RxData, "center", 6) == 0)
+		// {
+		// 	sscanf(g_RxData, "center:%f", &weight_value);
+		// 	track_weights[WEIGHT_CROSS].weight_center = weight_value;
+			
+		// 	// sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
+		// 	// uart_putstr(UART_4, g_TxData);
+		// }
+
 		// else if (strncmp(g_RxData, "filter", 6) == 0)
 		// {
 

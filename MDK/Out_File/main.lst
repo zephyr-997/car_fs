@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               11/05/25  11:01:37  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               11/05/25  15:48:19  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -66,7 +66,7 @@ stmt  level    source
    55   3      //      if (g_SpeedPoint == 20)
    56   3      //      {
    57   3      //        g_SpeedPoint = 50;
-C251 COMPILER V5.60.0,  main                                                               11/05/25  11:01:37  PAGE 2   
+C251 COMPILER V5.60.0,  main                                                               11/05/25  15:48:19  PAGE 2   
 
    58   3      //      }
    59   3      //      else if (g_SpeedPoint == 50)
@@ -120,7 +120,7 @@ stmt  level    source
   107   3             (uint16)normalized_data[SENSOR_VR], 
   108   3             (uint16)normalized_data[SENSOR_HR], 
   109   3              position,
-  110   3             (uint16)track_ten_flag,
+  110   3             (uint16)signal_strength_value,
   111   3              track_type,
   112   3              //track_route,
   113   3              track_ten_cnt); 
@@ -134,7 +134,7 @@ stmt  level    source
   121   2          normalize_sensors();
   122   2          
   123   2          // 计算位置偏差
-C251 COMPILER V5.60.0,  main                                                               11/05/25  11:01:37  PAGE 3   
+C251 COMPILER V5.60.0,  main                                                               11/05/25  15:48:19  PAGE 3   
 
   124   2          position = calculate_position_improved();
   125   2          
@@ -200,10 +200,10 @@ stmt  level    source
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       607     ------
+  code size            =       608     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
-C251 COMPILER V5.60.0,  main                                                               11/05/25  11:01:37  PAGE 4   
+C251 COMPILER V5.60.0,  main                                                               11/05/25  15:48:19  PAGE 4   
 
   idata size           =    ------     ------
   pdata size           =    ------     ------

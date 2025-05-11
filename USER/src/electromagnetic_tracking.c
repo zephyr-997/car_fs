@@ -19,13 +19,13 @@
 // 定义全局权重配置，只保留四种基本元素
 TrackWeights track_weights[] = {
     // 普通直道
-    {0.15f, 0.40f, 0.30f, 0.15f, 0.3f, 5, "直道"},
+    {0.15f, 0.45f, 0.30f, 0.15f, 0.3f, 5, "直道"},
     
     // 直角弯道
     {0.15f, 0.40f, 0.30f, 0.15f, 0.6f, 18, "直角弯道"},
     
     // 十字圆环
-    {0.3f, 0.3f, 0.2f, 0.1f, 0.4f, 10, "十字圆环"},
+    {0.06f, 0.4f, 0.2f, 0.06f, 0.4f, 10, "十字圆环"},
     
     // 环岛
     {0.5f, 0.3f, 0.1f, 0.1f, 0.7f, 12, "环岛"}
@@ -60,7 +60,7 @@ uint8 track_type_last = 0;         // 赛道类型：0-普通，1-直角弯道�
 
 uint8 track_type_zj = 0;	  //1-左直角，2-右直角
 uint8 track_route = 0; 		  //1-左环，2-右环
-uint8 track_route_status = 0; //1-入环，2-环中，3-出环
+uint8 track_route_status = 0; //1-入环·，2-环中，3-出环
 uint8 track_ten_flag = 1;	//十字圆环：0表示到计时0.5s再开始判断，1-可以开始判断
 uint8 ten_change_flag = 0; //1表示0.5后track_ten_flag=1
 
@@ -388,8 +388,8 @@ int16 calculate_position_improved(void)
     // 在函数开始处声明所有变量
     float weight_outer = 0.15f;   // 外侧电感权重(HL和HR)
     float weight_middle = 0.40f;  // 中间电感权重(HML和HMR)
-    float weight_center = 0.30f;  // 中心电感权重(HC)
     float weight_vertical = 0.15f; // 纵向电感权重(VL和VR)
+    float weight_center = 0.0f;  // 中心电感权重(HC)(没用上)
     
     float diff_outer = 0;        // 外侧电感差值
     float diff_middle = 0;       // 中间电感差值
@@ -468,35 +468,35 @@ int16 calculate_position_improved(void)
 	
 	
     // 赛道类型识别 - 根据七电感特征判断
-    // 1. 直角弯道特征：一侧横向和纵向电感值明显高于另一侧，同时信号强度适中
-    if (track_type == 0)
-    {	
+    if (track_type == WEIGHT_STRAIGHT) // 1. 当前认为是普通赛道时，尝试判断特殊赛道
+    {    
+        // 1. 直角弯道特征
         if(((normalized_data[SENSOR_HL] > 15.0f && normalized_data[SENSOR_VL] > 65.0f && 
-                normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) || 
+                normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) ||
                 (normalized_data[SENSOR_VR] > 70.0f && 
                 normalized_data[SENSOR_HL] < 20.0f && normalized_data[SENSOR_VL] < 15.0f)) && 
-                normalized_data[SENSOR_HC] < 70.0f && // 中心电感较弱
-                signal_strength > 28.0f && signal_strength < 55.0f) // 信号强度适中
+                normalized_data[SENSOR_HC] < 70.0f && 
+                signal_strength > 25.0f && signal_strength < 50.0f) // 调整信号强度范围
         {
-            track_type = 1; // 直角弯道
+            track_type = WEIGHT_RIGHT_ANGLE; // 直角弯道
         }
-        if((normalized_data[SENSOR_HL] > 90.0f && normalized_data[SENSOR_HR] < 40.0f)  ||
-                (normalized_data[SENSOR_HR] > 99.0f && normalized_data[SENSOR_HL] < 20.0f) )
+        if((normalized_data[SENSOR_HC] > 95.0f && normalized_data[SENSOR_HML] > 90.0f && normalized_data[SENSOR_HMR] > 80.0f)  ||  // 顺时针
+                (normalized_data[SENSOR_HC] > 95.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] > 80.0f) && signal_strength > 50.0f)    // 逆时针
         {
-            //track_type = 3; // 环岛
+            track_type = 3; // 环岛
         }
-		if (((normalized_data[SENSOR_HC] > 70 && normalized_data[SENSOR_HMR] > 80 && normalized_data[SENSOR_HML] < 50 && normalized_data[SENSOR_VL] > 60 && normalized_data[SENSOR_VR] > 75) ||  //逆时针
-                (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_HMR] < 45 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 60)) && track_ten_flag == 1) //顺时针
+
+		if (((normalized_data[SENSOR_HC] > 70 && normalized_data[SENSOR_HMR] > 75 && normalized_data[SENSOR_HML] < 60 && normalized_data[SENSOR_VL] > 50 && normalized_data[SENSOR_VR] > 75) ||  //逆时针
+                (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_HMR] < 45 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 60)) && 
+                track_ten_flag == 1 && signal_strength > 50.0f ) 
 		{
 			track_type = 2; //十字圆环
 			track_ten_flag = 0; 
 			ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
-
 			
 		}
     }
-    // 2. 直角弯道
-	else if (track_type == 1) 
+    else if (track_type == WEIGHT_RIGHT_ANGLE) // 2. 直角弯道
 	{
 		if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
 		{
@@ -509,30 +509,28 @@ int16 calculate_position_improved(void)
 		}
 		if (track_type_zj != 0)
 		{
-            // 回到直道
+            // 回到直道 - 可选:增加 signal_strength < 45.0f 判断
 			if (normalized_data[SENSOR_VR] < 20.0f && normalized_data[SENSOR_VL] < 20.0f)
 			{
-				track_type = 0; 
+				track_type = WEIGHT_STRAIGHT; 
 				track_type_zj = 0;
 			}		
 		}
-		
 	}
-    // 3. 十字圆环
-	else if (track_type == 2) 
+    else if (track_type == WEIGHT_CROSS) // 3. 十字圆环
    {
         // 出环
 		if (((normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_VL] > 80 && normalized_data[SENSOR_VR] > 70)  || //逆时针
-           (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HMR] > 80 && normalized_data[SENSOR_VL] > 70 && normalized_data[SENSOR_VR] > 80 )) && track_ten_flag == 1 )  //顺时针
+           (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HMR] > 80 && normalized_data[SENSOR_VL] > 70 && normalized_data[SENSOR_VR] > 80 )) &&
+            track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
            {
-                track_type = 0; //回直道
+                track_type = WEIGHT_STRAIGHT; //回直道
 			    track_ten_flag = 0;
 			    ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1
 
            }
 	}
-    // 4. 环岛：环岛中可以使用纵向电感和中间电感判断更精确的位置
-    else if (track_type == 3) 
+    else if (track_type == WEIGHT_ROUNDABOUT) // 4. 环岛   
     {
         if(normalized_data[SENSOR_VL] > 50.0f && normalized_data[SENSOR_VR] < 32.0f && track_route == 0)
         {
@@ -553,7 +551,6 @@ int16 calculate_position_improved(void)
             {
                 track_route_status = 3;
             }  
-           
         }
         else if (track_route == 1 && track_route_status == 2) // 右环岛&&出环
         {
@@ -563,13 +560,19 @@ int16 calculate_position_improved(void)
             }  
         }
         
-
+        if (signal_strength < 40) // 环岛内信号强度小于40，认为已经离开环岛
+        {
+            track_type = WEIGHT_STRAIGHT;
+            track_route = 0;
+            track_route_status = 0;
+            track_type_zj = 0;
+        }
     }
     
     // 4. 离开置0
    if(normalized_data[SENSOR_HC] < 2.0f && normalized_data[SENSOR_HMR] < 2.0f && normalized_data[SENSOR_HML] < 2.0f)
    {
-       track_type = 0;
+       track_type = WEIGHT_STRAIGHT;
        track_route = 0;
        track_route_status = 0;
 	   track_type_zj = 0;
@@ -582,7 +585,6 @@ int16 calculate_position_improved(void)
            // 使用直道权重
            weight_outer = track_weights[WEIGHT_STRAIGHT].weight_outer;
            weight_middle = track_weights[WEIGHT_STRAIGHT].weight_middle;
-           weight_center = track_weights[WEIGHT_STRAIGHT].weight_center;
            weight_vertical = track_weights[WEIGHT_STRAIGHT].weight_vertical;
            filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
            max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
@@ -592,7 +594,6 @@ int16 calculate_position_improved(void)
            // 使用直角弯道权重
            weight_outer = track_weights[WEIGHT_RIGHT_ANGLE].weight_outer;
            weight_middle = track_weights[WEIGHT_RIGHT_ANGLE].weight_middle;
-           weight_center = track_weights[WEIGHT_RIGHT_ANGLE].weight_center;
            weight_vertical = track_weights[WEIGHT_RIGHT_ANGLE].weight_vertical;
            filter_param = track_weights[WEIGHT_RIGHT_ANGLE].filter_param;
            max_change_rate = track_weights[WEIGHT_RIGHT_ANGLE].max_change_rate;
@@ -602,7 +603,6 @@ int16 calculate_position_improved(void)
            // 使用十字圆环权重
            weight_outer = track_weights[WEIGHT_CROSS].weight_outer;
            weight_middle = track_weights[WEIGHT_CROSS].weight_middle;
-           weight_center = track_weights[WEIGHT_CROSS].weight_center;
            weight_vertical = track_weights[WEIGHT_CROSS].weight_vertical;
            filter_param = track_weights[WEIGHT_CROSS].filter_param;
            max_change_rate = track_weights[WEIGHT_CROSS].max_change_rate;
@@ -612,7 +612,6 @@ int16 calculate_position_improved(void)
            // 使用环岛权重
            weight_outer = track_weights[WEIGHT_ROUNDABOUT].weight_outer;
            weight_middle = track_weights[WEIGHT_ROUNDABOUT].weight_middle;
-           weight_center = track_weights[WEIGHT_ROUNDABOUT].weight_center;
            weight_vertical = track_weights[WEIGHT_ROUNDABOUT].weight_vertical;
            filter_param = track_weights[WEIGHT_ROUNDABOUT].filter_param;
            max_change_rate = track_weights[WEIGHT_ROUNDABOUT].max_change_rate;
@@ -622,7 +621,6 @@ int16 calculate_position_improved(void)
            // 使用默认的直道权重
            weight_outer = track_weights[WEIGHT_STRAIGHT].weight_outer;
            weight_middle = track_weights[WEIGHT_STRAIGHT].weight_middle;
-           weight_center = track_weights[WEIGHT_STRAIGHT].weight_center;
            weight_vertical = track_weights[WEIGHT_STRAIGHT].weight_vertical;
            filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
            max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
@@ -728,7 +726,7 @@ uint8 check_electromagnetic_protection(void)
 		}
 		
 		// 3. 位置偏差过大，说明可能偏离赛道太多
-		if(position < -90 || position > 90)
+		if(position < -80 || position > 80)
 		{
 			// 只有当电感值总和也较小时才判断为出赛道
 			if(sum_value < threshold * 2)
