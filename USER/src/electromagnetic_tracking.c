@@ -7,8 +7,29 @@
 // 第二维保留，可用于存储历史数据
 #define SENSOR_COUNT 7   //电感个数
 #define HISTORY_COUNT 5  //滤波次数
-#define TYPE_RIGHT  0
-#define TYPE_  0
+
+// 赛道类型索引，与track_type对应
+#define WEIGHT_STRAIGHT    0  // 直道
+#define WEIGHT_RIGHT_ANGLE 1  // 直角弯道
+#define WEIGHT_CROSS       2  // 十字圆环
+#define WEIGHT_ROUNDABOUT  3  // 环岛
+
+// 定义电感权重结构体
+
+// 定义全局权重配置，只保留四种基本元素
+TrackWeights track_weights[] = {
+    // 普通直道
+    {0.15f, 0.40f, 0.30f, 0.15f, 0.3f, 5, "直道"},
+    
+    // 直角弯道
+    {0.15f, 0.40f, 0.30f, 0.15f, 0.6f, 18, "直角弯道"},
+    
+    // 十字圆环
+    {0.3f, 0.3f, 0.2f, 0.1f, 0.4f, 10, "十字圆环"},
+    
+    // 环岛
+    {0.5f, 0.3f, 0.1f, 0.1f, 0.7f, 12, "环岛"}
+};
 
 uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
 float result[SENSOR_COUNT] = {0};		//电存储每个电感滤波后的最终结果值（尚未归一化），是连接滤波处理和归一化处理的中间变量
@@ -42,9 +63,8 @@ uint8 track_route = 0; 		  //1-左环，2-右环
 uint8 track_route_status = 0; //1-入环，2-环中，3-出环
 uint8 track_ten_flag = 1;	//十字圆环：0表示到计时0.5s再开始判断，1-可以开始判断
 uint8 ten_change_flag = 0; //1表示0.5后track_ten_flag=1
-// 电磁保护逻辑变量,0表示未保护，1表示保护
-uint8 protection_flag = 0;
 
+uint8 protection_flag = 0;// 电磁保护逻辑变量,0表示未保护，1表示保护
 
 
 //-----------------------------------------------------------------------------
@@ -558,69 +578,54 @@ int16 calculate_position_improved(void)
     // 根据赛道类型和信号强度调整权重
    switch(track_type)
    {
-       case 0: // 普通赛道
-           // 根据信号强度动态调整权重
-           if(signal_strength > 38.0f) // 信号强，可能在直道
-           {
-               weight_outer = 0.15f;  // 适当平衡中间和外侧电感的权重
-               weight_middle = 0.40f; 
-               weight_center = 0.30f;  // 中心电感
-               weight_vertical = 0.15f;
-               filter_param = 0.3f;  // 降低滤波系数，增强平滑效果
-               max_change_rate = 5;  // 直道大幅降低变化率限制
-           }
-//           else if(signal_strength < 30.0f) // 信号弱，可能在弯道
-//           {
-//               weight_outer = 0.4f;
-//               weight_middle = 0.3f;
-//               weight_center = 0.1f;
-//               weight_vertical = 0.2f;
-//               filter_param = 0.4f;
-//               max_change_rate = 8;   // 弯道减小变化率
-//           }
-//           else // 直角弯道可能有一定的信号强度
-//           {
-//               // 默认权重
-//               weight_outer = 0.3f;
-//               weight_middle = 0.4f;
-//               weight_center = 0.15f;
-//               weight_vertical = 0.15f;
-//               filter_param = 0.4f;
-//               max_change_rate = 8;
-//           }
+       case WEIGHT_STRAIGHT: // 普通赛道
+           // 使用直道权重
+           weight_outer = track_weights[WEIGHT_STRAIGHT].weight_outer;
+           weight_middle = track_weights[WEIGHT_STRAIGHT].weight_middle;
+           weight_center = track_weights[WEIGHT_STRAIGHT].weight_center;
+           weight_vertical = track_weights[WEIGHT_STRAIGHT].weight_vertical;
+           filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
+           max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
            break;
            
-       case 1: // 直角弯道
-           // 直角弯道更依赖外侧和纵向电感
-           weight_outer = 0.15f;      // 降低外侧电感权重
-           weight_middle = 0.40f;     // 保持中间电感权重
-           weight_center = 0.30f;     // 显著增加中心电感权重
-           weight_vertical = 0.15f;   // 降低纵向电感权重
-           filter_param = 0.6f;       // 响应要快一些
-           max_change_rate = 18;      // 允许较大变化率以快速响应
+       case WEIGHT_RIGHT_ANGLE: // 直角弯道
+           // 使用直角弯道权重
+           weight_outer = track_weights[WEIGHT_RIGHT_ANGLE].weight_outer;
+           weight_middle = track_weights[WEIGHT_RIGHT_ANGLE].weight_middle;
+           weight_center = track_weights[WEIGHT_RIGHT_ANGLE].weight_center;
+           weight_vertical = track_weights[WEIGHT_RIGHT_ANGLE].weight_vertical;
+           filter_param = track_weights[WEIGHT_RIGHT_ANGLE].filter_param;
+           max_change_rate = track_weights[WEIGHT_RIGHT_ANGLE].max_change_rate;
            break;
            
-       case 2: // 十字圆环路口
-           // 十字圆环路口中心电感更重要
-           weight_outer = 0.3f;
-           weight_middle = 0.3f;
-           weight_center = 0.2f;  // 十字圆环路口中心电感给较大权重
-           weight_vertical = 0.1f;
-           filter_param = 0.4f;
-           max_change_rate = 10;
+       case WEIGHT_CROSS: // 十字圆环
+           // 使用十字圆环权重
+           weight_outer = track_weights[WEIGHT_CROSS].weight_outer;
+           weight_middle = track_weights[WEIGHT_CROSS].weight_middle;
+           weight_center = track_weights[WEIGHT_CROSS].weight_center;
+           weight_vertical = track_weights[WEIGHT_CROSS].weight_vertical;
+           filter_param = track_weights[WEIGHT_CROSS].filter_param;
+           max_change_rate = track_weights[WEIGHT_CROSS].max_change_rate;
            break;
            
-       case 3: // 环岛
-           // 环岛更依赖外侧电感
-           weight_outer = 0.5f;
-           weight_middle = 0.3f;
-           weight_center = 0.1f;
-           weight_vertical = 0.1f;
-           filter_param = 0.7f;
-           max_change_rate = 12;
+       case WEIGHT_ROUNDABOUT: // 环岛
+           // 使用环岛权重
+           weight_outer = track_weights[WEIGHT_ROUNDABOUT].weight_outer;
+           weight_middle = track_weights[WEIGHT_ROUNDABOUT].weight_middle;
+           weight_center = track_weights[WEIGHT_ROUNDABOUT].weight_center;
+           weight_vertical = track_weights[WEIGHT_ROUNDABOUT].weight_vertical;
+           filter_param = track_weights[WEIGHT_ROUNDABOUT].filter_param;
+           max_change_rate = track_weights[WEIGHT_ROUNDABOUT].max_change_rate;
            break;
 
        default:
+           // 使用默认的直道权重
+           weight_outer = track_weights[WEIGHT_STRAIGHT].weight_outer;
+           weight_middle = track_weights[WEIGHT_STRAIGHT].weight_middle;
+           weight_center = track_weights[WEIGHT_STRAIGHT].weight_center;
+           weight_vertical = track_weights[WEIGHT_STRAIGHT].weight_vertical;
+           filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
+           max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
            break;
    }
     

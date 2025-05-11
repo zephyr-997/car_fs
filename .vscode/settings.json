@@ -21,6 +21,7 @@
         "isr.h": "c",
         "filter.h": "c",
         "zf_iic.h": "c",
-        "key.h": "c"
+        "key.h": "c",
+        "zf_uart.h": "c"
     }
 }

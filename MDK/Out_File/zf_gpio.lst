@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_gpio                                                            09/05/25  21:10:31  PAGE 1   
+C251 COMPILER V5.60.0,  zf_gpio                                                            11/05/25  11:01:19  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_gpio
@@ -66,7 +66,7 @@ stmt  level    source
    46          
    47          //-------------------------------------------------------------------------------------------------------
              -------------
-C251 COMPILER V5.60.0,  zf_gpio                                                            09/05/25  21:10:31  PAGE 2   
+C251 COMPILER V5.60.0,  zf_gpio                                                            11/05/25  11:01:19  PAGE 2   
 
    48          //  @brief      GPIO��������ģʽ
    49          //  @param      pin         ѡ�����ţ�P0_0-P5_4��
@@ -134,7 +134,7 @@ stmt  level    source
   109   3            P1M1 &= ~(1<<(pin&0xF));
   110   3            P1M0 |=  (1<<(pin&0xF));
   111   3          }
-C251 COMPILER V5.60.0,  zf_gpio                                                            09/05/25  21:10:31  PAGE 3   
+C251 COMPILER V5.60.0,  zf_gpio                                                            11/05/25  11:01:19  PAGE 3   
 
   112   2          if(0x20 == (pin&0xF0))  //P2
   113   2          {
@@ -202,7 +202,7 @@ stmt  level    source
   175   3            P5M1 |=  (1<<(pin&0xF));
   176   3            P5M0 &= ~(1<<(pin&0xF));
   177   3          }
-C251 COMPILER V5.60.0,  zf_gpio                                                            09/05/25  21:10:31  PAGE 4   
+C251 COMPILER V5.60.0,  zf_gpio                                                            11/05/25  11:01:19  PAGE 4   
 
   178   2          if(0x60 == (pin&0xF0))  //P5
   179   2          {
@@ -271,7 +271,7 @@ Module Information          Static   Overlayable
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
-C251 COMPILER V5.60.0,  zf_gpio                                                            09/05/25  21:10:31  PAGE 5   
+C251 COMPILER V5.60.0,  zf_gpio                                                            11/05/25  11:01:19  PAGE 5   
 
   xdata-const size     =    ------     ------
   edata size           =         8     ------

@@ -16,6 +16,24 @@
 #define SENSOR_COUNT 7   // 电感个数
 #define HISTORY_COUNT 5  // 滤波次数，当前只存储最新值
 
+// 赛道类型索引，与track_type对应
+#define WEIGHT_STRAIGHT    0  // 直道
+#define WEIGHT_RIGHT_ANGLE 1  // 直角弯道
+#define WEIGHT_CROSS       2  // 十字圆环
+#define WEIGHT_ROUNDABOUT  3  // 环岛
+
+// 定义电感权重结构体
+typedef struct {
+    float weight_outer;    // 外侧电感权重(HL和HR)
+    float weight_middle;   // 中间电感权重(HML和HMR)
+    float weight_center;   // 中心电感权重(HC)
+    float weight_vertical; // 纵向电感权重(VL和VR)
+    float filter_param;    // 滤波系数，可调
+    int16 max_change_rate; // 允许的最大变化率
+    char *name;            // 赛道类型名称，便于调试
+} TrackWeights;
+
+
 // 电感类型枚举
 typedef enum {
     SENSOR_HL  = 0,  // 左侧横向电感

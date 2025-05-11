@@ -19,7 +19,8 @@
 
 #include "zf_uart.h"
 #include "board.h"
-   
+#include "electromagnetic_tracking.h"
+
 uint8 busy[5];		//接收忙标志位
 
 //串口收发相关数据
@@ -27,7 +28,7 @@ uint8_t g_TxData[UART_TX_LENGTH] = {0};
 uint8_t g_RxData[UART_RX_LENGTH] = {0};
 uint8_t g_RxPointer = 0, g_RxDat = 0;
 
-
+extern TrackWeights track_weights[];
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      串口初始化
 //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
@@ -256,6 +257,10 @@ void uart_putstr(UARTN_enum uart_n,uint8 *str)
 
 void uart4_interrupt_callback(void)
 {
+	float weight_value = 0;
+	float filter_value = 0;
+	int16 rate_value = 0;
+
 	if(g_RxPointer > 0)
 	{
 		if (strncmp(g_RxData, "left_kp", 7) == 0)
@@ -335,6 +340,67 @@ void uart4_interrupt_callback(void)
 //			sprintf(g_TxData, "imu_kd:%f\n", TurnPID.kd);
 //			uart_putstr(UART_4, g_TxData);
 		}
+		else if (strncmp(g_RxData, "outer", 5) == 0)
+		{
+			sscanf(g_RxData, "outer:%f", &weight_value);
+			track_weights[WEIGHT_CROSS].weight_outer = weight_value;
+			
+			// sprintf(g_TxData, "outer:%f\n", track_weights[WEIGHT_CROSS].weight_outer);
+			// uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "middle", 6) == 0)
+		{
+			sscanf(g_RxData, "middle:%f", &weight_value);
+			track_weights[WEIGHT_CROSS].weight_middle = weight_value;
+			
+			// sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
+			// uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "center", 6) == 0)
+		{
+			sscanf(g_RxData, "center:%f", &weight_value);
+			track_weights[WEIGHT_CROSS].weight_center = weight_value;
+			
+			// sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
+			// uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "vertical", 8) == 0)
+		{
+			sscanf(g_RxData, "vertical:%f", &weight_value);
+			track_weights[WEIGHT_CROSS].weight_vertical = weight_value;
+			
+			// sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
+			// uart_putstr(UART_4, g_TxData);
+		}
+		// else if (strncmp(g_RxData, "filter", 6) == 0)
+		// {
+
+		// 	sscanf(g_RxData, "filter:%f", &filter_value);
+		// 	track_weights[WEIGHT_CROSS].filter_param = filter_value;
+			
+		// 	// sprintf(g_TxData, "filter:%f\n", track_weights[WEIGHT_CROSS].filter_param);
+		// 	// uart_putstr(UART_4, g_TxData);
+		// }
+		// else if (strncmp(g_RxData, "rate", 4) == 0)
+		// {
+		// 	sscanf(g_RxData, "rate:%hd", &rate_value);
+		// 	track_weights[WEIGHT_CROSS].max_change_rate = rate_value;
+			
+		// 	// sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
+		// 	// uart_putstr(UART_4, g_TxData);
+		// }
+		// else if (strncmp(g_RxData, "query", 5) == 0)
+		// {
+		// 	// 查询所有十字圆环参数
+		// 	sprintf(g_TxData, "CROSS: o:%0.2f m:%0.2f c:%0.2f v:%0.2f f:%0.2f r:%d\n", 
+		// 		track_weights[WEIGHT_CROSS].weight_outer,
+		// 		track_weights[WEIGHT_CROSS].weight_middle,
+		// 		track_weights[WEIGHT_CROSS].weight_center,
+		// 		track_weights[WEIGHT_CROSS].weight_vertical,
+		// 		track_weights[WEIGHT_CROSS].filter_param,
+		// 		track_weights[WEIGHT_CROSS].max_change_rate);
+		// 	uart_putstr(UART_4, g_TxData);
+		// }
 	
 	}
 	

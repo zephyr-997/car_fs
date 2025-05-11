@@ -151,7 +151,7 @@ void main(void)
 		  value[1] = adc_once(ADC_VL,  ADC_10BIT);
 		  value[2] = adc_once(ADC_HML, ADC_10BIT);
 		  value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-	      value[4] = adc_once(ADC_HMR, ADC_10BIT);
+	    value[4] = adc_once(ADC_HMR, ADC_10BIT);
 		  value[5] = adc_once(ADC_VR,  ADC_10BIT);
 		  value[6] = adc_once(ADC_HR,  ADC_10BIT);	
 
