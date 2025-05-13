@@ -322,93 +322,131 @@ void TM2_Isr() interrupt 12
 
 	if (startKeyFlag == 1)
 	{
-		//对编码器的值进行滤波
+		/* 对编码器的值进行滤波 */
 		g_EncoderLeft = LowPass_Filter(&leftSpeedFilt, g_encoleft_init);
 		g_EncoderRight = LowPass_Filter(&rightSpeedFilt, g_encoright_init);
 		
-		//对编码器的值进行消刺
+		/* 对编码器的值进行异常消除 */
 		g_EncoderLeft = encoder_debounce(&EncoderDeboL, g_EncoderLeft);
 		g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
 		
 		
-//		if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者圆环内部
-//		{
-				/* 5ms算一次内环，15ms算一次外环 */
-				turn_count++;
-				if (turn_count >= 3)
-				{
-					filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
-					
-					turn_pid = pid_poisitional_normal(&TurnPID, position);
-	//				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
-					
-					Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
-					
-					turn_count = 0;
-				}
+		if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者圆环内部
+		{
+			/* 5ms算一次内环，15ms算一次外环 */
+			turn_count++;
+			if (turn_count >= 3)
+			{
+				filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
 				
-				if(turn_pid >= 0) // 左转
-				{
-					k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
-					g_LeftPoint = g_SpeedPoint * (1 - k);
-					g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-				}
-				else // 右转
-				{
-					k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
-					g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-					g_RightPoint = g_SpeedPoint * (1 - k);
-				}
+				turn_pid = pid_poisitional_normal(&TurnPID, position);
+//				turn_pid = pid_poisitional_quadratic(&TurnPID, position, filtered_GyroZ);
+				
+				Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
+				
+				turn_count = 0;
+			}
 			
-//		}
-//		else if (track_type == 3 && track_route_status == 1)//圆环准备入环
-//		{
-//			if (track_route == 1)//左环
+			if(turn_pid >= 0) // 左转
+			{
+				k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
+				g_LeftPoint = g_SpeedPoint * (1 - k);
+				g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+			}
+			else // 右转
+			{
+				k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
+				g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+				g_RightPoint = g_SpeedPoint * (1 - k);
+			}
+			
+//			if (track_type == 1)//直角
 //			{
-//				g_LeftPoint = g_SpeedPoint * 0.8;
-//				g_RightPoint = g_SpeedPoint * 1.2;
+//				if (track_type_zj == 1)//左转直角，积分积右轮
+//				{
+//					g_intencoderR += g_EncoderRight;
+//					
+//					if (g_intencoderR >= 2900)
+//					{
+//						g_intencoderR = 0;
+//						track_type = 0; 
+//						track_type_zj = 0;
+//					}
+//				}
+//				else if (track_type_zj == 2)//右转直角，积分积左轮
+//				{
+//					g_intencoderL += g_EncoderLeft;
+//					
+//					if (g_intencoderL >= 2500)
+//					{
+//						g_intencoderL = 0;
+//						track_type = 0; 
+//						track_type_zj = 0;
+//					}
+//				}
 //			}
-//			else if (track_route == 2)//右环
-//			{
-//				g_LeftPoint = g_SpeedPoint * 1.2;
-//				g_RightPoint = g_SpeedPoint * 0.8;
-//			}
-//			
-//			g_intencoder += (g_EncoderLeft + g_EncoderRight) / 2;
-//			
-//			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 15800)
-//			{
-//				track_route_status = 2;
-//				
-//				g_IntEncoderL = g_IntEncoderR = 0;
-//				
-//				P52 = 1;
-//			}
-//		}
-//		else if (track_type == 3 && track_route_status == 3)//圆环准备出环
-//		{
-//			if (track_route == 1)//左环
-//			{
-//				g_LeftPoint = g_SpeedPoint * 0.8;
-//				g_RightPoint = g_SpeedPoint * 1.2;
-//			}
-//			else if (track_route == 2)//右环
-//			{
-//				g_LeftPoint = g_SpeedPoint * 1.2;
-//				g_RightPoint = g_SpeedPoint * 0.8;
-//			}
-//			
-//			if ((g_IntEncoderL + g_IntEncoderR) / 2 > 16200)
-//			{
-//				track_type = 0;
-//				track_route = 0;
-//				track_route_status = 0;
-//				
-//				g_IntEncoderL = g_IntEncoderR = 0;
-//				
-//				P52 = 1;
-//			}
-//		}
+		}
+		else if (track_type == 3 && track_route_status == 1)//圆环入环
+		{
+			g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
+			
+			if(g_intencoderALL <= 4000)//第一阶段先直行
+			{
+				g_LeftPoint = g_SpeedPoint;
+				g_RightPoint = g_SpeedPoint;
+			}
+			else//进入第二阶段打死进环
+			{
+				if (track_route == 1)//右环
+				{
+					g_LeftPoint = g_SpeedPoint * 1.4;
+					g_RightPoint = g_SpeedPoint * 0.7;
+				}
+				else if (track_route == 2)//左环
+				{
+					g_LeftPoint = g_SpeedPoint * 0.8;
+					g_RightPoint = g_SpeedPoint * 1.3;
+				}
+							
+				if (g_intencoderALL >= 8500)//入环完毕
+				{
+					track_route_status = 2;
+					g_intencoderALL = 0;
+				}
+			}
+		}
+		else if (track_type == 3 && track_route_status == 3)//圆环出环
+		{
+			g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
+			
+			if (g_intencoderALL <= 4400)//第一阶段打死出环
+			{
+				if (track_route == 1)//右环
+				{
+					g_LeftPoint = g_SpeedPoint * 1.30;
+					g_RightPoint = g_SpeedPoint * 0.80;
+				}
+				else if (track_route == 2)//左环
+				{
+					g_LeftPoint = g_SpeedPoint * 0.8;
+					g_RightPoint = g_SpeedPoint * 1.25;
+				}
+			}
+			else//第二阶段直走
+			{
+				g_LeftPoint = g_SpeedPoint;
+				g_RightPoint = g_SpeedPoint;
+				
+				if (g_intencoderALL >= 5600)//出环完毕
+				{
+					track_type = 0;
+					track_route = 0;
+					track_route_status = 0;
+					
+					g_intencoderALL = 0;
+				}
+			}
+		}
 		
 		//计算速度环pid
 		left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);

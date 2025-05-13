@@ -2,7 +2,7 @@
 
 int g_encoleft_init = 0, g_encoright_init = 0;
 int g_EncoderLeft = 0, g_EncoderRight = 0;
-int g_intencoder = 0;
+int g_intencoderALL = 0, g_intencoderL = 0, g_intencoderR = 0;
 
 
 EncoderDebo_t EncoderDeboL, EncoderDeboR;

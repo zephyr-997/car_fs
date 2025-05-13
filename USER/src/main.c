@@ -21,7 +21,7 @@ void main(void)
 	
 	pid_init(&LeftPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
 	pid_init(&RightPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
-	pid_init(&TurnPID, 1.45f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&TurnPID, 1.7f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);
@@ -98,7 +98,7 @@ void main(void)
 //			uart_putstr(UART_4, g_TxData);
 			
 			// 通过串口输出七电感数据
-			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
 			 (uint16)normalized_data[SENSOR_HL], 
 			 (uint16)normalized_data[SENSOR_VL], 
 			 (uint16)normalized_data[SENSOR_HML], 
@@ -109,9 +109,11 @@ void main(void)
 			  position,
 			 (uint16)signal_strength_value,
 			  track_type,
-			  //track_route,
-			  track_ten_cnt); 
-			uart_putstr(UART_4, g_TxData);
+			  track_route,
+			  track_route_status,
+			  g_intencoderL,
+			  g_intencoderR);
+			 uart_putstr(UART_4, g_TxData);
 		}
 		
 		// 获取滤波后的ADC数据		
@@ -147,13 +149,13 @@ void main(void)
 		/*调试功能*/
 #if 0
 		 //读取七电感ADC值（用于调试）
-		  value[0] = adc_once(ADC_HL,  ADC_10BIT);
-		  value[1] = adc_once(ADC_VL,  ADC_10BIT);
-		  value[2] = adc_once(ADC_HML, ADC_10BIT);
-		  value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-	    value[4] = adc_once(ADC_HMR, ADC_10BIT);
-		  value[5] = adc_once(ADC_VR,  ADC_10BIT);
-		  value[6] = adc_once(ADC_HR,  ADC_10BIT);	
+		value[0] = adc_once(ADC_HL,  ADC_10BIT);
+		value[1] = adc_once(ADC_VL,  ADC_10BIT);
+		value[2] = adc_once(ADC_HML, ADC_10BIT);
+		value[3] = adc_once(ADC_HC,  ADC_10BIT); 
+		value[4] = adc_once(ADC_HMR, ADC_10BIT);
+		value[5] = adc_once(ADC_VR,  ADC_10BIT);
+		value[6] = adc_once(ADC_HR,  ADC_10BIT);	
 
 		// 计算所有电感值的总和
 //		sum_value = (uint16)normalized_data[SENSOR_HL] + (uint16)normalized_data[SENSOR_VL] + 
