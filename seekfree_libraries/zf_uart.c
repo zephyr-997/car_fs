@@ -343,15 +343,18 @@ void uart4_interrupt_callback(void)
 		else if (strncmp(g_RxData, "outer", 5) == 0)
 		{
 			sscanf(g_RxData, "outer:%f", &weight_value);
-			track_weights[WEIGHT_ROUNDABOUT].weight_outer = weight_value;
-			
+			track_weights[WEIGHT_STRAIGHT].weight_outer = weight_value;
+			//WEIGHT_STRAIGHT
+			//WEIGHT_RIGHT_ANGLE
+			//WEIGHT_CROSS
+			//WEIGHT_ROUNDABOUT
 			// sprintf(g_TxData, "outer:%f\n", track_weights[WEIGHT_CROSS].weight_outer);
 			// uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "middle", 6) == 0)
 		{
 			sscanf(g_RxData, "middle:%f", &weight_value);
-			track_weights[WEIGHT_ROUNDABOUT].weight_middle = weight_value;
+			track_weights[WEIGHT_STRAIGHT].weight_middle = weight_value;
 			
 			// sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
 			// uart_putstr(UART_4, g_TxData);
@@ -359,7 +362,7 @@ void uart4_interrupt_callback(void)
 		else if (strncmp(g_RxData, "vertical", 8) == 0)
 		{
 			sscanf(g_RxData, "vertical:%f", &weight_value);
-			track_weights[WEIGHT_ROUNDABOUT].weight_vertical = weight_value;
+			track_weights[WEIGHT_STRAIGHT].weight_vertical = weight_value;
 			
 			// sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
 			// uart_putstr(UART_4, g_TxData);

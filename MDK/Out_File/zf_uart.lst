@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 1   
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_uart
@@ -66,7 +66,7 @@ stmt  level    source
    49          void uart_init(UARTN_enum uart_n, UARTPIN_enum uart_rx_pin, UARTPIN_enum uart_tx_pin, uint32 baud, TIMN_e
              -num tim_n)
    50          {
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 2   
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 2   
 
    51   1          uint16 brt;
    52   1      
@@ -134,7 +134,7 @@ stmt  level    source
   114   3            else if((UART2_RX_P46 == uart_rx_pin) && (UART2_TX_P47 == uart_tx_pin))
   115   3            {
   116   4              P_SW2 |= 0x01;
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 3   
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 3   
 
   117   4            }
   118   3            
@@ -202,7 +202,7 @@ stmt  level    source
   180   4              P5M0 = 0x00;
   181   4              P5M1 = 0x01<<2;//P5.2 ��Ҫ����Ϊ����
   182   4              P_SW2 |= 0x04;
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 4   
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 4   
 
   183   4            }
   184   3            IE2 |= 0x01<<4; //�������п�4�ж�
@@ -270,7 +270,7 @@ stmt  level    source
   242          //-------------------------------------------------------------------------------------------------------
              -------------
   243          //  @brief      串口发送字符串
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 5   
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 5   
 
   244          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
   245          //  @param      *str            要发送的字符串地址
@@ -338,7 +338,7 @@ stmt  level    source
   306   3      //      uart_putstr(UART_4, g_TxData);
   307   3          }
   308   2          else if (strncmp(g_RxData, "right_kd", 8) == 0)
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 6   
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 6   
 
   309   2          {
   310   3            sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
@@ -377,74 +377,77 @@ stmt  level    source
   343   2          else if (strncmp(g_RxData, "outer", 5) == 0)
   344   2          {
   345   3            sscanf(g_RxData, "outer:%f", &weight_value);
-  346   3            track_weights[WEIGHT_ROUNDABOUT].weight_outer = weight_value;
-  347   3            
-  348   3            // sprintf(g_TxData, "outer:%f\n", track_weights[WEIGHT_CROSS].weight_outer);
-  349   3            // uart_putstr(UART_4, g_TxData);
-  350   3          }
-  351   2          else if (strncmp(g_RxData, "middle", 6) == 0)
-  352   2          {
-  353   3            sscanf(g_RxData, "middle:%f", &weight_value);
-  354   3            track_weights[WEIGHT_ROUNDABOUT].weight_middle = weight_value;
-  355   3            
-  356   3            // sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
-  357   3            // uart_putstr(UART_4, g_TxData);
-  358   3          }
-  359   2          else if (strncmp(g_RxData, "vertical", 8) == 0)
-  360   2          {
-  361   3            sscanf(g_RxData, "vertical:%f", &weight_value);
-  362   3            track_weights[WEIGHT_ROUNDABOUT].weight_vertical = weight_value;
-  363   3            
-  364   3            // sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
-  365   3            // uart_putstr(UART_4, g_TxData);
-  366   3          }
-  367   2          // else if (strncmp(g_RxData, "center", 6) == 0)
-  368   2          // {
-  369   2          //  sscanf(g_RxData, "center:%f", &weight_value);
-  370   2          //  track_weights[WEIGHT_CROSS].weight_center = weight_value;
-  371   2            
-  372   2          //  // sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
-  373   2          //  // uart_putstr(UART_4, g_TxData);
-  374   2          // }
-C251 COMPILER V5.60.0,  zf_uart                                                            11/05/25  15:48:23  PAGE 7   
+  346   3            track_weights[WEIGHT_STRAIGHT].weight_outer = weight_value;
+  347   3            //WEIGHT_STRAIGHT
+  348   3            //WEIGHT_RIGHT_ANGLE
+  349   3            //WEIGHT_CROSS
+  350   3            //WEIGHT_ROUNDABOUT
+  351   3            // sprintf(g_TxData, "outer:%f\n", track_weights[WEIGHT_CROSS].weight_outer);
+  352   3            // uart_putstr(UART_4, g_TxData);
+  353   3          }
+  354   2          else if (strncmp(g_RxData, "middle", 6) == 0)
+  355   2          {
+  356   3            sscanf(g_RxData, "middle:%f", &weight_value);
+  357   3            track_weights[WEIGHT_STRAIGHT].weight_middle = weight_value;
+  358   3            
+  359   3            // sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
+  360   3            // uart_putstr(UART_4, g_TxData);
+  361   3          }
+  362   2          else if (strncmp(g_RxData, "vertical", 8) == 0)
+  363   2          {
+  364   3            sscanf(g_RxData, "vertical:%f", &weight_value);
+  365   3            track_weights[WEIGHT_STRAIGHT].weight_vertical = weight_value;
+  366   3            
+  367   3            // sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
+  368   3            // uart_putstr(UART_4, g_TxData);
+  369   3          }
+  370   2          // else if (strncmp(g_RxData, "center", 6) == 0)
+  371   2          // {
+  372   2          //  sscanf(g_RxData, "center:%f", &weight_value);
+  373   2          //  track_weights[WEIGHT_CROSS].weight_center = weight_value;
+  374   2            
+C251 COMPILER V5.60.0,  zf_uart                                                            13/05/25  11:58:51  PAGE 7   
 
-  375   2      
-  376   2          // else if (strncmp(g_RxData, "filter", 6) == 0)
-  377   2          // {
+  375   2          //  // sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
+  376   2          //  // uart_putstr(UART_4, g_TxData);
+  377   2          // }
   378   2      
-  379   2          //  sscanf(g_RxData, "filter:%f", &filter_value);
-  380   2          //  track_weights[WEIGHT_CROSS].filter_param = filter_value;
-  381   2            
-  382   2          //  // sprintf(g_TxData, "filter:%f\n", track_weights[WEIGHT_CROSS].filter_param);
-  383   2          //  // uart_putstr(UART_4, g_TxData);
-  384   2          // }
-  385   2          // else if (strncmp(g_RxData, "rate", 4) == 0)
-  386   2          // {
-  387   2          //  sscanf(g_RxData, "rate:%hd", &rate_value);
-  388   2          //  track_weights[WEIGHT_CROSS].max_change_rate = rate_value;
-  389   2            
-  390   2          //  // sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
-  391   2          //  // uart_putstr(UART_4, g_TxData);
-  392   2          // }
-  393   2          // else if (strncmp(g_RxData, "query", 5) == 0)
-  394   2          // {
-  395   2          //  // 查询所有十字圆环参数
-  396   2          //  sprintf(g_TxData, "CROSS: o:%0.2f m:%0.2f c:%0.2f v:%0.2f f:%0.2f r:%d\n", 
-  397   2          //    track_weights[WEIGHT_CROSS].weight_outer,
-  398   2          //    track_weights[WEIGHT_CROSS].weight_middle,
-  399   2          //    track_weights[WEIGHT_CROSS].weight_center,
-  400   2          //    track_weights[WEIGHT_CROSS].weight_vertical,
-  401   2          //    track_weights[WEIGHT_CROSS].filter_param,
-  402   2          //    track_weights[WEIGHT_CROSS].max_change_rate);
-  403   2          //  uart_putstr(UART_4, g_TxData);
-  404   2          // }
-  405   2        
-  406   2        }
-  407   1        
-  408   1        g_RxPointer = 0;
-  409   1        memset(g_RxData, 0, UART_RX_LENGTH);
-  410   1        memset(g_TxData, 0, UART_TX_LENGTH);
-  411   1      }
+  379   2          // else if (strncmp(g_RxData, "filter", 6) == 0)
+  380   2          // {
+  381   2      
+  382   2          //  sscanf(g_RxData, "filter:%f", &filter_value);
+  383   2          //  track_weights[WEIGHT_CROSS].filter_param = filter_value;
+  384   2            
+  385   2          //  // sprintf(g_TxData, "filter:%f\n", track_weights[WEIGHT_CROSS].filter_param);
+  386   2          //  // uart_putstr(UART_4, g_TxData);
+  387   2          // }
+  388   2          // else if (strncmp(g_RxData, "rate", 4) == 0)
+  389   2          // {
+  390   2          //  sscanf(g_RxData, "rate:%hd", &rate_value);
+  391   2          //  track_weights[WEIGHT_CROSS].max_change_rate = rate_value;
+  392   2            
+  393   2          //  // sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
+  394   2          //  // uart_putstr(UART_4, g_TxData);
+  395   2          // }
+  396   2          // else if (strncmp(g_RxData, "query", 5) == 0)
+  397   2          // {
+  398   2          //  // 查询所有十字圆环参数
+  399   2          //  sprintf(g_TxData, "CROSS: o:%0.2f m:%0.2f c:%0.2f v:%0.2f f:%0.2f r:%d\n", 
+  400   2          //    track_weights[WEIGHT_CROSS].weight_outer,
+  401   2          //    track_weights[WEIGHT_CROSS].weight_middle,
+  402   2          //    track_weights[WEIGHT_CROSS].weight_center,
+  403   2          //    track_weights[WEIGHT_CROSS].weight_vertical,
+  404   2          //    track_weights[WEIGHT_CROSS].filter_param,
+  405   2          //    track_weights[WEIGHT_CROSS].max_change_rate);
+  406   2          //  uart_putstr(UART_4, g_TxData);
+  407   2          // }
+  408   2        
+  409   2        }
+  410   1        
+  411   1        g_RxPointer = 0;
+  412   1        memset(g_RxData, 0, UART_RX_LENGTH);
+  413   1        memset(g_TxData, 0, UART_TX_LENGTH);
+  414   1      }
 
 
 Module Information          Static   Overlayable

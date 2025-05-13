@@ -360,32 +360,33 @@ void TM2_Isr() interrupt 12
 				g_RightPoint = g_SpeedPoint * (1 - k);
 			}
 			
-//			if (track_type == 1)//直角
-//			{
-//				if (track_type_zj == 1)//左转直角，积分积右轮
-//				{
-//					g_intencoderR += g_EncoderRight;
-//					
-//					if (g_intencoderR >= 2900)
-//					{
-//						g_intencoderR = 0;
-//						track_type = 0; 
-//						track_type_zj = 0;
-//					}
-//				}
-//				else if (track_type_zj == 2)//右转直角，积分积左轮
-//				{
-//					g_intencoderL += g_EncoderLeft;
-//					
-//					if (g_intencoderL >= 2500)
-//					{
-//						g_intencoderL = 0;
-//						track_type = 0; 
-//						track_type_zj = 0;
-//					}
-//				}
-//			}
+		// 	if (track_type == 1)//直角
+		// 	{
+		// 		if (track_type_zj == 1)//左转直角，积分积右轮
+		// 		{
+		// 			g_intencoderR += g_EncoderRight;
+					
+		// 			if (g_intencoderR >= 2900)
+		// 			{
+		// 				g_intencoderR = 0;
+		// 				track_type = 0; 
+		// 				track_type_zj = 0;
+		// 			}
+		// 		}
+		// 		else if (track_type_zj == 2)//右转直角，积分积左轮
+		// 		{
+		// 			g_intencoderL += g_EncoderLeft;
+					
+		// 			if (g_intencoderL >= 2500)
+		// 			{
+		// 				g_intencoderL = 0;
+		// 				track_type = 0; 
+		// 				track_type_zj = 0;
+		// 			}
+		// 		}
+		// 	}
 		}
+		
 		else if (track_type == 3 && track_route_status == 1)//圆环入环
 		{
 			g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);

@@ -21,7 +21,7 @@ void main(void)
 	
 	pid_init(&LeftPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
 	pid_init(&RightPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
-	pid_init(&TurnPID, 1.7f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&TurnPID, 1.8f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);

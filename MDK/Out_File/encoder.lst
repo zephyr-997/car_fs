@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  encoder                                                            11/05/25  15:48:20  PAGE 1   
+C251 COMPILER V5.60.0,  encoder                                                            13/05/25  11:27:02  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE encoder
@@ -13,7 +13,7 @@ stmt  level    source
     2          
     3          int g_encoleft_init = 0, g_encoright_init = 0;
     4          int g_EncoderLeft = 0, g_EncoderRight = 0;
-    5          int g_intencoder = 0;
+    5          int g_intencoderALL = 0, g_intencoderL = 0, g_intencoderR = 0;
     6          
     7          
     8          EncoderDebo_t EncoderDeboL, EncoderDeboR;
@@ -66,7 +66,7 @@ stmt  level    source
    55   1        
    56   1        ctimer_count_clean(CTIM3_P04);
    57   1        
-C251 COMPILER V5.60.0,  encoder                                                            11/05/25  15:48:20  PAGE 2   
+C251 COMPILER V5.60.0,  encoder                                                            13/05/25  11:27:02  PAGE 2   
 
    58   1        return encoder_right;
    59   1      }
@@ -102,7 +102,7 @@ Module Information          Static   Overlayable
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =        28     ------
+  edata size           =        32     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------
@@ -110,7 +110,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        30     ------
+  hconst size          =        42     ------
 End of Module Information.
 
 
