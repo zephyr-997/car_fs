@@ -19,9 +19,10 @@ void main(void)
 	
 	imu963ra_init();
 	
-	pid_init(&LeftPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
-	pid_init(&RightPID, 140.0f, 0.2f, 0.0f, 0.0f, 0.0f, 7500.0f);
-	pid_init(&TurnPID, 1.8f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&LeftPID, 110.0f, 0.3f, 0.0f, 0.0f, 0.0f, 7500.0f);
+	pid_init(&RightPID, 110.0f, 0.3f, 0.0f, 0.0f, 0.0f, 7500.0f);
+//	pid_init(&TurnPID, 1.7f, 0.0f, 1.6f, 0.0f, 0.0f, 100.0f);
+	pid_init(&TurnPID, 0.3f, 0.0f, 0.3f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);
@@ -69,16 +70,16 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-//			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",
-//					g_LeftPoint,
-//					g_EncoderLeft,
-//					g_RightPoint,
-//					g_EncoderRight,
-//					position,
-//					(int)turn_pid,
-//					g_DutyLeft,
-//					g_DutyRight);
-//			uart_putstr(UART_4, g_TxData);
+			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",
+					g_LeftPoint,
+					g_EncoderLeft,
+					g_RightPoint,
+					g_EncoderRight,
+					position,
+					(int)turn_pid,
+					g_DutyLeft,
+					g_DutyRight);
+			uart_putstr(UART_4, g_TxData);
 					
 //			sprintf(g_TxData,"%.2f,%.2f,%.2f,%.4f,%.4f,%.4f,%.4f\n",
 //					(float)g_LeftPoint,
@@ -98,22 +99,22 @@ void main(void)
 //			uart_putstr(UART_4, g_TxData);
 			
 			// 通过串口输出七电感数据
-			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-			 (uint16)normalized_data[SENSOR_HL], 
-			 (uint16)normalized_data[SENSOR_VL], 
-			 (uint16)normalized_data[SENSOR_HML], 
-			 (uint16)normalized_data[SENSOR_HC],
-			 (uint16)normalized_data[SENSOR_HMR], 
-			 (uint16)normalized_data[SENSOR_VR], 
-			 (uint16)normalized_data[SENSOR_HR], 
-			  position,
-			 (uint16)signal_strength_value,
-			  track_type,
-			  track_route,
-			  track_route_status,
-			  g_intencoderL,
-			  g_intencoderR);
-			 uart_putstr(UART_4, g_TxData);
+//			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+//			 (uint16)normalized_data[SENSOR_HL], 
+//			 (uint16)normalized_data[SENSOR_VL], 
+//			 (uint16)normalized_data[SENSOR_HML], 
+//			 (uint16)normalized_data[SENSOR_HC],
+//			 (uint16)normalized_data[SENSOR_HMR], 
+//			 (uint16)normalized_data[SENSOR_VR], 
+//			 (uint16)normalized_data[SENSOR_HR], 
+//			  position,
+//			 (uint16)signal_strength_value,
+//			  track_type,
+//			  track_route,
+//			  track_route_status,
+//			  g_intencoderL,
+//			  g_intencoderR);
+//			 uart_putstr(UART_4, g_TxData);
 		}
 		
 		// 获取滤波后的ADC数据		
