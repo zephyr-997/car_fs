@@ -47,7 +47,7 @@ float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 // uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
 // uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
 uint16 min_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {1000, 980, 1000, 880, 1023, 1023, 1023};  // 每个电感的最大值
+uint16 max_value[SENSOR_COUNT] = {900, 920, 910, 760, 910, 920, 910};  // 每个电感的最大值
 
 // 电感位置计算相关变量
 float signal_strength_value = 0;   // 信号强度指标
@@ -484,7 +484,7 @@ int16 calculate_position_improved(void)
         else if((normalized_data[SENSOR_HC] > 95.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HR] > 70) ||  //右环岛
                 (normalized_data[SENSOR_HC] > 90.0f && normalized_data[SENSOR_HML] > 50.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HL] > 70) && signal_strength > 50.0f)    // 左环岛
         {
-            track_type = 3;// 环岛
+            //track_type = 3;// 环岛
         }
 
 		else if (((normalized_data[SENSOR_HC] > 70 && normalized_data[SENSOR_HMR] > 75 && normalized_data[SENSOR_HML] < 60 && normalized_data[SENSOR_VL] > 50 && normalized_data[SENSOR_VR] > 75) ||  //逆时针
@@ -624,14 +624,15 @@ int16 calculate_position_improved(void)
    }
     
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
-//    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
-//    {
-//        // 根据上一次位置判断偏离方向
+    if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
+    {
 //        if(last_pos > 0)
 //            return 100;  // 向右偏离
 //        else
 //            return -100; // 向左偏离
-//    }
+		
+		return last_pos;
+    }
     
     // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
     if(center_value > 50.0f) {
@@ -732,13 +733,13 @@ uint8 check_electromagnetic_protection(void)
 			}
 		}
 		
-		// // 连续检测逻辑，防止偶然的低值导致误判
+		// 连续检测逻辑，防止偶然的低值导致误判
 		if(is_out_of_track)
 		{
 			out_of_track_count++;
 			in_track_count = 0;  // 重置在轨道上的计数
 			
-			if(out_of_track_count >= 5 && !protection_triggered)  // 连续5次检测到脱离赛道才触发保护
+			if(out_of_track_count >= 30 && !protection_triggered)  // 连续5次检测到脱离赛道才触发保护
 			{
 				protection_triggered = 1;
 				// 这里可以输出触发保护的信息，用于调试

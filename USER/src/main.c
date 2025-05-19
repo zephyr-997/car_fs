@@ -19,10 +19,10 @@ void main(void)
 	
 	imu963ra_init();
 	
-	pid_init(&LeftPID, 110.0f, 0.3f, 0.0f, 0.0f, 0.0f, 7500.0f);
-	pid_init(&RightPID, 110.0f, 0.3f, 0.0f, 0.0f, 0.0f, 7500.0f);
-//	pid_init(&TurnPID, 1.7f, 0.0f, 1.6f, 0.0f, 0.0f, 100.0f);
-	pid_init(&TurnPID, 0.3f, 0.0f, 0.3f, 0.0f, 0.0f, 100.0f);
+	pid_init(&LeftPID, 100.0f, 0.0f, 0.2f, 0.0f, 7000.0f, 8000.0f);
+	pid_init(&RightPID, 100.0f, 0.0f, 0.2f, 0.0f, 7000.0f, 8000.0f);
+	pid_init(&TurnPID, 4.5f, 0.0f, 20.0f, 0.0f, 0.0f, 100.0f);
+//	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);
@@ -36,8 +36,7 @@ void main(void)
 	delay_ms(100); // 延时等待系统稳定
 	
     while(1)
-	{
-		
+	{		
 		/* 串口接收 */
 		if(g_RxPointer != 0)
 		{
@@ -55,9 +54,9 @@ void main(void)
 		{
 //			if (g_SpeedPoint == 20)
 //			{
-//				g_SpeedPoint = 50;
+//				g_SpeedPoint = 70;
 //			}
-//			else if (g_SpeedPoint == 50)
+//			else if (g_SpeedPoint == 70)
 //			{
 //				g_SpeedPoint = 20;
 //			}
@@ -70,7 +69,7 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld\n",
+			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_LeftPoint,
 					g_EncoderLeft,
 					g_RightPoint,
@@ -78,8 +77,18 @@ void main(void)
 					position,
 					(int)turn_pid,
 					g_DutyLeft,
-					g_DutyRight);
+					g_DutyRight,
+					track_type,
+					track_route,
+					track_route_status);
 			uart_putstr(UART_4, g_TxData);
+					
+//			sprintf(g_TxData,"%d,%d,%d,%d\n",
+//					g_LeftPoint,
+//					g_EncoderLeft,
+//					g_RightPoint,
+//					g_EncoderRight);
+//			uart_putstr(UART_4, g_TxData);
 					
 //			sprintf(g_TxData,"%.2f,%.2f,%.2f,%.4f,%.4f,%.4f,%.4f\n",
 //					(float)g_LeftPoint,
@@ -127,7 +136,7 @@ void main(void)
 		position = calculate_position_improved();
 		
 		//检查电磁保护
-		protection_flag = check_electromagnetic_protection();
+//		protection_flag = check_electromagnetic_protection();
 
 		// if(protection_flag)
 		// {

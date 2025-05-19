@@ -21,6 +21,12 @@
 #define __ISR_H_
 
 
+#define SPEED_STRAIGHT 70
+#define SPEED_ANGLE    70
+#define SPEED_CROSS    70
+#define SPEED_ISLAND   70
+
+
 extern int g_SpeedPoint;
 extern int32_t g_DutyLeft, g_DutyRight;
 extern float left_pid, right_pid;

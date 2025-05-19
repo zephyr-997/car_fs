@@ -367,6 +367,18 @@ void uart4_interrupt_callback(void)
 			// sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
 			// uart_putstr(UART_4, g_TxData);
 		}
+		else if (strncmp(g_RxData, "stop", 4) == 0)
+		{
+			set_motor_pwm(0, 0);
+			
+			TurnPID.lasterror = TurnPID.interror = 0;
+
+			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
+			
+			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+			
+			uartSendFlag = startKeyFlag = 0;
+		}
 		// else if (strncmp(g_RxData, "center", 6) == 0)
 		// {
 		// 	sscanf(g_RxData, "center:%f", &weight_value);

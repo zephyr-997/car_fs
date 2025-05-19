@@ -34,6 +34,7 @@ void set_motor_pwm(int32_t left_duty, int32_t right_duty)
 		}
 	
 		pwm_duty(PWMA_CH1P_P60, -left_duty);
+//		pwm_duty(PWMA_CH1P_P60, 0);
 		pwm_duty(PWMA_CH2P_P62, 0);
 	}
 	
@@ -59,7 +60,6 @@ void set_motor_pwm(int32_t left_duty, int32_t right_duty)
 		
 		pwm_duty(PWMA_CH3P_P64, 0);
 		pwm_duty(PWMA_CH4P_P66, -right_duty);
-		
-		
+//		pwm_duty(PWMA_CH4P_P66, 0);
 	}
 }
