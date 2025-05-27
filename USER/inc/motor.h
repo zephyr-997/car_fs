@@ -7,7 +7,7 @@
 
 
 #define  MOTOR_PWM_FREQ   17000   //PWM输出频率
-#define  MOTOR_PWM_LIMIT  8000    //PWM输出限幅80%
+#define  MOTOR_PWM_LIMIT  6000    //PWM输出限幅60%
 
 
 void motor_init(void);

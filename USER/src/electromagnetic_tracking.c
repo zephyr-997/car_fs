@@ -17,16 +17,16 @@
 // 定义电感权重结构体
 
 // 定义全局权重配置，只保留四种基本元素
-TrackWeights track_weights[] = {
+TrackWeights track_weights[4] = {
     // 普通直道
 
-    {0.15f, 0.40f, 0.30f, 0.15f, 0.3f, 5, "直道"},
+    {0.15f, 0.40f, 0.30f, 0.15f, 0.6f, 15, "直道"},
     
     // 直角弯道
-    {0.15f, 0.40f, 0.30f, 0.25f, 0.8f, 30, "直角弯道"},
+    {0.20f, 0.40f, 0.30f, 0.25f, 0.8f, 35, "直角弯道"},
     
     // 十字圆环
-    {0.06f, 0.4f, 0.2f, 0.06f, 0.4f, 10, "十字圆环"},
+    {0.06f, 0.4f, 0.2f, 0.06f, 0.6f, 15, "十字圆环"},
     
     // 环岛
     {0.15f, 0.4f, 0.1f, 0.15f, 0.7f, 12, "环岛"}
@@ -47,7 +47,7 @@ float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 // uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
 // uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
 uint16 min_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {900, 920, 910, 760, 910, 920, 910};  // 每个电感的最大值
+uint16 max_value[SENSOR_COUNT] = {940, 930, 920, 760, 920, 930, 940};  // 每个电感的最大值
 
 // 电感位置计算相关变量
 float signal_strength_value = 0;   // 信号强度指标
@@ -479,7 +479,7 @@ int16 calculate_position_improved(void)
                 normalized_data[SENSOR_HC] < 70.0f && 
                 signal_strength > 25.0f && signal_strength < 50.0f) // 调整信号强度范围
         {
-            track_type = WEIGHT_RIGHT_ANGLE; // 直角弯道
+//            track_type = WEIGHT_RIGHT_ANGLE; // 直角弯道
         }
         else if((normalized_data[SENSOR_HC] > 95.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HR] > 70) ||  //右环岛
                 (normalized_data[SENSOR_HC] > 90.0f && normalized_data[SENSOR_HML] > 50.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HL] > 70) && signal_strength > 50.0f)    // 左环岛
@@ -490,12 +490,12 @@ int16 calculate_position_improved(void)
 		else if (((normalized_data[SENSOR_HC] > 70 && normalized_data[SENSOR_HMR] > 75 && normalized_data[SENSOR_HML] < 60 && normalized_data[SENSOR_VL] > 50 && normalized_data[SENSOR_VR] > 75) ||  //逆时针
                 (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_HMR] < 45 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 45)) && 
                 track_ten_flag == 1 && signal_strength > 50.0f ) 
-		{
-			//track_type = 2; //十字圆环
-			track_ten_flag = 0; 
-			ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
-			
-		}
+				{
+//					track_type = 2; //十字圆环
+					track_ten_flag = 0; 
+					ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
+					
+				}
     }
     else if (track_type == WEIGHT_RIGHT_ANGLE) // 1. 直角弯道
 	{
@@ -517,16 +517,16 @@ int16 calculate_position_improved(void)
 				track_type = WEIGHT_STRAIGHT; 
 				track_type_zj = 0;
 			}
-			else if (signal_strength > 50) // 直角右拐进圆环的特殊点
-			{
-				track_type = WEIGHT_ROUNDABOUT; 
-				// track_type_zj = 0;
-			    // weight_outer = 0.4;  // 换成直道的权
-			    // weight_middle = 0.1;
-			    // weight_vertical = 0.1;
-			    // filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
-			    // max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
-			}
+//			if (signal_strength > 50) // 直角右拐进圆环的特殊点
+//			{
+//				track_type = WEIGHT_ROUNDABOUT; 
+//				// track_type_zj = 0;
+//			    // weight_outer = 0.4;  // 换成直道的权
+//			    // weight_middle = 0.1;
+//			    // weight_vertical = 0.1;
+//			    // filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
+//			    // max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
+//			}
 		}
 	}
     else if (track_type == WEIGHT_CROSS) // 2. 十字圆环
@@ -536,10 +536,9 @@ int16 calculate_position_improved(void)
            (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HMR] > 80 && normalized_data[SENSOR_VL] > 70 && normalized_data[SENSOR_VR] > 80 )) &&
             track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
            {
-                track_type = WEIGHT_STRAIGHT; //回直道
-			    track_ten_flag = 0;
-			    ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1
-
+//                track_type = WEIGHT_STRAIGHT; //回直道
+								track_ten_flag = 0;
+								ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1	
            }
 	}
     else if (track_type == WEIGHT_ROUNDABOUT) // 3. 环岛   
@@ -554,25 +553,25 @@ int16 calculate_position_improved(void)
         {
             // 左环岛
             track_route = 2;
-			track_route_status = 1;
+						track_route_status = 1;
         }
-		if(track_route_status == 2 &&((normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_HL] > 70.0f && normalized_data[SENSOR_VL] > 65.0f && signal_strength > 50.0f) ||
-        (normalized_data[SENSOR_HC] > 65.0f && normalized_data[SENSOR_HML] > 90.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_HR] > 40.0f))) 
-		{
-//			track_route = 0;
-			track_route_status = 3;
-//			track_type == WEIGHT_RIGHT_ANGLE; // 检验位点
-		}
+			if(track_route_status == 2 &&((normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_HL] > 70.0f && normalized_data[SENSOR_VL] > 65.0f && signal_strength > 50.0f) ||
+					(normalized_data[SENSOR_HC] > 65.0f && normalized_data[SENSOR_HML] > 90.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_HR] > 40.0f))) 
+			{
+	//			track_route = 0;
+				track_route_status = 3;
+	//			track_type == WEIGHT_RIGHT_ANGLE; // 检验位点
+			}
     }
 
     // 4. 超出置0
-   if(normalized_data[SENSOR_HC] < 2.0f && normalized_data[SENSOR_HMR] < 2.0f && normalized_data[SENSOR_HML] < 2.0f)
-   {
-       track_type = WEIGHT_STRAIGHT;
-       track_route = 0;
-       track_route_status = 0;
-	   track_type_zj = 0;
-   }
+//   if(normalized_data[SENSOR_HC] < 2.0f && normalized_data[SENSOR_HMR] < 2.0f && normalized_data[SENSOR_HML] < 2.0f)
+//   {
+//       track_type = WEIGHT_STRAIGHT;
+//       track_route = 0;
+//       track_route_status = 0;
+//	   track_type_zj = 0;
+//   }
     
     // 根据赛道类型和信号强度调整权重
    switch(track_type)
@@ -631,7 +630,7 @@ int16 calculate_position_improved(void)
 //        else
 //            return -100; // 向左偏离
 		
-		return last_pos;
+					return last_pos;
     }
     
     // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
@@ -723,7 +722,7 @@ uint8 check_electromagnetic_protection(void)
 		}
 		
 		// 3. 位置偏差过大，说明可能偏离赛道太多
-		if(position < -80 || position > 80)
+		if(position < -90 || position > 90)
 		{
 			// 只有当电感值总和也较小时才判断为出赛道
 			if(sum_value < threshold * 2)

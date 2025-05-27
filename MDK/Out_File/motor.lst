@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              13/05/25  11:27:02  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              23/05/25  20:19:16  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -45,35 +45,35 @@ stmt  level    source
    34   3          }
    35   2        
    36   2          pwm_duty(PWMA_CH1P_P60, -left_duty);
-   37   2          pwm_duty(PWMA_CH2P_P62, 0);
-   38   2        }
-   39   1        
-   40   1        // 右轮PWM限幅并输出
-   41   1        if (right_duty >= 0)
-   42   1        {
-   43   2          if (right_duty > MOTOR_PWM_LIMIT)
-   44   2          {
-   45   3            right_duty = MOTOR_PWM_LIMIT;
-   46   3          }
-   47   2          
-   48   2          pwm_duty(PWMA_CH3P_P64, right_duty);
-   49   2          pwm_duty(PWMA_CH4P_P66, 0);
-   50   2          
+   37   2      //    pwm_duty(PWMA_CH1P_P60, 0);
+   38   2          pwm_duty(PWMA_CH2P_P62, 0);
+   39   2        }
+   40   1        
+   41   1        // 右轮PWM限幅并输出
+   42   1        if (right_duty >= 0)
+   43   1        {
+   44   2          if (right_duty > MOTOR_PWM_LIMIT)
+   45   2          {
+   46   3            right_duty = MOTOR_PWM_LIMIT;
+   47   3          }
+   48   2          
+   49   2          pwm_duty(PWMA_CH3P_P64, right_duty);
+   50   2          pwm_duty(PWMA_CH4P_P66, 0);
    51   2          
-   52   2        }
-   53   1        else  
-   54   1        {
-   55   2          if (right_duty < -MOTOR_PWM_LIMIT)
-   56   2          {
-   57   3            right_duty = -MOTOR_PWM_LIMIT;
-C251 COMPILER V5.60.0,  motor                                                              13/05/25  11:27:02  PAGE 2   
+   52   2          
+   53   2        }
+   54   1        else  
+   55   1        {
+   56   2          if (right_duty < -MOTOR_PWM_LIMIT)
+   57   2          {
+C251 COMPILER V5.60.0,  motor                                                              23/05/25  20:19:16  PAGE 2   
 
-   58   3          }
-   59   2          
-   60   2          pwm_duty(PWMA_CH3P_P64, 0);
-   61   2          pwm_duty(PWMA_CH4P_P66, -right_duty);
-   62   2          
-   63   2          
+   58   3            right_duty = -MOTOR_PWM_LIMIT;
+   59   3          }
+   60   2          
+   61   2          pwm_duty(PWMA_CH3P_P64, 0);
+   62   2          pwm_duty(PWMA_CH4P_P66, -right_duty);
+   63   2      //    pwm_duty(PWMA_CH4P_P66, 0);
    64   2        }
    65   1      }
 

@@ -19,9 +19,9 @@ void main(void)
 	
 	imu963ra_init();
 	
-	pid_init(&LeftPID, 100.0f, 0.0f, 0.2f, 0.0f, 7000.0f, 8000.0f);
-	pid_init(&RightPID, 100.0f, 0.0f, 0.2f, 0.0f, 7000.0f, 8000.0f);
-	pid_init(&TurnPID, 4.5f, 0.0f, 20.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&LeftPID, 140.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+	pid_init(&RightPID, 140.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+	pid_init(&TurnPID, 1.5f, 0.0f, 4.5f, 0.0f, 0.0f, 100.0f);
 //	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
@@ -69,6 +69,7 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
+#if 1
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_LeftPoint,
 					g_EncoderLeft,
@@ -82,7 +83,7 @@ void main(void)
 					track_route,
 					track_route_status);
 			uart_putstr(UART_4, g_TxData);
-					
+#endif			
 //			sprintf(g_TxData,"%d,%d,%d,%d\n",
 //					g_LeftPoint,
 //					g_EncoderLeft,
@@ -106,37 +107,38 @@ void main(void)
 			
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
-			
+#if 0
 			// 通过串口输出七电感数据
-//			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-//			 (uint16)normalized_data[SENSOR_HL], 
-//			 (uint16)normalized_data[SENSOR_VL], 
-//			 (uint16)normalized_data[SENSOR_HML], 
-//			 (uint16)normalized_data[SENSOR_HC],
-//			 (uint16)normalized_data[SENSOR_HMR], 
-//			 (uint16)normalized_data[SENSOR_VR], 
-//			 (uint16)normalized_data[SENSOR_HR], 
-//			  position,
-//			 (uint16)signal_strength_value,
-//			  track_type,
-//			  track_route,
-//			  track_route_status,
-//			  g_intencoderL,
-//			  g_intencoderR);
-//			 uart_putstr(UART_4, g_TxData);
+			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+			 (uint16)normalized_data[SENSOR_HL], 
+			 (uint16)normalized_data[SENSOR_VL], 
+			 (uint16)normalized_data[SENSOR_HML], 
+			 (uint16)normalized_data[SENSOR_HC],
+			 (uint16)normalized_data[SENSOR_HMR], 
+			 (uint16)normalized_data[SENSOR_VR], 
+			 (uint16)normalized_data[SENSOR_HR], 
+			  position,
+			 (uint16)signal_strength_value,
+			  track_type,
+			  track_route,
+			  track_route_status,
+			  g_intencoderL,
+			  g_intencoderR);
+			 uart_putstr(UART_4, g_TxData);
+#endif
 		}
 		
 		// 获取滤波后的ADC数据		
 		mid_filter();      // 使用中位值滤波获取电感数据
 
-		// 归一化电感数组
+		// 归一化电感数组·
 		normalize_sensors();
 		
 		// 计算位置偏差
 		position = calculate_position_improved();
 		
 		//检查电磁保护
-//		protection_flag = check_electromagnetic_protection();
+		protection_flag = check_electromagnetic_protection();
 
 		// if(protection_flag)
 		// {
@@ -176,12 +178,12 @@ void main(void)
 
 		 // 通过串口输出七电感原始数据
 		  sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
-		  value[0], 
-		  value[1], 
-		  value[2], 
-		  value[3], 
-		  value[4],
-		  value[5],
+					value[0], 
+					value[1], 
+					value[2], 
+					value[3], 
+					value[4],
+					value[5],
           value[6]);
 		  uart_putstr(UART_4, g_TxData);
 
