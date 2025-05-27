@@ -491,7 +491,7 @@ int16 calculate_position_improved(void)
                 (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_HMR] < 45 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 45)) && 
                 track_ten_flag == 1 && signal_strength > 50.0f ) 
 		{
-			track_type = 2; //十字圆环
+			//track_type = 2; //十字圆环
 			track_ten_flag = 0; 
 			ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
 			
