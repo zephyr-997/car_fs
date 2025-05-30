@@ -19,9 +19,9 @@ void main(void)
 	
 	imu963ra_init();
 	
-	pid_init(&LeftPID, 150.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
-	pid_init(&RightPID, 150.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
-	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&LeftPID, 60.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+	pid_init(&RightPID, 60.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+	pid_init(&TurnPID, 2.0f, 0.0f, 5.0f, 0.0f, 0.0f, 100.0f);
 //	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
@@ -69,7 +69,7 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-#if 1
+#if 0
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_LeftPoint,
 					g_EncoderLeft,
@@ -107,7 +107,7 @@ void main(void)
 			
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
-#if 0
+#if 1
 			// 通过串口输出七电感数据
 			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
 			 (uint16)normalized_data[SENSOR_HL], 

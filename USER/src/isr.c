@@ -382,11 +382,11 @@ void TM2_Isr() interrupt 12
 			{
 				if (track_route == 1)//右环
 				{
-					positionReal = -20;
+					positionReal = -30;
 				}
 				else if (track_route == 2)//左环
 				{
-					positionReal = 20;
+					positionReal = 30;
 				}
 							
 				if (g_intencoderALL >= 8500)//入环完毕
