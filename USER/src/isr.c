@@ -58,7 +58,7 @@ float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还�
 int32_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
 float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
-int g_SpeedPoint = 70;
+int g_SpeedPoint = 80;
 int g_LeftPoint = 0;                             // 左轮目标速度                  
 int g_RightPoint = 0;                            // 右轮目标速度             
 int count = 0, flag = 0;
@@ -294,10 +294,10 @@ void TM1_Isr() interrupt 3
             P26 = 1;  // 关闭蜂鸣器
         }
     }	
-		if (protection_flag)
-		{
-			P26 = 0;
-		}
+//		if (protection_flag)
+//		{
+//			P26 = 0;
+//		}
 	
 	/* 出入十字圆环计时判定 */
 	if (ten_change_flag == 1)
