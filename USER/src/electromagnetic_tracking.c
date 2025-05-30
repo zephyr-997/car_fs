@@ -20,16 +20,16 @@
 TrackWeights track_weights[4] = {
     // 普通直道
 
-    {0.15f, 0.40f, 0.30f, 0.15f, 0.6f, 15, "直道"},
+    {0.15f, 0.40f, 0.30f, 0.15f, 0.60f, 20, "直道"},
     
     // 直角弯道
-    {0.20f, 0.40f, 0.30f, 0.25f, 0.8f, 35, "直角弯道"},
+    {0.15f, 0.40f, 0.30f, 0.25f, 0.90f, 50, "直角弯道"},
     
     // 十字圆环
-    {0.06f, 0.4f, 0.2f, 0.06f, 0.6f, 15, "十字圆环"},
+    {0.15f, 0.40f, 0.2f, 0.15f, 0.70f, 20, "十字圆环"},
     
     // 环岛
-    {0.15f, 0.4f, 0.1f, 0.15f, 0.7f, 12, "环岛"}
+    {0.15f, 0.40f, 0.10f, 0.15f, 0.70f, 20, "环岛"}
 };
 
 uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
@@ -47,7 +47,7 @@ float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 // uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
 // uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
 uint16 min_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {940, 930, 920, 760, 920, 930, 940};  // 每个电感的最大值
+uint16 max_value[SENSOR_COUNT] = {910, 930, 920, 730, 920, 930, 910};  // 每个电感的最大值
 
 // 电感位置计算相关变量
 float signal_strength_value = 0;   // 信号强度指标
@@ -472,82 +472,79 @@ int16 calculate_position_improved(void)
     if (track_type == WEIGHT_STRAIGHT) // 0. 当前认为是普通赛道时，尝试判断特殊赛道
     {    
         // 1. 直角弯道特征
-        if(((normalized_data[SENSOR_HL] > 15.0f && normalized_data[SENSOR_VL] > 65.0f && 
-                normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) ||
-                (normalized_data[SENSOR_VR] > 70.0f && 
-                normalized_data[SENSOR_HL] < 20.0f && normalized_data[SENSOR_VL] < 15.0f)) && 
-                normalized_data[SENSOR_HC] < 70.0f && 
+        if(((normalized_data[SENSOR_VL] > 65.0f && normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) || //左转
+                (normalized_data[SENSOR_VR] > 65.0f && normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_VL] < 20.0f)) &&  //右转
+								normalized_data[SENSOR_HC] < 75.0f && 
                 signal_strength > 25.0f && signal_strength < 50.0f) // 调整信号强度范围
         {
-//            track_type = WEIGHT_RIGHT_ANGLE; // 直角弯道
+            track_type = WEIGHT_RIGHT_ANGLE; // 直角弯道
         }
-        else if((normalized_data[SENSOR_HC] > 95.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HR] > 70) ||  //右环岛
-                (normalized_data[SENSOR_HC] > 90.0f && normalized_data[SENSOR_HML] > 50.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HL] > 70) && signal_strength > 50.0f)    // 左环岛
-        {
-            //track_type = 3;// 环岛
-        }
-
-		else if (((normalized_data[SENSOR_HC] > 70 && normalized_data[SENSOR_HMR] > 75 && normalized_data[SENSOR_HML] < 60 && normalized_data[SENSOR_VL] > 50 && normalized_data[SENSOR_VR] > 75) ||  //逆时针
-                (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_HMR] < 45 && normalized_data[SENSOR_VL] > 75 && normalized_data[SENSOR_VR] > 45)) && 
+				else if (((normalized_data[SENSOR_HC] > 70.0f && normalized_data[SENSOR_HMR] > 75.0f && normalized_data[SENSOR_HML] < 60.0f && normalized_data[SENSOR_VL] > 50.0f && normalized_data[SENSOR_VR] > 75.0f) ||  //逆时针
+                (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] < 45.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_VR] > 45.0f)) && 
                 track_ten_flag == 1 && signal_strength > 50.0f ) 
 				{
-//					track_type = 2; //十字圆环
+					track_type = 2; //十字圆环
 					track_ten_flag = 0; 
 					ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
 					
 				}
+        else if((normalized_data[SENSOR_HC] > 95.0f && normalized_data[SENSOR_HML] > 60.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f) ||  //右环岛
+                (normalized_data[SENSOR_HC] > 90.0f && normalized_data[SENSOR_HML] > 50.0f && normalized_data[SENSOR_HMR] > 60.0f && normalized_data[SENSOR_HL] > 70.0f && normalized_data[SENSOR_VR] < 20.0f) && signal_strength > 50.0f )    // 左环岛
+        {
+//            track_type = 3;// 环岛
+        }
     }
     else if (track_type == WEIGHT_RIGHT_ANGLE) // 1. 直角弯道
-	{
-		if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
 		{
-			track_type_zj = 1; //左转
-			
+				if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
+				{
+					track_type_zj = 1; //左转
+					
+				}
+				else if (normalized_data[SENSOR_VR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f )
+				{
+					track_type_zj = 2; //右转
+				}
+				
+				if (track_type_zj != 0)
+				{
+							 // 回到直道 - 可选:增加 signal_strength < 45.0f 判断
+					if (normalized_data[SENSOR_VR] < 20.0f && normalized_data[SENSOR_VL] < 20.0f ) 
+					{
+						track_type = WEIGHT_STRAIGHT; 
+						track_type_zj = 0;
+					}
+		//			if (signal_strength > 50) // 直角右拐进圆环的特殊点
+		//			{
+		//				track_type = WEIGHT_ROUNDABOUT; 
+		//				// track_type_zj = 0;
+		//			    // weight_outer = 0.4;  // 换成直道的权
+		//			    // weight_middle = 0.1;
+		//			    // weight_vertical = 0.1;
+		//			    // filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
+		//			    // max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
+		//			}
+				}
 		}
-		else if (normalized_data[SENSOR_VR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f )
-		{
-			track_type_zj = 2; //右转
-		}
-		
-		if (track_type_zj != 0)
-		{
-           // 回到直道 - 可选:增加 signal_strength < 45.0f 判断
-			if (normalized_data[SENSOR_VR] < 20.0f && normalized_data[SENSOR_VL] < 20.0f ) 
-			{
-				track_type = WEIGHT_STRAIGHT; 
-				track_type_zj = 0;
-			}
-//			if (signal_strength > 50) // 直角右拐进圆环的特殊点
-//			{
-//				track_type = WEIGHT_ROUNDABOUT; 
-//				// track_type_zj = 0;
-//			    // weight_outer = 0.4;  // 换成直道的权
-//			    // weight_middle = 0.1;
-//			    // weight_vertical = 0.1;
-//			    // filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
-//			    // max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
-//			}
-		}
-	}
     else if (track_type == WEIGHT_CROSS) // 2. 十字圆环
-   {
-        // 出环  
-		if (((normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HML] > 80 && normalized_data[SENSOR_VL] > 80 && normalized_data[SENSOR_VR] > 70)  || //逆时针
-           (normalized_data[SENSOR_HC] > 80 && normalized_data[SENSOR_HMR] > 80 && normalized_data[SENSOR_VL] > 70 && normalized_data[SENSOR_VR] > 80 )) &&
-            track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
-           {
-//                track_type = WEIGHT_STRAIGHT; //回直道
-								track_ten_flag = 0;
-								ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1	
-           }
-	}
+    {
+					// 出环  
+			if (((normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_VL] > 80.0f && normalized_data[SENSOR_VR] > 70.0f)  || //逆时针
+						 (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VL] > 70.0f && normalized_data[SENSOR_VR] > 80.0f )) &&
+							track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
+						 {
+	                track_type = WEIGHT_STRAIGHT; //回直道
+									track_ten_flag = 0;
+									ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1	
+						 }
+		}
     else if (track_type == WEIGHT_ROUNDABOUT) // 3. 环岛   
     {
-        if(normalized_data[SENSOR_HR] > 80.0f && normalized_data[SENSOR_HL] < 20.0f && track_route == 0)
+        if(normalized_data[SENSOR_HR] > 80.0f && normalized_data[SENSOR_HL] < 30.0f && track_route == 0)
         {
             // 右环岛
             track_route = 1;
-			track_route_status = 1;
+						track_route_status = 1;
         }
         else if(normalized_data[SENSOR_HR] < 30.0f && normalized_data[SENSOR_HL] > 70.0f && track_route == 0)
         {
@@ -559,7 +556,7 @@ int16 calculate_position_improved(void)
 					(normalized_data[SENSOR_HC] > 65.0f && normalized_data[SENSOR_HML] > 90.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_HR] > 40.0f))) 
 			{
 	//			track_route = 0;
-				track_route_status = 3;
+					track_route_status = 3;
 	//			track_type == WEIGHT_RIGHT_ANGLE; // 检验位点
 			}
     }
@@ -603,15 +600,14 @@ int16 calculate_position_improved(void)
            max_change_rate = track_weights[WEIGHT_CROSS].max_change_rate;
            break;
            
-       case WEIGHT_ROUNDABOUT: // 环岛
-           // 使用环岛权重
-           weight_outer = track_weights[WEIGHT_ROUNDABOUT].weight_outer;
-           weight_middle = track_weights[WEIGHT_ROUNDABOUT].weight_middle;
-           weight_vertical = track_weights[WEIGHT_ROUNDABOUT].weight_vertical;
-           filter_param = track_weights[WEIGHT_ROUNDABOUT].filter_param;
-           max_change_rate = track_weights[WEIGHT_ROUNDABOUT].max_change_rate;
-           break;
-
+//       case WEIGHT_ROUNDABOUT: // 环岛
+//           // 使用环岛权重
+//           weight_outer = track_weights[WEIGHT_ROUNDABOUT].weight_outer;
+//           weight_middle = track_weights[WEIGHT_ROUNDABOUT].weight_middle;
+//           weight_vertical = track_weights[WEIGHT_ROUNDABOUT].weight_vertical;
+//           filter_param = track_weights[WEIGHT_ROUNDABOUT].filter_param;
+//           max_change_rate = track_weights[WEIGHT_ROUNDABOUT].max_change_rate;
+//           break;
        default:
            // 使用默认的直道权重
            weight_outer = track_weights[WEIGHT_STRAIGHT].weight_outer;

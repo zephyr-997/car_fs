@@ -69,7 +69,7 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-#if 1
+#if 0
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_LeftPoint,
 					g_EncoderLeft,
@@ -81,7 +81,7 @@ void main(void)
 					g_DutyRight,
 					track_type,
 					track_route,
-					track_route_status);
+					protection_flag);
 			uart_putstr(UART_4, g_TxData);
 #endif			
 //			sprintf(g_TxData,"%d,%d,%d,%d\n",
@@ -107,7 +107,7 @@ void main(void)
 			
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
-#if 0
+#if 1
 			// 通过串口输出七电感数据
 			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
 			 (uint16)normalized_data[SENSOR_HL], 

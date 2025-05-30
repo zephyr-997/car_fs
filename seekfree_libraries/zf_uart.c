@@ -27,7 +27,8 @@ uint8 busy[5];		//接收忙标志位
 uint8_t g_TxData[UART_TX_LENGTH] = {0};
 uint8_t g_RxData[UART_RX_LENGTH] = {0};
 uint8_t g_RxPointer = 0, g_RxDat = 0;
-uint8_t type_track = 0; // 0: 直道 1: 十字圆环 2: 环岛 3: 直角弯道
+uint8_t type_track = 1; // 0: 直道 1: 十字圆环 2: 环岛 3: 直角弯道
+float temp = 0;
 extern TrackWeights track_weights[4];
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      串口初始化
@@ -342,20 +343,21 @@ void uart4_interrupt_callback(void)
 		}
 		else if (strncmp(g_RxData, "type", 4) == 0)
 		{
-			sscanf(g_RxData, "type:%d", &type_track);
-			sprintf(g_TxData, "type:%d\n", type_track);
+			sscanf(g_RxData, "type:%f", &temp);
+			type_track = (uint8_t)temp;
+			sprintf(g_TxData, "type=%d\n", type_track);
 			uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "outer", 5) == 0)
 		{
 			sscanf(g_RxData, "outer:%f", &weight_value);
-			track_weights[type_track].weight_outer = weight_value;
+//			track_weights[type_track].weight_outer = weight_value;
 			//WEIGHT_STRAIGHT
 			//WEIGHT_RIGHT_ANGLE
 			//WEIGHT_CROSS
 			//WEIGHT_ROUNDABOUT
-			// sprintf(g_TxData, "outer:%f\n", track_weights[WEIGHT_CROSS].weight_outer);
-			// uart_putstr(UART_4, g_TxData);
+			sprintf(g_TxData, "outer[%d]:%f\n",type_track , track_weights[type_track].weight_outer);
+			uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "middle", 6) == 0)
 		{
@@ -407,8 +409,8 @@ void uart4_interrupt_callback(void)
 			sscanf(g_RxData, "rate:%hd", &rate_value);
 			track_weights[type_track].max_change_rate = rate_value;
 			
-			// sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
-			// uart_putstr(UART_4, g_TxData);
+			 sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
+			 uart_putstr(UART_4, g_TxData);
 		}
 		// else if (strncmp(g_RxData, "query", 5) == 0)
 		// {

@@ -294,6 +294,10 @@ void TM1_Isr() interrupt 3
             P26 = 1;  // 关闭蜂鸣器
         }
     }	
+		if (protection_flag)
+		{
+			P26 = 0;
+		}
 	
 	/* 出入十字圆环计时判定 */
 	if (ten_change_flag == 1)
@@ -333,7 +337,7 @@ void TM2_Isr() interrupt 12
 		g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
 		
 		
-		if (track_type == 0 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者环岛内部
+		if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者环岛内部
 		{
 			positionReal = position;
 		}
