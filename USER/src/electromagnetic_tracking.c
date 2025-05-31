@@ -26,10 +26,10 @@ TrackWeights track_weights[4] = {
     {0.15f, 0.40f, 0.30f, 0.25f, 0.90f, 50, "直角弯道"},
     
     // 十字圆环
-    {0.15f, 0.40f, 0.2f, 0.15f, 0.70f, 30, "十字圆环"},
+    {0.35f, 0.23f, 0.2f, 0.15f, 0.70f, 30, "十字圆环"},
     
     // 环岛
-    {0.15f, 0.40f, 0.10f, 0.15f, 0.70f, 20, "环岛"}
+    {0.26f, 0.35f, 0.10f, 0.15f, 0.70f, 30, "环岛"}
 };
 
 uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
@@ -488,7 +488,7 @@ int16 calculate_position_improved(void)
 					ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
 					
 				}
-        else if((normalized_data[SENSOR_HC] > 95.0f && ((normalized_data[SENSOR_HR] + normalized_data[SENSOR_VR]) - (normalized_data[SENSOR_HL] + normalized_data[SENSOR_VL]) > 100.0f))  //右环岛
+        else if((normalized_data[SENSOR_HC] > 95.0f && ((normalized_data[SENSOR_HR] + normalized_data[SENSOR_VR]) - (normalized_data[SENSOR_HL] + normalized_data[SENSOR_VL]) > 90.0f))  //右环岛
                  && signal_strength > 50.0f )    // 左环岛
         {
             track_type = 3;// 环岛
@@ -529,7 +529,7 @@ int16 calculate_position_improved(void)
     else if (track_type == WEIGHT_CROSS) // 2. 十字圆环
     {
 					// 出环  
-			if (((normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_VL] > 80.0f && normalized_data[SENSOR_VR] > 70.0f)  || //逆时针
+			if (((normalized_data[SENSOR_HC] > 70.0f && normalized_data[SENSOR_HML] > 75.0f && normalized_data[SENSOR_VL] > 80.0f && normalized_data[SENSOR_VR] > 70.0f)  || //逆时针
 						 (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VL] > 70.0f && normalized_data[SENSOR_VR] > 80.0f )) &&
 							track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
 			 {
@@ -544,16 +544,15 @@ int16 calculate_position_improved(void)
         {
             // 右环岛
             track_route = 1;
-			track_route_status = 1;
+		      	track_route_status = 1;
         }
         else if(normalized_data[SENSOR_HR] < 30.0f && normalized_data[SENSOR_HL] > 70.0f && track_route == 0)
         {
             // 左环岛
             track_route = 2;
-			track_route_status = 1;
+						track_route_status = 1;
         }
-			if(track_route_status == 2 &&((normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_HL] > 70.0f && normalized_data[SENSOR_VL] > 65.0f && signal_strength > 50.0f) ||
-					(normalized_data[SENSOR_HC] > 65.0f && normalized_data[SENSOR_HML] > 90.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_HR] > 40.0f))) 
+			if(track_route_status == 2 &&(normalized_data[SENSOR_HML] < 50.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VR] > 75.0f && signal_strength > 40.0f)) //右环
 			{
 	//			track_route = 0;
 				track_route_status = 3;

@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 1   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE isr
@@ -66,7 +66,7 @@ stmt  level    source
    53          // 函数前置声明
    54          void uart4_interrupt_callback(void);
    55          
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 2   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 2   
 
    56          // 全局变量定义
    57          float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还需转化再赋给电机
@@ -134,7 +134,7 @@ stmt  level    source
   118   1          if(UART2_GET_RX_FLAG)
   119   1        {
   120   2              UART2_CLEAR_RX_FLAG;
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 3   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 3   
 
   121   2          //接收数据寄存器为：S2BUF
   122   2      
@@ -202,7 +202,7 @@ stmt  level    source
   184          {
   185   1        INT2_CLEAR_FLAG;  //清除中断标志
   186   1        
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 4   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 4   
 
   187   1      }
   188          
@@ -270,7 +270,7 @@ stmt  level    source
   250   5              }
   251   4            }
   252   3            break;
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 5   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 5   
 
   253   3            
   254   3            case 2:
@@ -338,7 +338,7 @@ stmt  level    source
   316          void TM2_Isr() interrupt 12
   317          {
   318   1        TIM2_CLEAR_FLAG;  //清除中断标志
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 6   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 6   
 
   319   1        
   320   1        /* 读取并清除编码器的值 */
@@ -406,14 +406,14 @@ stmt  level    source
   381   3            else//进入第二阶段打死进环
   382   3            {
   383   4              if (track_route == 1)//右环
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 7   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 7   
 
   384   4              {
-  385   5                positionReal = -20;
+  385   5                positionReal = -30;
   386   5              }
   387   4              else if (track_route == 2)//左环
   388   4              {
-  389   5                positionReal = 20;
+  389   5                positionReal = 30;
   390   5              }
   391   4                    
   392   4              if (g_intencoderALL >= 8500)//入环完毕
@@ -474,7 +474,7 @@ stmt  level    source
   447   3            g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
   448   3          }
   449   2          else //右转
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 8   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 8   
 
   450   2          {
   451   3            k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
@@ -542,7 +542,7 @@ stmt  level    source
   513          //void  INT3_Isr()  interrupt 11;
   514          //void  TM2_Isr()   interrupt 12;
   515          //void  INT4_Isr()  interrupt 16;
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  17:10:16  PAGE 9   
+C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 9   
 
   516          //void  UART3_Isr() interrupt 17;
   517          //void  UART4_Isr() interrupt 18;
