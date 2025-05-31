@@ -21,7 +21,7 @@ void main(void)
 	
 	pid_init(&LeftPID, 60.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
 	pid_init(&RightPID, 60.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
-	pid_init(&TurnPID, 2.0f, 0.0f, 7.0f, 0.0f, 0.0f, 100.0f);
+	pid_init(&TurnPID, 2.0f, 0.0f, 4.0f, 0.0f, 0.0f, 100.0f);
 //	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
@@ -69,7 +69,7 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-#if 0
+#if 1
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_LeftPoint,
 					g_EncoderLeft,
@@ -81,7 +81,7 @@ void main(void)
 					g_DutyRight,
 					track_type,
 					track_route,
-					protection_flag);
+					track_route_status);
 			uart_putstr(UART_4, g_TxData);
 #endif			
 //			sprintf(g_TxData,"%d,%d,%d,%d\n",
@@ -107,7 +107,7 @@ void main(void)
 			
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
-#if 1
+#if 0
 			// 通过串口输出七电感数据
 			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
 			 (uint16)normalized_data[SENSOR_HL], 

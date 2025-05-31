@@ -340,41 +340,23 @@ void TM2_Isr() interrupt 12
 		if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者环岛内部
 		{
 			positionReal = position;
+			
+			if (track_type == 0 || track_type == 1)
+			{
+				g_SpeedPoint = SPEED_STRAIGHT;
+			}
+			else if (track_type == 2 || (track_type == 3 && track_route_status == 2))
+			{
+				g_SpeedPoint = SPEED_ISLAND;
+			}
 		}
-//		else if (track_type == 1)//直角
-//		{
-//			if (track_type_zj == 1)//左直角
-//			{
-//				positionReal = 60;
-//				
-//				g_intencoderR += g_EncoderRight;
-//				
-//				if (g_intencoderR >= 3200)
-//				{
-//					track_type = 0;
-//					track_type_zj = 0;
-//					g_intencoderR = 0;
-//				}
-//			}
-//			else if (track_type_zj == 2)//右直角
-//			{
-//				positionReal = -60;
-//				
-//				g_intencoderL += g_EncoderLeft;
-//				
-//				if (g_intencoderL >= 3200)
-//				{
-//					track_type = 0;
-//					track_type_zj = 0;
-//					g_intencoderL = 0;
-//				}
-//			}
-//		}
 		else if (track_type == 3 && track_route_status == 1)//圆环入环
 		{
+			g_SpeedPoint = SPEED_STRAIGHT;
+			
 			g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
 			
-			if(g_intencoderALL <= 4000)//第一阶段先直行
+			if(g_intencoderALL <= 4500)//第一阶段先直行
 			{
 				positionReal = 0;
 			}
@@ -382,14 +364,14 @@ void TM2_Isr() interrupt 12
 			{
 				if (track_route == 1)//右环
 				{
-					positionReal = -30;
+					positionReal = -50;
 				}
 				else if (track_route == 2)//左环
 				{
-					positionReal = 30;
+					positionReal = 50;
 				}
 							
-				if (g_intencoderALL >= 8500)//入环完毕
+				if (g_intencoderALL >= 6500)//入环完毕
 				{
 					track_route_status = 2;
 					g_intencoderALL = 0;
@@ -398,24 +380,26 @@ void TM2_Isr() interrupt 12
 		}
 		else if (track_type == 3 && track_route_status == 3)//圆环出环
 		{
+			g_SpeedPoint = SPEED_STRAIGHT;
+			
 			g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
 			
 			if (g_intencoderALL <= 2000)//第一阶段打死出环
 			{
 				if (track_route == 1)//右环
 				{
-					positionReal = -20;
+					positionReal = -40;
 				}
 				else if (track_route == 2)//左环
 				{
-					positionReal = 20;
+					positionReal = 40;
 				}
 			}
 			else//第二阶段直走
 			{
 				positionReal = 0;
 				
-				if (g_intencoderALL >= 5000)//出环完毕
+				if (g_intencoderALL >= 4000)//出环完毕
 				{
 					track_type = 0;
 					track_route = 0;
