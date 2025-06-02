@@ -13,6 +13,7 @@
 #define WEIGHT_RIGHT_ANGLE 1  // 直角弯道
 #define WEIGHT_CROSS       2  // 十字圆环
 #define WEIGHT_ROUNDABOUT  3  // 环岛
+#define WEIGHT_SPEED       4  //深度加速 
 
 // 定义电感权重结构体	
 
@@ -20,7 +21,7 @@
 TrackWeights track_weights[4] = {
     // 普通直道
 
-    {0.15f, 0.40f, 0.30f, 0.15f, 0.70f, 30, "直道"},
+    {0.15f, 0.40f, 0.30f, 0.15f, 0.80f, 35, "直道"},
     
     // 直角弯道
     {0.25f, 0.30f, 0.35f, 0.35f, 1.00f, 50, "直角弯道"},
@@ -67,6 +68,8 @@ uint8 ten_change_flag = 0; //1表示0.5后track_ten_flag=1
 
 uint8 protection_flag = 0;// 电磁保护逻辑变量,0表示未保护，1表示保护
 
+
+uint8 speed_count = 0;
 
 //-----------------------------------------------------------------------------
 // @brief  	电磁传感器初始化
@@ -469,7 +472,7 @@ int16 calculate_position_improved(void)
 	
 	
     // 赛道类型识别 - 根据七电感特征判断
-    if (track_type == WEIGHT_STRAIGHT) // 0. 当前认为是普通赛道时，尝试判断特殊赛道
+    if (track_type == WEIGHT_STRAIGHT || track_type == 4) // 0. 当前认为是普通赛道时，尝试判断特殊赛道
     {    
         // 1. 直角弯道特征
         if(((normalized_data[SENSOR_VL] > 65.0f && normalized_data[SENSOR_HR] < 35.0f && normalized_data[SENSOR_VR] < 20.0f) || //左转
@@ -550,7 +553,7 @@ int16 calculate_position_improved(void)
         {
             // 左环岛
             track_route = 2;
-			track_route_status = 1;
+						track_route_status = 1;
         }
 		if(track_route_status == 2 &&(normalized_data[SENSOR_HC] < 70.0f && normalized_data[SENSOR_HML] < 30.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VR] > 75.0f &&normalized_data[SENSOR_HL] > 20.0f && signal_strength > 40.0f)) //右环
 		{
@@ -620,12 +623,10 @@ int16 calculate_position_improved(void)
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
     if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
     {
-//        if(last_pos > 0)
-//            return 100;  // 向右偏离
-//        else
-//            return -100; // 向左偏离
-		
-					return last_pos;
+        if(last_pos > 0)
+            return (last_pos + 10);  // 向右偏离
+        else
+            return (last_pos - 10); // 向左偏离
     }
     
     // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正
@@ -661,6 +662,28 @@ int16 calculate_position_improved(void)
         // 应用三点平均滤波，进一步平滑
         pos = (pos + last_pos + very_last_pos) / 3;
     }
+		
+		
+//		if (track_type == 0 && (pos <= 10 || pos >= -10))
+//		{
+//				speed_count++;
+//			
+//				if (speed_count >= 12)
+//				{
+//						track_type = 4;
+//						speed_count = 0;
+//				}
+//		}
+//		else
+//		{
+//				speed_count = 0;
+//		}
+//		
+//		if (track_type == 4 && (pos > 10 || pos < -10))
+//		{
+//			track_type = 0;
+//		}
+		
     
     // 更新历史位置值
     very_very_last_pos = very_last_pos;

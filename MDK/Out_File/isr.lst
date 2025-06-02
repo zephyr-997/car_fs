@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 1   
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE isr
@@ -66,7 +66,7 @@ stmt  level    source
    53          // 函数前置声明
    54          void uart4_interrupt_callback(void);
    55          
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 2   
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 2   
 
    56          // 全局变量定义
    57          float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还需转化再赋给电机
@@ -134,7 +134,7 @@ stmt  level    source
   118   1          if(UART2_GET_RX_FLAG)
   119   1        {
   120   2              UART2_CLEAR_RX_FLAG;
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 3   
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 3   
 
   121   2          //接收数据寄存器为：S2BUF
   122   2      
@@ -202,7 +202,7 @@ stmt  level    source
   184          {
   185   1        INT2_CLEAR_FLAG;  //清除中断标志
   186   1        
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 4   
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 4   
 
   187   1      }
   188          
@@ -270,7 +270,7 @@ stmt  level    source
   250   5              }
   251   4            }
   252   3            break;
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 5   
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 5   
 
   253   3            
   254   3            case 2:
@@ -338,7 +338,7 @@ stmt  level    source
   316          void TM2_Isr() interrupt 12
   317          {
   318   1        TIM2_CLEAR_FLAG;  //清除中断标志
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 6   
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 6   
 
   319   1        
   320   1        /* 读取并清除编码器的值 */
@@ -361,203 +361,198 @@ stmt  level    source
   337   2          g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
   338   2          
   339   2          
-  340   2          if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 
-             -2))//普通直线、直角、十字圆环内部或者环岛内部
+  340   2          if (track_type == 0)//普通直线、直角、十字圆环内部或者环岛内部
   341   2          {
   342   3            positionReal = position;
-  343   3          }
-  344   2      //    else if (track_type == 1)//直角
-  345   2      //    {
-  346   2      //      if (track_type_zj == 1)//左直角
-  347   2      //      {
-  348   2      //        positionReal = 60;
-  349   2      //        
-  350   2      //        g_intencoderR += g_EncoderRight;
-  351   2      //        
-  352   2      //        if (g_intencoderR >= 3200)
-  353   2      //        {
-  354   2      //          track_type = 0;
-  355   2      //          track_type_zj = 0;
-  356   2      //          g_intencoderR = 0;
-  357   2      //        }
-  358   2      //      }
-  359   2      //      else if (track_type_zj == 2)//右直角
-  360   2      //      {
-  361   2      //        positionReal = -60;
-  362   2      //        
-  363   2      //        g_intencoderL += g_EncoderLeft;
-  364   2      //        
-  365   2      //        if (g_intencoderL >= 3200)
-  366   2      //        {
-  367   2      //          track_type = 0;
-  368   2      //          track_type_zj = 0;
-  369   2      //          g_intencoderL = 0;
-  370   2      //        }
-  371   2      //      }
-  372   2      //    }
-  373   2          else if (track_type == 3 && track_route_status == 1)//圆环入环
-  374   2          {
-  375   3            g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
-  376   3            
-  377   3            if(g_intencoderALL <= 4000)//第一阶段先直行
-  378   3            {
-  379   4              positionReal = 0;
-  380   4            }
-  381   3            else//进入第二阶段打死进环
-  382   3            {
-  383   4              if (track_route == 1)//右环
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 7   
+  343   3            g_SpeedPoint = SPEED_STRAIGHT;
+  344   3          }
+  345   2          else if (track_type == 1)
+  346   2          {
+  347   3            positionReal = position;
+  348   3            g_SpeedPoint = SPEED_ANGLE;
+  349   3          }
+  350   2          else if (track_type == 2)
+  351   2          {
+  352   3            positionReal = position;
+  353   3            g_SpeedPoint = SPEED_CROSS;
+  354   3          }
+  355   2          else if (track_type == 3 && track_route_status == 1)//圆环入环
+  356   2          {
+  357   3            g_SpeedPoint = SPEED_STRAIGHT;
+  358   3            
+  359   3            g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
+  360   3            
+  361   3            if(g_intencoderALL <= 4500)//第一阶段先直行
+  362   3            {
+  363   4              positionReal = 0;
+  364   4            }
+  365   3            else//进入第二阶段打死进环
+  366   3            {
+  367   4              if (track_route == 1)//右环
+  368   4              {
+  369   5                positionReal = -50;
+  370   5              }
+  371   4              else if (track_route == 2)//左环
+  372   4              {
+  373   5                positionReal = 50;
+  374   5              }
+  375   4                    
+  376   4              if (g_intencoderALL >= 6500)//入环完毕
+  377   4              {
+  378   5                track_route_status = 2;
+  379   5                g_intencoderALL = 0;
+  380   5              }
+  381   4            }
+  382   3          }
+  383   2          else if (track_type == 3 && track_route_status == 2)
+  384   2          {
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 7   
 
-  384   4              {
-  385   5                positionReal = -30;
-  386   5              }
-  387   4              else if (track_route == 2)//左环
-  388   4              {
-  389   5                positionReal = 30;
-  390   5              }
-  391   4                    
-  392   4              if (g_intencoderALL >= 8500)//入环完毕
-  393   4              {
-  394   5                track_route_status = 2;
-  395   5                g_intencoderALL = 0;
-  396   5              }
-  397   4            }
-  398   3          }
-  399   2          else if (track_type == 3 && track_route_status == 3)//圆环出环
-  400   2          {
-  401   3            g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
-  402   3            
-  403   3            if (g_intencoderALL <= 2000)//第一阶段打死出环
-  404   3            {
-  405   4              if (track_route == 1)//右环
-  406   4              {
-  407   5                positionReal = -20;
-  408   5              }
-  409   4              else if (track_route == 2)//左环
+  385   3            positionReal = position;
+  386   3            g_SpeedPoint = SPEED_ROUNDABOUT;
+  387   3          }
+  388   2          else if (track_type == 3 && track_route_status == 3)//圆环出环
+  389   2          {
+  390   3            g_SpeedPoint = SPEED_STRAIGHT;
+  391   3            
+  392   3            g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
+  393   3            
+  394   3            if (g_intencoderALL <= 2000)//第一阶段打死出环
+  395   3            {
+  396   4              if (track_route == 1)//右环
+  397   4              {
+  398   5                positionReal = -40;
+  399   5              }
+  400   4              else if (track_route == 2)//左环
+  401   4              {
+  402   5                positionReal = 40;
+  403   5              }
+  404   4            }
+  405   3            else//第二阶段直走
+  406   3            {
+  407   4              positionReal = 0;
+  408   4              
+  409   4              if (g_intencoderALL >= 4000)//出环完毕
   410   4              {
-  411   5                positionReal = 20;
-  412   5              }
-  413   4            }
-  414   3            else//第二阶段直走
-  415   3            {
-  416   4              positionReal = 0;
-  417   4              
-  418   4              if (g_intencoderALL >= 5000)//出环完毕
-  419   4              {
-  420   5                track_type = 0;
-  421   5                track_route = 0;
-  422   5                track_route_status = 0;
-  423   5                
-  424   5                g_intencoderALL = 0;
-  425   5              }
-  426   4            }
-  427   3          }
-  428   2          
-  429   2          /* 5ms算一次内环，15ms算一次外环 */
-  430   2          turn_count++;
-  431   2          if (turn_count >= 3)
-  432   2          {
-  433   3            filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
-  434   3            
-  435   3            turn_pid = pid_poisitional_normal(&TurnPID, positionReal);
-  436   3      //      turn_pid = pid_poisitional_quadratic(&TurnPID, positionReal, filtered_GyroZ);
-  437   3            
-  438   3            Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
-  439   3            
-  440   3            turn_count = 0;
-  441   3          }
-  442   2          
-  443   2          if(turn_pid >= 0) //左转
-  444   2          {
-  445   3            k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
-  446   3            g_LeftPoint = g_SpeedPoint * (1 - k);
-  447   3            g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-  448   3          }
-  449   2          else //右转
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 8   
+  411   5                track_type = 0;
+  412   5                track_route = 0;
+  413   5                track_route_status = 0;
+  414   5                
+  415   5                g_intencoderALL = 0;
+  416   5              }
+  417   4            }
+  418   3          }
+  419   2          else if (track_type == 4)
+  420   2          {
+  421   3            positionReal = position;
+  422   3            g_SpeedPoint = SPEED_SPEED;
+  423   3          }
+  424   2          
+  425   2          /* 5ms算一次内环，15ms算一次外环 */
+  426   2          turn_count++;
+  427   2          if (turn_count >= 3)
+  428   2          {
+  429   3            filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
+  430   3            
+  431   3            turn_pid = pid_poisitional_normal(&TurnPID, positionReal);
+  432   3      //      turn_pid = pid_poisitional_quadratic(&TurnPID, positionReal, filtered_GyroZ);
+  433   3            
+  434   3            Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
+  435   3            
+  436   3            turn_count = 0;
+  437   3          }
+  438   2          
+  439   2          if(turn_pid >= 0) //左转
+  440   2          {
+  441   3            k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
+  442   3            g_LeftPoint = g_SpeedPoint * (1 - k);
+  443   3            g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+  444   3          }
+  445   2          else //右转
+  446   2          {
+  447   3            k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
+  448   3            g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
+  449   3            g_RightPoint = g_SpeedPoint * (1 - k);
+  450   3          }
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 8   
 
-  450   2          {
-  451   3            k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
-  452   3            g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-  453   3            g_RightPoint = g_SpeedPoint * (1 - k);
-  454   3          }
+  451   2          
+  452   2          //计算速度环pid
+  453   2      //    left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
+  454   2      //    right_pid = pid_increment_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
   455   2          
-  456   2          //计算速度环pid
-  457   2      //    left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
-  458   2      //    right_pid = pid_increment_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
-  459   2          
-  460   2          left_pid = pid_poisitional_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
-  461   2          right_pid = pid_poisitional_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
-  462   2          
-  463   2          //转int
-  464   2          g_DutyLeft = (int32_t)left_pid;
-  465   2          g_DutyRight = (int32_t)right_pid;
-  466   2        
-  467   2          if (protection_flag == 1)
-  468   2          {
-  469   3            LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
-  470   3            RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
-  471   3            uartSendFlag = 0;
-  472   3            
-  473   3            set_motor_pwm(0, 0);
+  456   2          left_pid = pid_poisitional_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
+  457   2          right_pid = pid_poisitional_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
+  458   2          
+  459   2          //转int
+  460   2          g_DutyLeft = (int32_t)left_pid;
+  461   2          g_DutyRight = (int32_t)right_pid;
+  462   2        
+  463   2          if (protection_flag == 1)
+  464   2          {
+  465   3            LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
+  466   3            RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+  467   3            uartSendFlag = 0;
+  468   3            
+  469   3            set_motor_pwm(0, 0);
+  470   3          }
+  471   2          else
+  472   2          {
+  473   3            set_motor_pwm(g_DutyLeft, g_DutyRight);
   474   3          }
-  475   2          else
-  476   2          {
-  477   3            set_motor_pwm(g_DutyLeft, g_DutyRight);
-  478   3          }
-  479   2        }
-  480   1      }
-  481          
-  482          
-  483          
-  484          //定时器3中断
-  485          void TM3_Isr() interrupt 19
-  486          {
-  487   1        TIM3_CLEAR_FLAG; //清除中断标志
-  488   1        
-  489   1      }
-  490          
-  491          
-  492          
-  493          //定时器4中断
-  494          void TM4_Isr() interrupt 20
-  495          {
-  496   1        TIM4_CLEAR_FLAG; //清除中断标志
-  497   1      
-  498   1      
-  499   1      }
-  500          
-  501          
-  502          //void  INT0_Isr()  interrupt 0;
-  503          //void  TM0_Isr()   interrupt 1;
-  504          //void  INT1_Isr()  interrupt 2;
-  505          //void  TM1_Isr()   interrupt 3;
-  506          //void  UART1_Isr() interrupt 4;
-  507          //void  ADC_Isr()   interrupt 5;
-  508          //void  LVD_Isr()   interrupt 6;
-  509          //void  PCA_Isr()   interrupt 7;
-  510          //void  UART2_Isr() interrupt 8;
-  511          //void  SPI_Isr()   interrupt 9;
-  512          //void  INT2_Isr()  interrupt 10;
-  513          //void  INT3_Isr()  interrupt 11;
-  514          //void  TM2_Isr()   interrupt 12;
-  515          //void  INT4_Isr()  interrupt 16;
-C251 COMPILER V5.60.0,  isr                                                                30/05/25  22:55:16  PAGE 9   
+  475   2        }
+  476   1      }
+  477          
+  478          
+  479          
+  480          //定时器3中断
+  481          void TM3_Isr() interrupt 19
+  482          {
+  483   1        TIM3_CLEAR_FLAG; //清除中断标志
+  484   1        
+  485   1      }
+  486          
+  487          
+  488          
+  489          //定时器4中断
+  490          void TM4_Isr() interrupt 20
+  491          {
+  492   1        TIM4_CLEAR_FLAG; //清除中断标志
+  493   1      
+  494   1      
+  495   1      }
+  496          
+  497          
+  498          //void  INT0_Isr()  interrupt 0;
+  499          //void  TM0_Isr()   interrupt 1;
+  500          //void  INT1_Isr()  interrupt 2;
+  501          //void  TM1_Isr()   interrupt 3;
+  502          //void  UART1_Isr() interrupt 4;
+  503          //void  ADC_Isr()   interrupt 5;
+  504          //void  LVD_Isr()   interrupt 6;
+  505          //void  PCA_Isr()   interrupt 7;
+  506          //void  UART2_Isr() interrupt 8;
+  507          //void  SPI_Isr()   interrupt 9;
+  508          //void  INT2_Isr()  interrupt 10;
+  509          //void  INT3_Isr()  interrupt 11;
+  510          //void  TM2_Isr()   interrupt 12;
+  511          //void  INT4_Isr()  interrupt 16;
+  512          //void  UART3_Isr() interrupt 17;
+  513          //void  UART4_Isr() interrupt 18;
+  514          //void  TM3_Isr()   interrupt 19;
+  515          //void  TM4_Isr()   interrupt 20;
+  516          //void  CMP_Isr()   interrupt 21;
+C251 COMPILER V5.60.0,  isr                                                                01/06/25  22:28:48  PAGE 9   
 
-  516          //void  UART3_Isr() interrupt 17;
-  517          //void  UART4_Isr() interrupt 18;
-  518          //void  TM3_Isr()   interrupt 19;
-  519          //void  TM4_Isr()   interrupt 20;
-  520          //void  CMP_Isr()   interrupt 21;
-  521          //void  I2C_Isr()   interrupt 24;
-  522          //void  USB_Isr()   interrupt 25;
-  523          //void  PWM1_Isr()  interrupt 26;
-  524          //void  PWM2_Isr()  interrupt 27;
+  517          //void  I2C_Isr()   interrupt 24;
+  518          //void  USB_Isr()   interrupt 25;
+  519          //void  PWM1_Isr()  interrupt 26;
+  520          //void  PWM2_Isr()  interrupt 27;
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =      1624     ------
+  code size            =      1735     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------

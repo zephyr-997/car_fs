@@ -21,8 +21,11 @@
 #define __ISR_H_
 
 
-#define SPEED_STRAIGHT 80
-#define SPEED_ISLAND   80
+#define SPEED_STRAIGHT     85
+#define SPEED_ANGLE        60
+#define SPEED_CROSS        80
+#define SPEED_ROUNDABOUT   80
+#define SPEED_SPEED        100
 
 
 extern int g_SpeedPoint;

@@ -337,18 +337,20 @@ void TM2_Isr() interrupt 12
 		g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
 		
 		
-		if (track_type == 0 || track_type == 1 || track_type == 2 || (track_type == 3 && track_route_status == 2))//普通直线、直角、十字圆环内部或者环岛内部
+		if (track_type == 0)//普通直线、直角、十字圆环内部或者环岛内部
 		{
 			positionReal = position;
-			
-			if (track_type == 0 || track_type == 1)
-			{
-				g_SpeedPoint = SPEED_STRAIGHT;
-			}
-			else if (track_type == 2 || (track_type == 3 && track_route_status == 2))
-			{
-				g_SpeedPoint = SPEED_ISLAND;
-			}
+			g_SpeedPoint = SPEED_STRAIGHT;
+		}
+		else if (track_type == 1)
+		{
+			positionReal = position;
+			g_SpeedPoint = SPEED_ANGLE;
+		}
+		else if (track_type == 2)
+		{
+			positionReal = position;
+			g_SpeedPoint = SPEED_CROSS;
 		}
 		else if (track_type == 3 && track_route_status == 1)//圆环入环
 		{
@@ -377,6 +379,11 @@ void TM2_Isr() interrupt 12
 					g_intencoderALL = 0;
 				}
 			}
+		}
+		else if (track_type == 3 && track_route_status == 2)
+		{
+			positionReal = position;
+			g_SpeedPoint = SPEED_ROUNDABOUT;
 		}
 		else if (track_type == 3 && track_route_status == 3)//圆环出环
 		{
@@ -408,6 +415,11 @@ void TM2_Isr() interrupt 12
 					g_intencoderALL = 0;
 				}
 			}
+		}
+		else if (track_type == 4)
+		{
+			positionReal = position;
+			g_SpeedPoint = SPEED_SPEED;
 		}
 		
 		/* 5ms算一次内环，15ms算一次外环 */

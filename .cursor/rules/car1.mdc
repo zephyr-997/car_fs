@@ -1,0 +1,214 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# 优化后的STC32G12K128智能车Cursor规则文件
+
+根据12条最佳实践，以下是优化后的.cursor/rules/car1.mdc文件：
+
+```
+---
+description: STC32G12K128微缩电磁寻迹智能车项目规则
+globs: "*.c,*.h"
+alwaysApply: true
+---
+
+# STC32G12K128微缩电磁寻迹智能车项目规则
+
+## 项目基础信息 
+
+### 技术栈
+- 微控制器：STC32G12K128（基于8051架构）
+- 编程语言：标准C语言（C89/C90）
+- 开发环境：Keil C51
+- 库文件：逐飞科技STC32G系列外设驱动库
+
+### 项目结构引用
+@USER/src/main.c
+@USER/src/electromagnetic_tracking.c
+@USER/inc/electromagnetic_tracking.h
+
+## 代码风格
+
+### 命名规范
+- 变量：snake_case
+- 函数：snake_case
+- 宏定义：UPPER_CASE
+- 常量：UPPER_CASE
+- 类型定义：PascalCase
+
+### 前缀规范
+- 全局变量：g_
+- 外设前缀：
+  - ADC：adc_
+  - GPIO：gpio_
+  - PWM：pwm_
+  - UART：uart_
+  - 定时器：tim_
+
+### 代码格式
+- 缩进大小：4个空格
+- 最大行长度：80个字符
+- 文件末尾插入空行
+- 移除行尾空白字符
+
+### 编码原则
+- 提前返回模式优先，避免深层嵌套
+- 使用状态码返回错误，避免使用全局错误标志
+- 变量必须在函数开始处声明，不能在函数中间随时声明变量
+- 避免使用魔法数字，应使用宏定义或常量
+- 函数必须有注释说明其功能、参数和返回值
+- 生成的函数应遵循以下格式：
+```c
+/**
+ * @brief 函数简要描述
+ * @param param1 参数1描述
+ * @param param2 参数2描述
+ * @return 返回值描述
+ */
+uint8_t function_name(uint8_t param1, uint16_t param2)
+{
+    // 变量声明区
+    uint8_t result = 0;
+    
+    // 函数主体
+    
+    return result;
+}
+```
+
+## 硬件配置
+
+### 微控制器
+- 型号：STC32G12K128
+- 时钟频率：33MHz
+- RAM大小：8KB
+- ROM大小：128KB
+
+### 外设使用
+- ADC：电磁传感器、电池电压
+- GPIO：LED、按键、蜂鸣器
+- PWM：电机控制、舵机控制
+- UART：调试输出、无线通信
+- 定时器：系统时钟、编码器计数
+
+### 硬件规格
+- 电机类型：直流减速电机 
+- 舵机类型：数字舵机SG90
+- 电磁传感器：模拟量输出，5通道
+- 编码器：光电增量式，1024线
+
+## 项目模块化分类
+
+### 核心模块
+- main.c：程序入口和主循环
+- isr.c：中断服务程序
+- system.c：系统初始化和配置
+
+### 驱动模块
+- zf_adc.c：ADC驱动
+- zf_gpio.c：GPIO驱动
+- zf_tim.c：定时器驱动
+- zf_pwm.c：PWM驱动
+- zf_uart.c：串口通信驱动
+
+### 算法模块
+- pid.c：PID控制器
+- filter.c：滤波算法
+- kalman.c：卡尔曼滤波
+
+### 应用模块
+- electromagnetic_tracking.c：电磁寻迹
+- motor.c：电机控制
+- encoder.c：编码器读取
+- track_recognition.c：赛道识别
+
+## 文件处理规则
+
+### 头文件包含顺序
+1. 系统标准头文件
+2. 逐飞库头文件
+3. 自定义应用头文件
+
+### 示例
+```c
+#include "stc32g.h"
+#include "intrins.h"
+#include "zf_uart.h"
+#include "zf_gpio.h"
+#include "electromagnetic_tracking.h"
+#include "pid.h"
+```
+
+## 测试与调试
+
+### 测试优先原则
+- 新功能开发前先编写测试逻辑
+- 使用UART输出调试信息
+- 功能模块应单独进行测试
+
+### 调试方法
+```c
+// 调试输出示例
+uart_printf(DEBUG_UART, "ADC value: %d\r\n", adc_value);
+
+// 功能测试示例
+void test_motor_control(void)
+{
+    motor_set_speed(MOTOR_LEFT, 50);  // 设置左电机50%速度
+    delay_ms(1000);                   // 等待1秒
+    motor_set_speed(MOTOR_LEFT, 0);   // 停止电机
+}
+```
+
+## 最佳实践
+
+- 使用宏定义常量替代魔法数字
+- 函数单一职责原则，一个函数只完成一个功能
+- 中断函数保持简短，避免长时间占用中断
+- 避免使用递归函数
+- 合理使用volatile关键字处理中断变量
+- 使用结构体组织相关数据
+- 模块化设计，降低耦合度
+- 添加足够的注释说明算法原理
+
+## 8051特定规则
+
+- 关键字使用：使用code关键字放置只读数据到程序存储区
+- 变量类型选择：优先使用小字节类型(如uint8_t)节省RAM
+- 位变量使用：适当使用bit类型定义布尔变量
+- 中断优先级：高优先级用于关键实时任务
+- 内存分配：注意STC单片机的不同内存区域限制
+
+## 忽略的文件和错误
+
+### 忽略的错误
+- 检测到 #include 错误
+- 无法打开源文件 "intrins.h"
+
+### 忽略的文件
+- USER/src/isr.c
+- ./USER/src/isr.c
+
+## 文档参考链接
+- STC32G12K128数据手册: https://www.stcmcudata.com/STC32G-DATASHEET/STC32G.pdf
+- 逐飞科技库文档: http://zfcs.seekfree.com/
+
+## 工作流程指导
+
+### 开发流程
+1. 先编写功能测试逻辑
+2. 实现基础功能
+3. 测试验证功能是否符合预期
+4. 优化代码性能和可读性
+5. 记录关键参数和算法说明
+
+### 编辑顺序
+1. 每次只关注一个功能模块
+2. 遵循文件结构，不混合不同模块的代码
+3. 使用@file指令引用相关文件增加上下文
+```
+
+
