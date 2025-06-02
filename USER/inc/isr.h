@@ -21,16 +21,17 @@
 #define __ISR_H_
 
 
-#define SPEED_STRAIGHT     85
-#define SPEED_ANGLE        60
+#define SPEED_STRAIGHT     80
+#define SPEED_ANGLE        70
 #define SPEED_CROSS        80
 #define SPEED_ROUNDABOUT   80
-#define SPEED_SPEED        100
+#define SPEED_SPEED        80
 
 
 extern int g_SpeedPoint;
 extern int32_t g_DutyLeft, g_DutyRight;
 extern float left_pid, right_pid;
+extern float speed_pid;
                           
 extern float Gyro_Z, filtered_GyroZ;
 extern float turn_pid;

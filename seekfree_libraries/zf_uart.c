@@ -264,81 +264,103 @@ void uart4_interrupt_callback(void)
 
 	if(g_RxPointer > 0)
 	{
-		if (strncmp(g_RxData, "left_kp", 7) == 0)
+//		if (strncmp(g_RxData, "left_kp", 7) == 0)
+//		{
+//			sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
+//			
+////			sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "left_ki", 7) == 0)
+//		{
+//			sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
+//			
+////			sprintf(g_TxData, "left_ki:%f\n", LeftPID.ki);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "left_kd", 7) == 0)
+//		{
+//			sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
+//			
+////			sprintf(g_TxData, "left_kd:%f\n", LeftPID.kd);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "left_kf", 7) == 0)
+//		{
+//			sscanf(g_RxData, "left_kf:%f", &LeftPID.kf);
+//			
+////			sprintf(g_TxData, "left_kd:%f\n", LeftPID.kf);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "right_kp", 8) == 0)
+//		{
+//			sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
+//			
+////			sprintf(g_TxData, "right_kp:%f\n", RightPID.kp);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "right_ki", 8) == 0)
+//		{
+//			sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
+//			
+////			sprintf(g_TxData, "right_ki:%f\n", RightPID.ki);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "right_kd", 8) == 0)
+//		{
+//			sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
+//			
+////			sprintf(g_TxData, "right_kd:%f\n", RightPID.kd);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+//		else if (strncmp(g_RxData, "right_kf", 8) == 0)
+//		{
+//			sscanf(g_RxData, "right_kf:%f", &RightPID.kf);
+//			
+////			sprintf(g_TxData, "right_kd:%f\n", RightPID.kf);
+////			uart_putstr(UART_4, g_TxData);
+//		}
+
+		if (strncmp(g_RxData, "speed_kp", 8) == 0)
 		{
-			sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
+			sscanf(g_RxData, "speed_kp:%f", &SpeedPID.kp);
 			
-//			sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
+//			sprintf(g_TxData, "speed_kp:%f\n", SpeedPID.kp);
 //			uart_putstr(UART_4, g_TxData);
 		}
-		else if (strncmp(g_RxData, "left_ki", 7) == 0)
+		else if (strncmp(g_RxData, "speed_ki", 8) == 0)
 		{
-			sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
+			sscanf(g_RxData, "speed_ki:%f", &SpeedPID.ki);
 			
-//			sprintf(g_TxData, "left_ki:%f\n", LeftPID.ki);
+//			sprintf(g_TxData, "speed_ki:%f\n", SpeedPID.ki);
 //			uart_putstr(UART_4, g_TxData);
 		}
-		else if (strncmp(g_RxData, "left_kd", 7) == 0)
+		else if (strncmp(g_RxData, "speed_kd", 8) == 0)
 		{
-			sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
+			sscanf(g_RxData, "speed_kd:%f", &SpeedPID.kd);
 			
-//			sprintf(g_TxData, "left_kd:%f\n", LeftPID.kd);
-//			uart_putstr(UART_4, g_TxData);
-		}
-		else if (strncmp(g_RxData, "left_kf", 7) == 0)
-		{
-			sscanf(g_RxData, "left_kf:%f", &LeftPID.kf);
-			
-//			sprintf(g_TxData, "left_kd:%f\n", LeftPID.kf);
-//			uart_putstr(UART_4, g_TxData);
-		}
-		else if (strncmp(g_RxData, "right_kp", 8) == 0)
-		{
-			sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
-			
-//			sprintf(g_TxData, "right_kp:%f\n", RightPID.kp);
-//			uart_putstr(UART_4, g_TxData);
-		}
-		else if (strncmp(g_RxData, "right_ki", 8) == 0)
-		{
-			sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
-			
-//			sprintf(g_TxData, "right_ki:%f\n", RightPID.ki);
-//			uart_putstr(UART_4, g_TxData);
-		}
-		else if (strncmp(g_RxData, "right_kd", 8) == 0)
-		{
-			sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
-			
-//			sprintf(g_TxData, "right_kd:%f\n", RightPID.kd);
-//			uart_putstr(UART_4, g_TxData);
-		}
-		else if (strncmp(g_RxData, "right_kf", 8) == 0)
-		{
-			sscanf(g_RxData, "right_kf:%f", &RightPID.kf);
-			
-//			sprintf(g_TxData, "right_kd:%f\n", RightPID.kf);
+//			sprintf(g_TxData, "speed_kd:%f\n", SpeedPID.kd);
 //			uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "turn_kp", 7) == 0)
 		{
 			sscanf(g_RxData, "turn_kp:%f", &TurnPID.kp);
 			
-//			sprintf(g_TxData, "imu_kp:%f\n", TurnPID.kp);
+//			sprintf(g_TxData, "turn_kp:%f\n", TurnPID.kp);
 //			uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "turn_ki", 7) == 0)
 		{
 			sscanf(g_RxData, "turn_ki:%f", &TurnPID.ki);
 			
-//			sprintf(g_TxData, "imu_ki:%f\n", TurnPID.ki);
+//			sprintf(g_TxData, "turn_ki:%f\n", TurnPID.ki);
 //			uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "turn_kd", 7) == 0)
 		{
 			sscanf(g_RxData, "turn_kd:%f", &TurnPID.kd);
 			
-//			sprintf(g_TxData, "imu_kd:%f\n", TurnPID.kd);
+//			sprintf(g_TxData, "turn_kd:%f\n", TurnPID.kd);
 //			uart_putstr(UART_4, g_TxData);
 		}
 		else if (strncmp(g_RxData, "type", 4) == 0)
@@ -379,11 +401,8 @@ void uart4_interrupt_callback(void)
 		{
 			set_motor_pwm(0, 0);
 			
-			TurnPID.lasterror = TurnPID.interror = 0;
-
-			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
-			
-			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+			pid_clean(&SpeedPID);
+			pid_clean(&TurnPID);
 			
 			uartSendFlag = startKeyFlag = 0;
 		}

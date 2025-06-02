@@ -19,10 +19,12 @@ void main(void)
 	
 	imu963ra_init();
 	
-	pid_init(&LeftPID, 60.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
-	pid_init(&RightPID, 60.0f, 0.2f, 0.0f, 0.0f, 5000.0f, 6000.0f);
-	pid_init(&TurnPID, 2.0f, 0.0f, 7.0f, 0.0f, 0.0f, 100.0f);
-//	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 100.0f);
+//	pid_init(&LeftPID, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+//	pid_init(&RightPID, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+//	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 250.0f);
+	
+	pid_init(&SpeedPID, 110.0f, 0.6f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 6000.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);
@@ -69,7 +71,7 @@ void main(void)
 
 		if (uartSendFlag == 1)
 		{
-#if 1
+#if 0
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_LeftPoint,
 					g_EncoderLeft,
@@ -83,7 +85,23 @@ void main(void)
 					track_route,
 					track_route_status);
 			uart_putstr(UART_4, g_TxData);
-#endif			
+#endif
+					
+#if 1
+			sprintf(g_TxData,"%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
+					g_SpeedPoint,
+					g_EncoderAverage,
+					(int)speed_pid,
+					position,
+					(int)turn_pid,
+					g_DutyLeft,
+					g_DutyRight,
+					(int)SpeedPID.interror,
+					(int)SpeedPID.p_out,
+					(int)SpeedPID.i_out);
+			uart_putstr(UART_4, g_TxData);
+#endif
+					
 //			sprintf(g_TxData,"%d,%d,%d,%d\n",
 //					g_LeftPoint,
 //					g_EncoderLeft,
@@ -107,6 +125,7 @@ void main(void)
 			
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
+
 #if 0
 			// 通过串口输出七电感数据
 			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",

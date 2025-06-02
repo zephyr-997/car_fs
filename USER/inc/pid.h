@@ -29,6 +29,7 @@ typedef struct
 extern PID_t LeftPID;
 extern PID_t RightPID;
 extern PID_t TurnPID;
+extern PID_t SpeedPID;
 
 int myabs(int num);
 float myfabs(float num);
@@ -38,5 +39,6 @@ float pid_poisitional_feedforward(PID_t* pid, float real, float target);
 float pid_increment_feedforward(PID_t* pid, float real, float target);
 float pid_poisitional_normal(PID_t* pid, float position);
 float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ);
+void pid_clean(PID_t* pid);
 
 #endif

@@ -20,7 +20,7 @@ extern EncoderDebo_t EncoderDeboL, EncoderDeboR;
 
 
 extern int g_encoleft_init, g_encoright_init;
-extern int g_EncoderLeft, g_EncoderRight;
+extern int g_EncoderLeft, g_EncoderRight, g_EncoderAverage;
 extern int g_intencoderALL, g_intencoderL, g_intencoderR;
 
 

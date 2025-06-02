@@ -498,49 +498,49 @@ int16 calculate_position_improved(void)
         }
     }
     else if (track_type == WEIGHT_RIGHT_ANGLE) // 1. 直角弯道
+	{
+		if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
 		{
-				if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
-				{
-					track_type_zj = 1; //左转
-					
-				}
-				else if (normalized_data[SENSOR_VR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f )
-				{
-					track_type_zj = 2; //右转
-				}
-				
-				if (track_type_zj != 0)
-				{
-							 // 回到直道 - 可选:增加 signal_strength < 45.0f 判断
-					if (normalized_data[SENSOR_VR] < 20.0f && normalized_data[SENSOR_VL] < 20.0f ) 
-					{
-						track_type = WEIGHT_STRAIGHT; 
-						track_type_zj = 0;
-					}
-		//			if (signal_strength > 50) // 直角右拐进圆环的特殊点
-		//			{
-		//				track_type = WEIGHT_ROUNDABOUT; 
-		//				// track_type_zj = 0;
-		//			    // weight_outer = 0.4;  // 换成直道的权
-		//			    // weight_middle = 0.1;
-		//			    // weight_vertical = 0.1;
-		//			    // filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
-		//			    // max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
-		//			}
-				}
+			track_type_zj = 1; //左转
+			
 		}
+		else if (normalized_data[SENSOR_VR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f )
+		{
+			track_type_zj = 2; //右转
+		}
+		
+		if (track_type_zj != 0)
+		{
+			// 回到直道 - 可选:增加 signal_strength < 45.0f 判断
+			if (normalized_data[SENSOR_VR] < 20.0f && normalized_data[SENSOR_VL] < 20.0f ) 
+			{
+				track_type = WEIGHT_STRAIGHT; 
+				track_type_zj = 0;
+			}
+//			if (signal_strength > 50) // 直角右拐进圆环的特殊点
+//			{
+//				track_type = WEIGHT_ROUNDABOUT; 
+//				// track_type_zj = 0;
+//			    // weight_outer = 0.4;  // 换成直道的权
+//			    // weight_middle = 0.1;
+//			    // weight_vertical = 0.1;
+//			    // filter_param = track_weights[WEIGHT_STRAIGHT].filter_param;
+//			    // max_change_rate = track_weights[WEIGHT_STRAIGHT].max_change_rate;
+//			}
+		}
+	}
     else if (track_type == WEIGHT_CROSS) // 2. 十字圆环
     {
-					// 出环  
-			if (((normalized_data[SENSOR_HC] > 70.0f && normalized_data[SENSOR_HML] > 75.0f && normalized_data[SENSOR_VL] > 80.0f && normalized_data[SENSOR_VR] > 70.0f)  || //逆时针
-						 (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VL] > 70.0f && normalized_data[SENSOR_VR] > 80.0f )) &&
-							track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
-			 {
-					track_type = WEIGHT_STRAIGHT; //回直道
-					track_ten_flag = 0;
-					ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1	
-			 }
-		}
+		// 出环  
+		if (((normalized_data[SENSOR_HC] > 70.0f && normalized_data[SENSOR_HML] > 75.0f && normalized_data[SENSOR_VL] > 80.0f && normalized_data[SENSOR_VR] > 70.0f)  || //逆时针
+					 (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VL] > 70.0f && normalized_data[SENSOR_VR] > 80.0f )) &&
+						track_ten_flag == 1 && signal_strength > 50.0f )  //顺时针
+		 {
+			track_type = WEIGHT_STRAIGHT; //回直道
+			track_ten_flag = 0;
+			ten_change_flag = 1; //感应到出环延时2s再让track_ten_flag=1	
+		 }
+	}
     else if (track_type == WEIGHT_ROUNDABOUT) // 3. 环岛   
     {
         if(normalized_data[SENSOR_HR] > 70.0f && normalized_data[SENSOR_HL] < 35.0f && track_route == 0)
@@ -553,7 +553,7 @@ int16 calculate_position_improved(void)
         {
             // 左环岛
             track_route = 2;
-						track_route_status = 1;
+			track_route_status = 1;
         }
 		if(track_route_status == 2 &&(normalized_data[SENSOR_HC] < 70.0f && normalized_data[SENSOR_HML] < 30.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VR] > 75.0f &&normalized_data[SENSOR_HL] > 20.0f && signal_strength > 40.0f)) //右环
 		{
@@ -623,10 +623,12 @@ int16 calculate_position_improved(void)
     // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
     if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
     {
-        if(last_pos > 0)
-            return (last_pos + 10);  // 向右偏离
-        else
-            return (last_pos - 10); // 向左偏离
+//        if(last_pos > 0)
+//            return (last_pos + 10);  // 向右偏离
+//        else
+//            return (last_pos - 10); // 向左偏离
+		
+		return last_pos;
     }
     
     // 当中心电感大于阈值时，认为车辆接近中心，对位置进行修正

@@ -55,6 +55,7 @@ void uart4_interrupt_callback(void);
 
 // 全局变量定义
 float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还需转化再赋给电机
+float speed_pid = 0;
 int32_t g_DutyLeft = 0, g_DutyRight = 0;         // 最后真正要给电机的PWM值
 float Gyro_Z = 0, filtered_GyroZ = 0;            // 陀螺仪角速度的原始值和卡尔曼滤波之后的值
 float turn_pid = 0;
@@ -321,149 +322,131 @@ void TM2_Isr() interrupt 12
 	g_encoleft_init = get_left_encoder();
 	g_encoright_init = get_right_encoder();
 	
+	/* 对编码器的值进行滤波 */
+	g_EncoderLeft = LowPass_Filter(&leftSpeedFilt, g_encoleft_init);
+	g_EncoderRight = LowPass_Filter(&rightSpeedFilt, g_encoright_init);
+	
+	/* 对编码器的值进行异常消除 */
+	g_EncoderLeft = encoder_debounce(&EncoderDeboL, g_EncoderLeft);
+	g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
+	
+	/* 取左右编码器平均值 */
+	g_EncoderAverage = (g_EncoderLeft + g_EncoderRight) / 2;
+	
 	/* 读取陀螺仪原始数据并将其转化为物理数据 */
 	imu963ra_get_gyro();
 	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
 	
-
+	if (track_type == 0)//普通直线
+	{
+		positionReal = position;
+		g_SpeedPoint = SPEED_STRAIGHT;
+	}
+	else if (track_type == 1)//直角
+	{
+		positionReal = position;
+		g_SpeedPoint = SPEED_ANGLE;
+	}
+	else if (track_type == 2)//十字圆环内部
+	{
+		positionReal = position;
+		g_SpeedPoint = SPEED_CROSS;
+	}
+	else if (track_type == 3 && track_route_status == 1)//圆环入环
+	{
+		g_SpeedPoint = SPEED_STRAIGHT;
+		g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
+		
+		if(g_intencoderALL <= 4000)//第一阶段先直行
+		{
+			positionReal = 0;
+		}
+		else//进入第二阶段打死进环
+		{
+			if (track_route == 1)//右环
+			{
+				positionReal = -60;
+			}
+			else if (track_route == 2)//左环
+			{
+				positionReal = 60;
+			}
+						
+			if (g_intencoderALL >= 6500)//入环完毕
+			{
+				track_route_status = 2;
+				g_intencoderALL = 0;
+			}
+		}
+	}
+	else if (track_type == 3 && track_route_status == 2)//环岛内部
+	{
+		positionReal = position;
+		g_SpeedPoint = SPEED_ROUNDABOUT;
+	}
+	else if (track_type == 3 && track_route_status == 3)//圆环出环
+	{
+		g_SpeedPoint = SPEED_STRAIGHT;
+		g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
+		
+		if (g_intencoderALL <= 2000)//第一阶段打死出环
+		{
+			if (track_route == 1)//右环
+			{
+				positionReal = -65;
+			}
+			else if (track_route == 2)//左环
+			{
+				positionReal = 65;
+			}
+		}
+		else//第二阶段直走
+		{
+			positionReal = 0;
+			
+			if (g_intencoderALL >= 4000)//出环完毕
+			{
+				track_type = 0;
+				track_route = 0;
+				track_route_status = 0;
+				
+				g_intencoderALL = 0;
+			}
+		}
+	}
+	else if (track_type == 4)//深度加速模式
+	{
+		positionReal = position;
+		g_SpeedPoint = SPEED_SPEED;
+	}
+	
 	if (startKeyFlag == 1)
 	{
-		/* 对编码器的值进行滤波 */
-		g_EncoderLeft = LowPass_Filter(&leftSpeedFilt, g_encoleft_init);
-		g_EncoderRight = LowPass_Filter(&rightSpeedFilt, g_encoright_init);
+		filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
+	
+//		turn_pid = pid_poisitional_normal(&TurnPID, positionReal);
+		turn_pid = pid_poisitional_quadratic(&TurnPID, positionReal, filtered_GyroZ);
 		
-		/* 对编码器的值进行异常消除 */
-		g_EncoderLeft = encoder_debounce(&EncoderDeboL, g_EncoderLeft);
-		g_EncoderRight = encoder_debounce(&EncoderDeboR, g_EncoderRight);
-		
-		
-		if (track_type == 0)//普通直线、直角、十字圆环内部或者环岛内部
-		{
-			positionReal = position;
-			g_SpeedPoint = SPEED_STRAIGHT;
-		}
-		else if (track_type == 1)
-		{
-			positionReal = position;
-			g_SpeedPoint = SPEED_ANGLE;
-		}
-		else if (track_type == 2)
-		{
-			positionReal = position;
-			g_SpeedPoint = SPEED_CROSS;
-		}
-		else if (track_type == 3 && track_route_status == 1)//圆环入环
-		{
-			g_SpeedPoint = SPEED_STRAIGHT;
-			
-			g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
-			
-			if(g_intencoderALL <= 4500)//第一阶段先直行
-			{
-				positionReal = 0;
-			}
-			else//进入第二阶段打死进环
-			{
-				if (track_route == 1)//右环
-				{
-					positionReal = -50;
-				}
-				else if (track_route == 2)//左环
-				{
-					positionReal = 50;
-				}
-							
-				if (g_intencoderALL >= 6500)//入环完毕
-				{
-					track_route_status = 2;
-					g_intencoderALL = 0;
-				}
-			}
-		}
-		else if (track_type == 3 && track_route_status == 2)
-		{
-			positionReal = position;
-			g_SpeedPoint = SPEED_ROUNDABOUT;
-		}
-		else if (track_type == 3 && track_route_status == 3)//圆环出环
-		{
-			g_SpeedPoint = SPEED_STRAIGHT;
-			
-			g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
-			
-			if (g_intencoderALL <= 2000)//第一阶段打死出环
-			{
-				if (track_route == 1)//右环
-				{
-					positionReal = -40;
-				}
-				else if (track_route == 2)//左环
-				{
-					positionReal = 40;
-				}
-			}
-			else//第二阶段直走
-			{
-				positionReal = 0;
-				
-				if (g_intencoderALL >= 4000)//出环完毕
-				{
-					track_type = 0;
-					track_route = 0;
-					track_route_status = 0;
-					
-					g_intencoderALL = 0;
-				}
-			}
-		}
-		else if (track_type == 4)
-		{
-			positionReal = position;
-			g_SpeedPoint = SPEED_SPEED;
-		}
-		
-		/* 5ms算一次内环，15ms算一次外环 */
-		turn_count++;
-		if (turn_count >= 3)
-		{
-			filtered_GyroZ = Kalman_Update(&imu693_kf, Gyro_Z);//对Gyro_Z进行卡尔曼滤波
-			
-			turn_pid = pid_poisitional_normal(&TurnPID, positionReal);
-//			turn_pid = pid_poisitional_quadratic(&TurnPID, positionReal, filtered_GyroZ);
-			
-			Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
-			
-			turn_count = 0;
-		}
-		
-		if(turn_pid >= 0) //左转
-		{
-			k = turn_pid * 0.01; // 缩放至 0.0 ~ 1.0
-			g_LeftPoint = g_SpeedPoint * (1 - k);
-			g_RightPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-		}
-		else //右转
-		{
-			k = -turn_pid * 0.01; // 取相反数并缩放至 0.0 ~ 1.0
-			g_LeftPoint = g_SpeedPoint * (1 + k * 0.5); // 加少减多
-			g_RightPoint = g_SpeedPoint * (1 - k);
-		}
-		
+		Kalman_Predict(&imu693_kf, turn_pid);//更新卡尔曼滤波器的值
+
 		//计算速度环pid
 //		left_pid = pid_increment_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
 //		right_pid = pid_increment_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
 		
-		left_pid = pid_poisitional_feedforward(&LeftPID, g_EncoderLeft, g_LeftPoint);
-		right_pid = pid_poisitional_feedforward(&RightPID, g_EncoderRight, g_RightPoint);
+		speed_pid = pid_poisitional_feedforward(&SpeedPID, g_EncoderAverage, g_SpeedPoint);
+//		speed_pid = pid_increment_feedforward(&SpeedPID, g_EncoderAverage, g_SpeedPoint);
 		
 		//转int
-		g_DutyLeft = (int32_t)left_pid;
-		g_DutyRight = (int32_t)right_pid;
-	
+		g_DutyLeft = (int32_t)(speed_pid - turn_pid);
+		g_DutyRight = (int32_t)(speed_pid + turn_pid);
+
 		if (protection_flag == 1)
 		{
-			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
-			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+//			pid_clean(&LeftPID);
+//			pid_clean(&RightPID);
+			pid_clean(&SpeedPID);
+			pid_clean(&TurnPID);
+			
 			uartSendFlag = 0;
 			
 			set_motor_pwm(0, 0);

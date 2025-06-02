@@ -4,6 +4,7 @@
 PID_t LeftPID;//左轮速度环PID	  
 PID_t RightPID;//右轮速度环PID
 PID_t TurnPID;//转向环PID
+PID_t SpeedPID;
 
 float myfabs(float num)
 {
@@ -55,7 +56,11 @@ float pid_poisitional_feedforward(PID_t* pid, float real, float target)
 	}
 	
 	//线性、积分、微分、前馈共同作用
-	pid->output = pid->kp * pid->error + pid->ki * pid->interror + pid->kd * (pid->error - pid->lasterror) + pid->kf * (target - pid->lasttarget);
+	pid->p_out = pid->kp * pid->error;
+	pid->i_out = pid->ki * pid->interror;
+	pid->d_out = pid->kd * (pid->error - pid->lasterror);
+	
+	pid->output = pid->p_out + pid->i_out + pid->d_out + pid->kf * (target - pid->lasttarget);
 	
 	pid->lasterror = pid->error;
 	pid->lasttarget = target;
@@ -148,3 +153,12 @@ float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
 	
 	return pid->output;
 }
+
+void pid_clean(PID_t* pid)
+{
+	pid->lasterror = 0;
+	pid->interror = 0;
+	pid->preverror = 0;
+	pid->output = 0;
+}
+

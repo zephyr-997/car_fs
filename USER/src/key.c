@@ -9,12 +9,11 @@ void key_task(void)
 		if (startKeyFlag == 1)
 		{
 			set_motor_pwm(0, 0);
-			
-			TurnPID.lasterror = TurnPID.interror = 0;
 
-			LeftPID.output = LeftPID.lasterror = LeftPID.preverror = 0;
-			
-			RightPID.output = RightPID.lasterror = RightPID.preverror = 0;
+			pid_clean(&SpeedPID);
+			pid_clean(&TurnPID);
+//			pid_clean(&LeftPID);
+//			pid_clean(&RightPID);
 			
 			uartSendFlag = startKeyFlag = 0;
 		}
