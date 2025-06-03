@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               02/06/25  21:54:38  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               03/06/25  22:35:44  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -66,7 +66,7 @@ stmt  level    source
    55   2          if (flag == 1)
    56   2          {
    57   3      //      if (g_SpeedPoint == 20)
-C251 COMPILER V5.60.0,  main                                                               02/06/25  21:54:38  PAGE 2   
+C251 COMPILER V5.60.0,  main                                                               03/06/25  22:35:44  PAGE 2   
 
    58   3      //      {
    59   3      //        g_SpeedPoint = 70;
@@ -134,7 +134,7 @@ stmt  level    source
   121   3      //      uart_putstr(UART_4, g_TxData);
   122   3            
   123   3      //      sprintf(g_TxData,"%d,%d,%d,%d\n",g_encoleft_init,g_encoright_init,g_EncoderLeft,g_EncoderRight);
-C251 COMPILER V5.60.0,  main                                                               02/06/25  21:54:38  PAGE 3   
+C251 COMPILER V5.60.0,  main                                                               03/06/25  22:35:44  PAGE 3   
 
   124   3      //      uart_putstr(UART_4, g_TxData);
   125   3            
@@ -202,7 +202,7 @@ stmt  level    source
                    value[4] = adc_once(ADC_HMR, ADC_10BIT);
                    value[5] = adc_once(ADC_VR,  ADC_10BIT);
                    value[6] = adc_once(ADC_HR,  ADC_10BIT);  
-C251 COMPILER V5.60.0,  main                                                               02/06/25  21:54:38  PAGE 4   
+C251 COMPILER V5.60.0,  main                                                               03/06/25  22:35:44  PAGE 4   
 
                
                    // 计算所有电感值的总和

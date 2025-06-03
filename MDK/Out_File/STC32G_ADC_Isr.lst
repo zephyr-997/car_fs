@@ -1,0 +1,58 @@
+C251 COMPILER V5.60.0,  STC32G_ADC_Isr                                                     03/06/25  22:35:47  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_ADC_Isr
+OBJECT MODULE PLACED IN .\Out_File\STC32G_ADC_Isr.obj
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\seekfree_libraries\STC32G_ADC_Isr.c XSMALL WARNINGL
+                    -EVEL(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\
+                    -seekfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\STC32G_ADC_Isr.lst) TABS(2) OBJECT(.\Out_File\STC32G_ADC_Isr.ob
+                    -j) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- Web: www.STCAI.com ---------------------------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include  "STC32G_ADC.h"
+    6          
+    7          //========================================================================
+    8          // 函数: ADC_ISR_Handler
+    9          // 描述: ADC中断函数.
+   10          // 参数: none.
+   11          // 返回: none.
+   12          // 版本: V1.0, 2020-09-23
+   13          //========================================================================
+   14          void ADC_ISR_Handler (void) interrupt ADC_VECTOR
+   15          {
+   16   1        ADC_FLAG = 0;     //清除中断标志
+   17   1        
+   18   1        // TODO: 在此处添加用户代码
+   19   1        
+   20   1      }
+   21          
+   22          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =         8     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

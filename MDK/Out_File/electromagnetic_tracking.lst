@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 1   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE electromagnetic_tracking
@@ -66,7 +66,7 @@ stmt  level    source
    51          uint16 max_value[SENSOR_COUNT] = {910, 930, 920, 730, 920, 930, 910};  // 每个电感的最大值
    52          
    53          // 电感位置计算相关变量
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 2   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 2   
 
    54          float signal_strength_value = 0;   // 信号强度指标
    55          int16 position = 0;
@@ -134,7 +134,7 @@ stmt  level    source
   116   2            return adc_once(ADC_HL, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
   117   2          case 1:
   118   2            return adc_once(ADC_VL, ADC_10BIT);
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 3   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 3   
 
   119   2          case 2:
   120   2            return adc_once(ADC_HML, ADC_10BIT);
@@ -202,7 +202,7 @@ stmt  level    source
   181   3                  // 递推均值滤波核心算法：减去平均值，加上新值，重新计算平均值
   182   3                  sum[a][0] -= (sum[a][0] / times);         // 每次去除平均值的贡献
   183   3                  sum[a][0] += get_adc(a);              // 加上新值
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 4   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 4   
 
   184   3                  adc_fliter_data[a][0] = (sum[a][0] / times);  // 求新的平均值
   185   3                  result[a] = adc_fliter_data[a][0];      // 保存结果
@@ -270,7 +270,7 @@ stmt  level    source
   247   4                      sort_array[t] = adc_fliter_data[a][t];
   248   4                  }
   249   3                  
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 5   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 5   
 
   250   3                  // 冒泡排序
   251   3                  for(i = 0; i < times-1; i++)
@@ -338,7 +338,7 @@ stmt  level    source
   313   2                  min_value[i] = result[i];
   314   2              
   315   2              // 更新最大值
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 6   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 6   
 
   316   2              if(result[i] > max_value[i]) 
   317   2                  max_value[i] = result[i];
@@ -406,7 +406,7 @@ stmt  level    source
   374   2              // 低通滤波平滑处理
   375   2              normalized_data[i] = normalized_data[i] * smooth_factor + 
   376   2                                  last_normalized[i] * (1.0f - smooth_factor);
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 7   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 7   
 
   377   2              
   378   2              // 保存当前值用于下次平滑
@@ -474,7 +474,7 @@ stmt  level    source
   439   1          // 计算信号强度指标 - 所有电感平均值
   440   1          signal_strength = (sum_outer + sum_middle + sum_vertical + center_value) / 7.0f;
   441   1          signal_strength_value = signal_strength; // 保存信号强度指标
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 8   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 8   
 
   442   1      
   443   1      
@@ -542,7 +542,7 @@ stmt  level    source
   496   2              {
   497   3                  track_type = 3;// 环岛
   498   3              }
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 9   
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 9   
 
   499   2          }
   500   1          else if (track_type == WEIGHT_RIGHT_ANGLE) // 1. 直角弯道
@@ -610,7 +610,7 @@ stmt  level    source
              - && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VR] > 75.0f &&normalized_data[SENSOR_HL] > 20.0f && si
              -gnal_strength > 40.0f)) //右环
   559   2          {
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 10  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 10  
 
   560   3      //      track_route = 0;
   561   3            track_route_status = 3;
@@ -678,7 +678,7 @@ stmt  level    source
   622   1          
   623   1          // 特殊情况处理：当所有电感值都很小时，可能已经偏离赛道
   624   1          if(sum_outer < 10.0f && sum_middle < 10.0f && sum_vertical < 10.0f && center_value < 10.0f)
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 11  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 11  
 
   625   1          {
   626   2      //        if(last_pos > 0)
@@ -746,7 +746,7 @@ stmt  level    source
   688   1          
   689   1          
   690   1          // 更新历史位置值
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 12  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 12  
 
   691   1          very_very_last_pos = very_last_pos;
   692   1          very_last_pos = last_pos;
@@ -814,7 +814,7 @@ stmt  level    source
   754   2          
   755   2          // 连续检测逻辑，防止偶然的低值导致误判
   756   2          if(is_out_of_track)
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 13  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 13  
 
   757   2          {
   758   3            out_of_track_count++;
@@ -882,7 +882,7 @@ stmt  level    source
   818   1          
   819   1          ips114_showstr_simspi(0,4,"HMR:");   
   820   1          ips114_showuint16_simspi(4*8, 4, result[SENSOR_HMR]);
-C251 COMPILER V5.60.0,  electromagnetic_tracking                                           02/06/25  21:54:39  PAGE 14  
+C251 COMPILER V5.60.0,  electromagnetic_tracking                                           03/06/25  22:35:44  PAGE 14  
 
   821   1          ips114_showstr_simspi(9*8,4,"N:");
   822   1          ips114_showfloat_simspi(11*8, 4, normalized_data[SENSOR_HMR], 2, 2);

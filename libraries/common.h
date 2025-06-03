@@ -19,12 +19,15 @@
 
 #ifndef __COMMON_H_
 #define __COMMON_H_
-#include "STC32Gxx.h"
+//#include "STC32Gxx.h"
+#include "STC32G_mix.h"
 #include <string.h>
 #include <stdio.h>
 #include "intrins.h"
 
 //数据类型声明
+// bit 类型是 Keil C51 编译器的内置类型，用于位变量声明
+// 例如: bit flag; // 声明一个位变量
 typedef unsigned char   uint8  ;	//  8 bits 
 typedef unsigned int  	uint16 ;	// 16 bits 
 typedef unsigned long  	uint32 ;	// 32 bits 
@@ -71,5 +74,54 @@ extern WIRELESS_TYPE_enum wireless_type;
 
 extern void (*wireless_module_uart_handler)(uint8 dat);
 
+
+// For compatibility with 21-ADC_DMA code
+typedef uint8  u8;     //  8 bits 
+typedef uint16 u16;    // 16 bits 
+typedef uint32 u32;    // 32 bits 
+
+#ifndef TRUE
+#define TRUE    1
+#endif
+
+#ifndef FALSE
+#define FALSE   0
+#endif
+
+// NULL is often defined in stddef.h or similar standard headers.
+// Define it only if not already defined.
+#ifndef NULL
+#define NULL    ((void *)0)
+#endif
+
+// Interrupt priorities
+#ifndef Priority_0
+#define Priority_0     0   // Interrupt priority 0 (lowest)
+#endif
+#ifndef Priority_1
+#define Priority_1     1   // Interrupt priority 1
+#endif
+#ifndef Priority_2
+#define Priority_2     2   // Interrupt priority 2
+#endif
+#ifndef Priority_3
+#define Priority_3     3   // Interrupt priority 3 (highest)
+#endif
+
+#ifndef ENABLE
+#define ENABLE      1
+#endif
+
+#ifndef DISABLE
+#define DISABLE     0
+#endif
+
+#ifndef SUCCESS
+#define SUCCESS     0
+#endif
+
+#ifndef FAIL
+#define FAIL        (-1) // It's common to define FAIL as a non-zero value, often -1
+#endif
 
 #endif

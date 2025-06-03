@@ -1,0 +1,15 @@
+".\list\main.obj",
+".\list\STC32G_ADC.obj",
+".\list\STC32G_ADC_Isr.obj",
+".\list\STC32G_Delay.obj",
+".\list\STC32G_DMA.obj",
+".\list\STC32G_DMA_Isr.obj",
+".\list\STC32G_GPIO.obj",
+".\list\STC32G_NVIC.obj",
+".\list\STC32G_UART.obj",
+".\list\STC32G_UART_Isr.obj" 
+TO ".\list\DMA-ADC" 
+PRINT(".\list\DMA-ADC.map") CASE 
+REMOVEUNUSED 
+CLASSES (EDATA (0x0-0xFFF), 
+HDATA (0x0-0xFFF)) 

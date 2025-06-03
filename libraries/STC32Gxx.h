@@ -401,10 +401,10 @@ sfr         RSTCFG      =           0xff;
 sbit        ENLVR       =           RSTCFG^6;
 sbit        P54RST      =           RSTCFG^4;
 
-//ÈçÏÂÌØÊâ¹¦ÄÜ¼Ä´æÆ÷Î»ÓÚÀ©Õ¹RAMÇøÓò
-//·ÃÎÊÕâÐ©¼Ä´æÆ÷,ÐèÏÈ½«EAXFRÉèÖÃÎª1,²Å¿ÉÕý³£¶ÁÐ´
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â¹¦ï¿½Ü¼Ä´ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Õ¹RAMï¿½ï¿½ï¿½ï¿½
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð©ï¿½Ä´ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½È½ï¿½EAXFRï¿½ï¿½ï¿½ï¿½Îª1,ï¿½Å¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´
 //    EAXFR = 1;
-//»òÕß
+//ï¿½ï¿½ï¿½ï¿½
 //    P_SW2 |= 0x80;
 
 /////////////////////////////////////////////////
@@ -770,14 +770,14 @@ typedef struct TAG_PWM_STRUCT
 #define     HSSPI_CFG2              (*(unsigned char volatile far *)0x7efbf9)
 #define     HSSPI_STA               (*(unsigned char volatile far *)0x7efbfa)
 
-//Ê¹ÓÃÏÂÃæµÄºê,ÐèÏÈ½«EAXFRÉèÖÃÎª1
-//Ê¹ÓÃ·½·¨:
+//Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½,ï¿½ï¿½ï¿½È½ï¿½EAXFRï¿½ï¿½ï¿½ï¿½Îª1
+//Ê¹ï¿½Ã·ï¿½ï¿½ï¿½:
 //      char val;
 //
-//      EAXFR = 1;                      //Ê¹ÄÜ·ÃÎÊXFR
-//      READ_HSPWMA(PWMA_CR1, val);     //Òì²½¶ÁPWMA×é¼Ä´æÆ÷
+//      EAXFR = 1;                      //Ê¹ï¿½Ü·ï¿½ï¿½ï¿½XFR
+//      READ_HSPWMA(PWMA_CR1, val);     //ï¿½ì²½ï¿½ï¿½PWMAï¿½ï¿½Ä´ï¿½ï¿½ï¿½
 //      val |= 0x01;
-//      WRITE_HSPWMA(PWMA_CR1, val);    //Òì²½Ð´PWMA×é¼Ä´æÆ÷
+//      WRITE_HSPWMA(PWMA_CR1, val);    //ï¿½ì²½Ð´PWMAï¿½ï¿½Ä´ï¿½ï¿½ï¿½
 
 #define     READ_HSPWMA(reg, dat)           \
             {                               \
@@ -967,13 +967,13 @@ typedef struct TAG_PWM_STRUCT
 //#define   CANAR                   (*(unsigned char volatile far *)0x7efebb)
 //#define   CANDR                   (*(unsigned char volatile far *)0x7efebc)
 
-//Ê¹ÓÃÏÂÃæµÄºê,ÐèÏÈ½«EAXFRÉèÖÃÎª1
-//Ê¹ÓÃ·½·¨:
+//Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½,ï¿½ï¿½ï¿½È½ï¿½EAXFRï¿½ï¿½ï¿½ï¿½Îª1
+//Ê¹ï¿½Ã·ï¿½ï¿½ï¿½:
 //      char dat;
 //
-//      EAXFR = 1;                  //Ê¹ÄÜ·ÃÎÊXFR
-//      dat = READ_CAN(RX_BUF0);    //¶ÁCAN¼Ä´æÆ÷
-//      WRITE_CAN(TX_BUF0, 0x55);   //Ð´CAN¼Ä´æÆ÷
+//      EAXFR = 1;                  //Ê¹ï¿½Ü·ï¿½ï¿½ï¿½XFR
+//      dat = READ_CAN(RX_BUF0);    //ï¿½ï¿½CANï¿½Ä´ï¿½ï¿½ï¿½
+//      WRITE_CAN(TX_BUF0, 0x55);   //Ð´CANï¿½Ä´ï¿½ï¿½ï¿½
 
 #define     READ_CAN(reg)           (CANAR = (reg), CANDR)
 #define     WRITE_CAN(reg, dat)     (CANAR = (reg), CANDR = (dat))
@@ -1017,11 +1017,11 @@ typedef struct TAG_PWM_STRUCT
 //sfr       LINAR       =           0xfa;
 //sfr       LINDR       =           0xfb;
 
-//Ê¹ÓÃ·½·¨:
+//Ê¹ï¿½Ã·ï¿½ï¿½ï¿½:
 //      char dat;
 //
-//      dat = READ_LIN(LBUF);       //¶ÁCAN¼Ä´æÆ÷
-//      WRITE_LIN(LBUF, 0x55);      //Ð´CAN¼Ä´æÆ÷
+//      dat = READ_LIN(LBUF);       //ï¿½ï¿½CANï¿½Ä´ï¿½ï¿½ï¿½
+//      WRITE_LIN(LBUF, 0x55);      //Ð´CANï¿½Ä´ï¿½ï¿½ï¿½
 
 #define     READ_LIN(reg)           (LINAR = (reg), LINDR)
 #define     WRITE_LIN(reg, dat)     (LINAR = (reg), LINDR = (dat))
@@ -1048,11 +1048,11 @@ typedef struct TAG_PWM_STRUCT
 //sfr       USBCON      =           0xf4;
 //sfr       USBADR      =           0xfc;
 
-//Ê¹ÓÃ·½·¨:
+//Ê¹ï¿½Ã·ï¿½ï¿½ï¿½:
 //      char dat;
 //
-//      READ_USB(CSR0, dat);        //¶ÁUSB¼Ä´æÆ÷
-//      WRITE_USB(FADDR, 0x00);     //Ð´USB¼Ä´æÆ÷
+//      READ_USB(CSR0, dat);        //ï¿½ï¿½USBï¿½Ä´ï¿½ï¿½ï¿½
+//      WRITE_USB(FADDR, 0x00);     //Ð´USBï¿½Ä´ï¿½ï¿½ï¿½
 
 #define     READ_USB(reg, dat)          \
             {                           \

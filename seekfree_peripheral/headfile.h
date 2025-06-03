@@ -9,7 +9,8 @@
 
 
 //STC32G SDK等
-#include "STC32Gxx.h"
+//#include "STC32Gxx.h"
+#include "STC32G_mix.h"
 #include "board.h"
 #include "common.h"
 #include "intrins.h"

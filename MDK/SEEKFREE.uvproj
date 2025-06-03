@@ -494,6 +494,26 @@
               <FileType>1</FileType>
               <FilePath>..\seekfree_libraries\zf_uart.c</FilePath>
             </File>
+            <File>
+              <FileName>STC32G_ADC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\seekfree_libraries\STC32G_ADC.c</FilePath>
+            </File>
+            <File>
+              <FileName>STC32G_ADC_Isr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\seekfree_libraries\STC32G_ADC_Isr.c</FilePath>
+            </File>
+            <File>
+              <FileName>STC32G_DMA.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\seekfree_libraries\STC32G_DMA.c</FilePath>
+            </File>
+            <File>
+              <FileName>STC32G_DMA_Isr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\seekfree_libraries\STC32G_DMA_Isr.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
