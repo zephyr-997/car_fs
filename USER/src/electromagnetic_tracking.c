@@ -1,6 +1,11 @@
 #include "electromagnetic_tracking.h"
 #include "headfile.h"
 #include "common.h"
+#include "STC32G_NVIC.h"
+
+// DMA ADC缓冲区和标志
+uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM] = {0}; // DMA ADC缓冲区
+uint8 adc_dma_ready_flag = 0;  // DMA ADC数据就绪标志
 
 // 滤波后数据 - 使用二维数组形式
 // 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HC, 4-HMR, 5-VR, 6-HR
@@ -70,6 +75,118 @@ uint8 protection_flag = 0;// 电磁保护逻辑变量,0表示未保护，1表示
 
 
 uint8 speed_count = 0;
+
+//-----------------------------------------------------------------------------
+// @brief    电磁传感器DMA ADC初始化
+// @param    无
+// @return   无
+// @author   
+// Sample usage: electromagnetic_dma_init();
+//-----------------------------------------------------------------------------
+void electromagnetic_dma_init(void)
+{
+    ADC_InitTypeDef adc_init_struct;
+    DMA_ADC_InitTypeDef dma_adc_init_struct;
+    uint8 i = 0, j = 0; // 变量声明移到函数开始处
+
+    // 配置ADC参数
+    adc_init_struct.ADC_SMPduty = 15;                // ADC 模拟信号采样时间控制, 0~31, 一般大于10
+    adc_init_struct.ADC_Speed = ADC_SPEED_2X16T;     // ADC 转换速度, 相对于 SYSCLK/2
+    adc_init_struct.ADC_AdjResult = ADC_RIGHT_JUSTIFIED; // ADC 转换结果对齐方式, 右对齐
+    adc_init_struct.ADC_CsSetup = 0;                 // ADC 通道选择建立时间控制, 0(默认),1
+    adc_init_struct.ADC_CsHold = 1;                  // ADC 通道选择保持时间控制, 0,1(默认),2,3
+
+    // 初始化ADC
+    ADC_Inilize(&adc_init_struct);
+    ADC_PowerControl(ENABLE);                        // 使能ADC模块
+
+    // 配置DMA ADC参数
+    dma_adc_init_struct.DMA_Enable = ENABLE;         // 使能DMA
+    dma_adc_init_struct.DMA_Channel = ELECTROMAGNETIC_DMA_CHANNELS; // 使能的通道
+    dma_adc_init_struct.DMA_Buffer = (uint16)AdcDmaBuffer; // DMA缓冲区地址
+    dma_adc_init_struct.DMA_Times = ADC_4_Times;     // 每个通道采样4次，对应ADC_DMA_SAMPLES_PER_CHANNEL_NUM=4
+
+    // 初始化DMA ADC
+    DMA_ADC_Inilize(&dma_adc_init_struct);
+    
+    // 使能DMA ADC中断请求
+    DMA_ADC_CR |= (1 << 6);  // 设置DMA_ADC_CR的INT_EN位(bit 6)
+    
+    // 使能DMA ADC中断并设置优先级
+    NVIC_DMA_ADC_Init(ENABLE, Priority_1, Priority_1);
+
+    // 初始化缓冲区
+    for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
+    {
+        for(j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
+        {
+            AdcDmaBuffer[i][j] = 0;
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------
+// @brief    启动DMA ADC转换
+// @param    无
+// @return   无
+// @author   
+// Sample usage: start_adc_dma_conversion();
+//-----------------------------------------------------------------------------
+void start_adc_dma_conversion(void)
+{
+    if(!adc_dma_ready_flag)  // 只有当上一次转换完成后才启动新的转换
+    {
+        DMA_ADC_TRIG();      // 触发DMA ADC转换
+    }
+}
+
+//-----------------------------------------------------------------------------
+// @brief    处理DMA ADC数据
+// @param    无
+// @return   无
+// @author   
+// Sample usage: process_adc_dma_data();
+//-----------------------------------------------------------------------------
+void process_adc_dma_data(void)
+{
+    static uint8 is_initialized = 0;  // 初始化标志
+    uint8 i, j;
+    uint32 sum_values;
+    
+    // 检查DMA ADC数据是否就绪
+    if(!adc_dma_ready_flag)
+    {
+        return;
+    }
+    
+    // 清除标志位
+    adc_dma_ready_flag = 0;
+    
+    // 处理DMA ADC数据
+    // 对每个通道的多次采样取平均值
+    for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
+    {
+        sum_values = 0;
+        for(j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
+        {
+            sum_values += AdcDmaBuffer[i][j];
+        }
+        
+        // 计算平均值并存入result数组
+        // 注意: DMA通道顺序与电感编号的映射关系需要处理
+        // 这里假设DMA通道的数据顺序与电感编号一致，实际使用时可能需要调整
+        result[i] = sum_values / ADC_DMA_SAMPLES_PER_CHANNEL_NUM;
+        
+        // 同时更新adc_fliter_data，以便与原有代码兼容
+        adc_fliter_data[i][0] = result[i];
+    }
+    
+    // 标记初始化完成
+    is_initialized = 1;
+    
+    // 启动下一次DMA ADC转换
+    start_adc_dma_conversion();
+}
 
 //-----------------------------------------------------------------------------
 // @brief  	电磁传感器初始化
@@ -202,7 +319,7 @@ void mid_filter(void)
 {
     uint16 temp = 0, a = 0, t = 0;
     uint16 mid_index = 0;  //中位数
-	uint16 i = 0; //用于循环
+    uint16 i = 0; //用于循环
     // 创建临时数组用于排序，避免修改原始数据
     uint16 sort_array[HISTORY_COUNT];  // 使用宏定义的常量而不是变量
 	
@@ -261,11 +378,16 @@ void mid_filter(void)
                 }
             }
             
-            // 计算中位数索引
-            mid_index = times / 2;  // 5 / 2 = 2  ,sort_array[2]是第三个数即中位数
-            
-            // 取中位数作为结果
-            result[a] = sort_array[mid_index];
+            // 获取中位数
+            mid_index = times / 2;
+            if(times % 2 == 0)  // 偶数个样本，取中间两个的平均
+            {
+                result[a] = (sort_array[mid_index-1] + sort_array[mid_index]) / 2;
+            }
+            else  // 奇数个样本，取中间值
+            {
+                result[a] = sort_array[mid_index];
+            }
         }
     }
 }

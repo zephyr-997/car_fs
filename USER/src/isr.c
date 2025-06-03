@@ -52,6 +52,7 @@
 
 // 函数前置声明
 void uart4_interrupt_callback(void);
+void DMA_ADC_Routine(void);  // 添加DMA ADC中断服务函数声明
 
 // 全局变量定义
 float left_pid = 0, right_pid = 0;               // 速度环pid的增量，还需转化再赋给电机
@@ -476,6 +477,22 @@ void TM4_Isr() interrupt 20
 
 
 }
+
+
+// 添加DMA ADC中断服务函数
+// 注意：此函数应该与STC32G_DMA_Isr.c中的DMA_ADC_ISR_Handler函数二选一
+// 如果使用STC32G_DMA_Isr.c中的函数，则不需要此函数
+/*
+void DMA_ADC_Routine(void) interrupt 13  // DMA ADC中断向量号可能需要根据实际情况调整
+{
+    // 清除DMA ADC中断标志
+    DMA_ADCIF_CLR();
+    
+    // 设置DMA ADC数据就绪标志
+    extern uint8 adc_dma_ready_flag;
+    adc_dma_ready_flag = 1;
+}
+*/
 
 
 //void  INT0_Isr()  interrupt 0;

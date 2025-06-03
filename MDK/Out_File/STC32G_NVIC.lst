@@ -1,0 +1,773 @@
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_NVIC
+OBJECT MODULE PLACED IN .\Out_File\STC32G_NVIC.obj
+COMPILER INVOKED BY: D:\Software\Keil5\c251v560\C251\BIN\C251.EXE ..\seekfree_libraries\STC32G_NVIC.c XSMALL WARNINGLEVE
+                    -L(3) OPTIMIZE(0,SPEED) BROWSE INCDIR(..\CODE;..\USER\inc;..\USER\src;..\seekfree_components;..\seekfree_libraries;..\see
+                    -kfree_peripheral;..\libraries) DEBUG PRINT(.\Out_File\STC32G_NVIC.lst) TABS(2) OBJECT(.\Out_File\STC32G_NVIC.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- Web: www.STCAI.com ---------------------------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "STC32G_NVIC.h"
+    6          
+    7          //========================================================================
+    8          // 函数: NVIC_Timer0_Init
+    9          // 功能: Timer0中断初始化.
+   10          // 输入: State:    状态, ENABLE/DISABLE.
+   11          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+   12          // 输出: 返回值 SUCCESS/FAIL.
+   13          // 版本: V1.0, 2020-09-29
+   14          //========================================================================
+   15          u8 NVIC_Timer0_Init(u8 State, u8 Priority)
+   16          {
+   17   1        if(State <= ENABLE) Timer0_Interrupt(State); else  return FAIL;
+   18   1        if(Priority <= Priority_3) Timer0_Priority(Priority); else  return FAIL;
+   19   1        return SUCCESS;
+   20   1      }
+   21          
+   22          //========================================================================
+   23          // 函数: NVIC_Timer1_Init
+   24          // 功能: Timer1中断初始化.
+   25          // 输入: State:    状态, ENABLE/DISABLE.
+   26          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+   27          // 输出: 返回值 SUCCESS/FAIL.
+   28          // 版本: V1.0, 2020-09-29
+   29          //========================================================================
+   30          u8 NVIC_Timer1_Init(u8 State, u8 Priority)
+   31          {
+   32   1        if(State <= ENABLE) Timer1_Interrupt(State); else  return FAIL;
+   33   1        if(Priority <= Priority_3) Timer1_Priority(Priority); else  return FAIL;
+   34   1        return SUCCESS;
+   35   1      }
+   36          
+   37          //========================================================================
+   38          // 函数: NVIC_Timer2_Init
+   39          // 功能: Timer2中断初始化.
+   40          // 输入: State:    状态, ENABLE/DISABLE.
+   41          //       Priority: 优先级, NULL.
+   42          // 输出: 返回值 SUCCESS/FAIL.
+   43          // 版本: V1.0, 2020-09-29
+   44          //========================================================================
+   45          u8 NVIC_Timer2_Init(u8 State, u8 Priority)
+   46          {
+   47   1        if(State <= ENABLE) Timer2_Interrupt(State); else  return FAIL;
+   48   1        Priority = 0;
+   49   1        return SUCCESS;
+   50   1      }
+   51          
+   52          //========================================================================
+   53          // 函数: NVIC_Timer3_Init
+   54          // 功能: Timer3中断初始化.
+   55          // 输入: State:    状态, ENABLE/DISABLE.
+   56          //       Priority: 优先级, NULL.
+   57          // 输出: 返回值 SUCCESS/FAIL.
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 2   
+
+   58          // 版本: V1.0, 2020-09-29
+   59          //========================================================================
+   60          u8 NVIC_Timer3_Init(u8 State, u8 Priority)
+   61          {
+   62   1        if(State <= ENABLE) Timer3_Interrupt(State); else  return FAIL;
+   63   1        Priority = 0;
+   64   1        return SUCCESS;
+   65   1      }
+   66          
+   67          //========================================================================
+   68          // 函数: NVIC_Timer4_Init
+   69          // 功能: Timer4中断初始化.
+   70          // 输入: State:    状态, ENABLE/DISABLE.
+   71          //       Priority: 优先级, NULL.
+   72          // 输出: 返回值 SUCCESS/FAIL.
+   73          // 版本: V1.0, 2020-09-29
+   74          //========================================================================
+   75          u8 NVIC_Timer4_Init(u8 State, u8 Priority)
+   76          {
+   77   1        if(State <= ENABLE) Timer4_Interrupt(State); else  return FAIL;
+   78   1        Priority = 0;
+   79   1        return SUCCESS;
+   80   1      }
+   81          
+   82          //========================================================================
+   83          // 函数: NVIC_INT0_Init
+   84          // 功能: INT0中断初始化.
+   85          // 输入: State:    状态, ENABLE/DISABLE.
+   86          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+   87          // 输出: 返回值 SUCCESS/FAIL.
+   88          // 版本: V1.0, 2020-09-29
+   89          //========================================================================
+   90          u8 NVIC_INT0_Init(u8 State, u8 Priority)
+   91          {
+   92   1        if(State <= ENABLE) INT0_Interrupt(State); else  return FAIL;
+   93   1        if(Priority <= Priority_3) INT0_Priority(Priority); else  return FAIL;
+   94   1        return SUCCESS;
+   95   1      }
+   96          
+   97          //========================================================================
+   98          // 函数: NVIC_INT1_Init
+   99          // 功能: INT1中断初始化.
+  100          // 输入: State:    状态, ENABLE/DISABLE.
+  101          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  102          // 输出: 返回值 SUCCESS/FAIL.
+  103          // 版本: V1.0, 2020-09-29
+  104          //========================================================================
+  105          u8 NVIC_INT1_Init(u8 State, u8 Priority)
+  106          {
+  107   1        if(State <= ENABLE) INT1_Interrupt(State); else  return FAIL;
+  108   1        if(Priority <= Priority_3) INT1_Priority(Priority); else  return FAIL;
+  109   1        return SUCCESS;
+  110   1      }
+  111          
+  112          //========================================================================
+  113          // 函数: NVIC_INT2_Init
+  114          // 功能: INT2中断初始化.
+  115          // 输入: State:    状态, ENABLE/DISABLE.
+  116          //       Priority: 优先级, NULL.
+  117          // 输出: 返回值 SUCCESS/FAIL.
+  118          // 版本: V1.0, 2020-09-29
+  119          //========================================================================
+  120          u8 NVIC_INT2_Init(u8 State, u8 Priority)
+  121          {
+  122   1        if(State <= ENABLE) INT2_Interrupt(State); else  return FAIL;
+  123   1        Priority = 0;
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 3   
+
+  124   1        return SUCCESS;
+  125   1      }
+  126          
+  127          //========================================================================
+  128          // 函数: NVIC_INT3_Init
+  129          // 功能: INT3中断初始化.
+  130          // 输入: State:    状态, ENABLE/DISABLE.
+  131          //       Priority: 优先级, NULL.
+  132          // 输出: 返回值 SUCCESS/FAIL.
+  133          // 版本: V1.0, 2020-09-29
+  134          //========================================================================
+  135          u8 NVIC_INT3_Init(u8 State, u8 Priority)
+  136          {
+  137   1        if(State <= ENABLE) INT3_Interrupt(State); else  return FAIL;
+  138   1        Priority = 0;
+  139   1        return SUCCESS;
+  140   1      }
+  141          
+  142          //========================================================================
+  143          // 函数: NVIC_INT4_Init
+  144          // 功能: INT4中断初始化.
+  145          // 输入: State:    状态, ENABLE/DISABLE.
+  146          //       Priority: 优先级, NULL.
+  147          // 输出: 返回值 SUCCESS/FAIL.
+  148          // 版本: V1.0, 2020-09-29
+  149          //========================================================================
+  150          u8 NVIC_INT4_Init(u8 State, u8 Priority)
+  151          {
+  152   1        if(State <= ENABLE) INT4_Interrupt(State); else  return FAIL;
+  153   1        Priority = 0;
+  154   1        return SUCCESS;
+  155   1      }
+  156          
+  157          //========================================================================
+  158          // 函数: NVIC_ADC_Init
+  159          // 功能: ADC中断初始化.
+  160          // 输入: State:    状态, ENABLE/DISABLE.
+  161          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  162          // 输出: 返回值 SUCCESS/FAIL.
+  163          // 版本: V1.0, 2020-09-29
+  164          //========================================================================
+  165          u8 NVIC_ADC_Init(u8 State, u8 Priority)
+  166          {
+  167   1        if(State <= ENABLE) ADC_Interrupt(State); else  return FAIL;
+  168   1        if(Priority <= Priority_3) ADC_Priority(Priority); else  return FAIL;
+  169   1        return SUCCESS;
+  170   1      }
+  171          
+  172          //========================================================================
+  173          // 函数: NVIC_CMP_Init
+  174          // 功能: 比较中断初始化.
+  175          // 输入: State:    状态, RISING_EDGE/FALLING_EDGE/DISABLE.
+  176          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  177          // 输出: 返回值 SUCCESS/FAIL.
+  178          // 版本: V1.0, 2020-09-29
+  179          //========================================================================
+  180          u8 NVIC_CMP_Init(u8 State, u8 Priority)
+  181          {
+  182   1        if(State & RISING_EDGE) PIE = 1;      //允许上升沿触发
+  183   1        else  PIE = 0;      //禁止下降沿触发
+  184   1        if(State & FALLING_EDGE)  NIE = 1;    //允许下降沿触发
+  185   1        else  NIE = 0;      //禁止下降沿触发
+  186   1        if(Priority <= Priority_3) CMP_Priority(Priority); else  return FAIL;
+  187   1        return SUCCESS;
+  188   1      }
+  189          
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 4   
+
+  190          //========================================================================
+  191          // 函数: NVIC_I2C_Init
+  192          // 功能: I2C中断初始化.
+  193          // 输入: Mode:     模式, I2C_Mode_Master/I2C_Mode_Slave.
+  194          //       State:    状态, I2C_Mode_Master: ENABLE/DISABLE.
+  195          //                              I2C_Mode_Slave: I2C_ESTAI/I2C_ERXI/I2C_ETXI/I2C_ESTOI/DISABLE.
+  196          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  197          // 输出: 返回值 SUCCESS/FAIL.
+  198          // 版本: V1.0, 2020-09-29
+  199          //========================================================================
+  200          u8 NVIC_I2C_Init(u8 Mode, u8 State, u8 Priority)
+  201          {
+  202   1        if(Mode > 1) return FAIL;
+  203   1        if(Mode == 1) //I2C_Mode_Master
+  204   1        {
+  205   2          I2C_Master_Inturrupt(State);
+  206   2        }
+  207   1        else if(Mode == 0)  //I2C_Mode_Slave
+  208   1        {
+  209   2          I2CSLCR = (I2CSLCR & ~0x78) | State;
+  210   2        }
+  211   1        if(Priority <= Priority_3) CMP_Priority(Priority); else  return FAIL;
+  212   1        return SUCCESS;
+  213   1      }
+  214          
+  215          //========================================================================
+  216          // 函数: NVIC_UART1_Init
+  217          // 功能: UART1中断初始化.
+  218          // 输入: State:    状态, ENABLE/DISABLE.
+  219          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  220          // 输出: 返回值 SUCCESS/FAIL.
+  221          // 版本: V1.0, 2020-09-29
+  222          //========================================================================
+  223          u8 NVIC_UART1_Init(u8 State, u8 Priority)
+  224          {
+  225   1        if(State <= ENABLE) UART1_Interrupt(State); else  return FAIL;
+  226   1        if(Priority <= Priority_3) UART1_Priority(Priority); else  return FAIL;
+  227   1        return SUCCESS;
+  228   1      }
+  229          
+  230          //========================================================================
+  231          // 函数: NVIC_UART2_Init
+  232          // 功能: UART2中断初始化.
+  233          // 输入: State:    状态, ENABLE/DISABLE.
+  234          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  235          // 输出: 返回值 SUCCESS/FAIL.
+  236          // 版本: V1.0, 2020-09-29
+  237          //========================================================================
+  238          u8 NVIC_UART2_Init(u8 State, u8 Priority)
+  239          {
+  240   1        if(State <= ENABLE) UART2_Interrupt(State); else  return FAIL;
+  241   1        if(Priority <= Priority_3) UART2_Priority(Priority); else  return FAIL;
+  242   1        return SUCCESS;
+  243   1      }
+  244          
+  245          //========================================================================
+  246          // 函数: NVIC_UART3_Init
+  247          // 功能: UART3中断初始化.
+  248          // 输入: State:    状态, ENABLE/DISABLE.
+  249          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  250          // 输出: 返回值 SUCCESS/FAIL.
+  251          // 版本: V1.0, 2020-09-29
+  252          //========================================================================
+  253          u8 NVIC_UART3_Init(u8 State, u8 Priority)
+  254          {
+  255   1        if(State <= ENABLE) UART3_Interrupt(State); else  return FAIL;
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 5   
+
+  256   1        if(Priority <= Priority_3) UART3_Priority(Priority); else  return FAIL;
+  257   1        return SUCCESS;
+  258   1      }
+  259          
+  260          //========================================================================
+  261          // 函数: NVIC_UART4_Init
+  262          // 功能: UART4中断初始化.
+  263          // 输入: State:    状态, ENABLE/DISABLE.
+  264          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  265          // 输出: 返回值 SUCCESS/FAIL.
+  266          // 版本: V1.0, 2020-09-29
+  267          //========================================================================
+  268          u8 NVIC_UART4_Init(u8 State, u8 Priority)
+  269          {
+  270   1        if(State <= ENABLE) UART4_Interrupt(State); else  return FAIL;
+  271   1        if(Priority <= Priority_3) UART4_Priority(Priority); else  return FAIL;
+  272   1        return SUCCESS;
+  273   1      }
+  274          
+  275          //========================================================================
+  276          // 函数: NVIC_SPI_Init
+  277          // 功能: SPI中断初始化.
+  278          // 输入: State:    状态, ENABLE/DISABLE.
+  279          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  280          // 输出: 返回值 SUCCESS/FAIL.
+  281          // 版本: V1.0, 2020-09-29
+  282          //========================================================================
+  283          u8 NVIC_SPI_Init(u8 State, u8 Priority)
+  284          {
+  285   1        if(State <= ENABLE) SPI_Interrupt(State); else  return FAIL;
+  286   1        if(Priority <= Priority_3) SPI_Priority(Priority); else  return FAIL;
+  287   1        return SUCCESS;
+  288   1      }
+  289          
+  290          //========================================================================
+  291          // 函数: NVIC_RTC_Init
+  292          // 功能: SPI中断初始化.
+  293          // 输入: State:    状态, 状态, 0x80:禁止中断, 0x40:禁止中断, 0x20:禁止中断, 0x10:禁止
+             -中断, 0x08:禁止中断, 0x04:禁止中断, 0x02:禁止中断, 0x01:禁止中断 /DISABLE.
+  294          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  295          // 输出: 返回值 SUCCESS/FAIL.
+  296          // 版本: V1.0, 2020-09-29
+  297          //========================================================================
+  298          u8 NVIC_RTC_Init(u8 State, u8 Priority)
+  299          {
+  300   1        if(Priority <= Priority_3) RTC_Priority(Priority); else  return FAIL;
+  301   1        RTC_Interrupt(State); 
+  302   1        return SUCCESS;
+  303   1      }
+  304          
+  305          //========================================================================
+  306          // 函数: NVIC_PWM_Init
+  307          // 功能: PWM中断初始化.
+  308          // 输入: Channel:  通道, PWMA/PWMB.
+  309          //       State:    状态, PWM_BIE/PWM_TIE/PWM_COMIE/PWM_CC8IE~PWM_CC1IE/PWM_UIE/DISABLE.
+  310          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  311          // 输出: 返回值 SUCCESS/FAIL.
+  312          // 版本: V1.0, 2020-09-29
+  313          //========================================================================
+  314          #ifndef PWMA
+               #define PWMA  9
+               #endif
+  317          #ifndef PWMB
+               #define PWMB  10
+               #endif
+  320          u8 NVIC_PWM_Init(u8 Channel, u8 State, u8 Priority)
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 6   
+
+  321          {
+  322   1        if(Channel > 10) return FAIL;
+  323   1        if(Priority > Priority_3) return FAIL;
+  324   1        switch(Channel)
+  325   1        {
+  326   2          case 9:
+  327   2            PWMA_IER = State;
+  328   2            PWMA_Priority(Priority);
+  329   2          break;
+  330   2      
+  331   2          case 10:
+  332   2            PWMB_IER = State;
+  333   2            PWMB_Priority(Priority);
+  334   2          break;
+  335   2      
+  336   2          default:
+  337   2            PWMB_IER = State;
+  338   2            Priority = 0;
+  339   2          break;
+  340   2        }
+  341   1        return SUCCESS;
+  342   1      }
+  343          
+  344          //========================================================================
+  345          // 函数: NVIC_DMA_ADC_Init
+  346          // 功能: DMA ADC中断初始化.
+  347          // 输入: State:    状态, ENABLE/DISABLE.
+  348          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  349          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  350          // 输出: 返回值 SUCCESS/FAIL.
+  351          // 版本: V1.0, 2021-05-21
+  352          //========================================================================
+  353          u8 NVIC_DMA_ADC_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  354          {
+  355   1        DMA_ADC_CFG &= ~0x0f;
+  356   1        if(Priority <= Priority_3) DMA_ADC_CFG |= Priority << 2;
+  357   1        if(Bus_Priority <= Priority_3) DMA_ADC_CFG |= Bus_Priority; //总线优先级
+  358   1        if(State == ENABLE)
+  359   1          DMA_ADC_CFG |= 0x80;    //bit7 1:Enable Interrupt
+  360   1        else
+  361   1          DMA_ADC_CFG &= ~0x80;   //bit7 0:Disable Interrupt
+  362   1        return SUCCESS;
+  363   1      }
+  364          
+  365          //========================================================================
+  366          // 函数: NVIC_DMA_M2M_Init
+  367          // 功能: DMA M2M中断初始化.
+  368          // 输入: State:    状态, ENABLE/DISABLE.
+  369          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  370          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  371          // 输出: 返回值 SUCCESS/FAIL.
+  372          // 版本: V1.0, 2021-05-21
+  373          //========================================================================
+  374          u8 NVIC_DMA_M2M_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  375          {
+  376   1        DMA_M2M_CFG &= ~0x0f;
+  377   1        if(Priority <= Priority_3) DMA_M2M_CFG |= Priority << 2;
+  378   1        if(Bus_Priority <= Priority_3) DMA_M2M_CFG |= Bus_Priority; //总线优先级
+  379   1        if(State == ENABLE)
+  380   1          DMA_M2M_CFG |= 0x80;    //bit7 1:Enable Interrupt
+  381   1        else
+  382   1          DMA_M2M_CFG &= ~0x80;   //bit7 0:Disable Interrupt
+  383   1        return SUCCESS;
+  384   1      }
+  385          
+  386          //========================================================================
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 7   
+
+  387          // 函数: NVIC_DMA_SPI_Init
+  388          // 功能: DMA SPI中断初始化.
+  389          // 输入: State:    状态, ENABLE/DISABLE.
+  390          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  391          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  392          // 输出: 返回值 SUCCESS/FAIL.
+  393          // 版本: V1.0, 2021-05-27
+  394          //========================================================================
+  395          u8 NVIC_DMA_SPI_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  396          {
+  397   1        DMA_SPI_CFG &= ~0x0f;
+  398   1        if(Priority <= Priority_3) DMA_SPI_CFG |= Priority << 2;
+  399   1        if(Bus_Priority <= Priority_3) DMA_SPI_CFG |= Bus_Priority; //总线优先级
+  400   1        if(State == ENABLE)
+  401   1          DMA_SPI_CFG |= 0x80;    //bit7 1:Enable Interrupt
+  402   1        else
+  403   1          DMA_SPI_CFG &= ~0x80;   //bit7 0:Disable Interrupt
+  404   1        return SUCCESS;
+  405   1      }
+  406          
+  407          //========================================================================
+  408          // 函数: NVIC_DMA_UART1_Tx_Init
+  409          // 功能: DMA UART1 Tx中断初始化.
+  410          // 输入: State:    状态, ENABLE/DISABLE.
+  411          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  412          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  413          // 输出: 返回值 SUCCESS/FAIL.
+  414          // 版本: V1.0, 2021-05-21
+  415          //========================================================================
+  416          u8 NVIC_DMA_UART1_Tx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  417          {
+  418   1        DMA_UR1T_CFG &= ~0x0f;
+  419   1        if(Priority <= Priority_3) DMA_UR1T_CFG |= Priority << 2;
+  420   1        if(Bus_Priority <= Priority_3) DMA_UR1T_CFG |= Bus_Priority;  //总线优先级
+  421   1        if(State == ENABLE)
+  422   1          DMA_UR1T_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  423   1        else
+  424   1          DMA_UR1T_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  425   1        return SUCCESS;
+  426   1      }
+  427          
+  428          //========================================================================
+  429          // 函数: NVIC_DMA_UART1_Rx_Init
+  430          // 功能: DMA UART1 Rx中断初始化.
+  431          // 输入: State:    状态, ENABLE/DISABLE.
+  432          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  433          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  434          // 输出: 返回值 SUCCESS/FAIL.
+  435          // 版本: V1.0, 2021-05-21
+  436          //========================================================================
+  437          u8 NVIC_DMA_UART1_Rx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  438          {
+  439   1        DMA_UR1R_CFG &= ~0x0f;
+  440   1        if(Priority <= Priority_3) DMA_UR1R_CFG |= Priority << 2;
+  441   1        if(Bus_Priority <= Priority_3) DMA_UR1R_CFG |= Bus_Priority;  //总线优先级
+  442   1        if(State == ENABLE)
+  443   1          DMA_UR1R_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  444   1        else
+  445   1          DMA_UR1R_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  446   1        return SUCCESS;
+  447   1      }
+  448          
+  449          //========================================================================
+  450          // 函数: NVIC_DMA_UART2_Tx_Init
+  451          // 功能: DMA UART2 Tx中断初始化.
+  452          // 输入: State:    状态, ENABLE/DISABLE.
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 8   
+
+  453          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  454          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  455          // 输出: 返回值 SUCCESS/FAIL.
+  456          // 版本: V1.0, 2021-05-21
+  457          //========================================================================
+  458          u8 NVIC_DMA_UART2_Tx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  459          {
+  460   1        DMA_UR2T_CFG &= ~0x0f;
+  461   1        if(Priority <= Priority_3) DMA_UR2T_CFG |= Priority << 2;
+  462   1        if(Bus_Priority <= Priority_3) DMA_UR2T_CFG |= Bus_Priority;  //总线优先级
+  463   1        if(State == ENABLE)
+  464   1          DMA_UR2T_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  465   1        else
+  466   1          DMA_UR2T_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  467   1        return SUCCESS;
+  468   1      }
+  469          
+  470          //========================================================================
+  471          // 函数: NVIC_DMA_UART2_Rx_Init
+  472          // 功能: DMA UART2 Rx中断初始化.
+  473          // 输入: State:    状态, ENABLE/DISABLE.
+  474          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  475          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  476          // 输出: 返回值 SUCCESS/FAIL.
+  477          // 版本: V1.0, 2021-05-21
+  478          //========================================================================
+  479          u8 NVIC_DMA_UART2_Rx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  480          {
+  481   1        DMA_UR2R_CFG &= ~0x0f;
+  482   1        if(Priority <= Priority_3) DMA_UR2R_CFG |= Priority << 2;
+  483   1        if(Bus_Priority <= Priority_3) DMA_UR2R_CFG |= Bus_Priority;  //总线优先级
+  484   1        if(State == ENABLE)
+  485   1          DMA_UR2R_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  486   1        else
+  487   1          DMA_UR2R_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  488   1        return SUCCESS;
+  489   1      }
+  490          
+  491          //========================================================================
+  492          // 函数: NVIC_DMA_UART3_Tx_Init
+  493          // 功能: DMA UART3 Tx中断初始化.
+  494          // 输入: State:    状态, ENABLE/DISABLE.
+  495          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  496          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  497          // 输出: 返回值 SUCCESS/FAIL.
+  498          // 版本: V1.0, 2021-05-21
+  499          //========================================================================
+  500          u8 NVIC_DMA_UART3_Tx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  501          {
+  502   1        DMA_UR3T_CFG &= ~0x0f;
+  503   1        if(Priority <= Priority_3) DMA_UR3T_CFG |= Priority << 2;
+  504   1        if(Bus_Priority <= Priority_3) DMA_UR3T_CFG |= Bus_Priority;  //总线优先级
+  505   1        if(State == ENABLE)
+  506   1          DMA_UR3T_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  507   1        else
+  508   1          DMA_UR3T_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  509   1        return SUCCESS;
+  510   1      }
+  511          
+  512          //========================================================================
+  513          // 函数: NVIC_DMA_UART3_Rx_Init
+  514          // 功能: DMA UART3 Rx中断初始化.
+  515          // 输入: State:    状态, ENABLE/DISABLE.
+  516          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  517          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  518          // 输出: 返回值 SUCCESS/FAIL.
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 9   
+
+  519          // 版本: V1.0, 2021-05-21
+  520          //========================================================================
+  521          u8 NVIC_DMA_UART3_Rx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  522          {
+  523   1        DMA_UR3R_CFG &= ~0x0f;
+  524   1        if(Priority <= Priority_3) DMA_UR3R_CFG |= Priority << 2;
+  525   1        if(Bus_Priority <= Priority_3) DMA_UR3R_CFG |= Bus_Priority;  //总线优先级
+  526   1        if(State == ENABLE)
+  527   1          DMA_UR3R_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  528   1        else
+  529   1          DMA_UR3R_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  530   1        return SUCCESS;
+  531   1      }
+  532          
+  533          //========================================================================
+  534          // 函数: NVIC_DMA_UART4_Tx_Init
+  535          // 功能: DMA UART4 Tx中断初始化.
+  536          // 输入: State:    状态, ENABLE/DISABLE.
+  537          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  538          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  539          // 输出: 返回值 SUCCESS/FAIL.
+  540          // 版本: V1.0, 2021-05-21
+  541          //========================================================================
+  542          u8 NVIC_DMA_UART4_Tx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  543          {
+  544   1        DMA_UR4T_CFG &= ~0x0f;
+  545   1        if(Priority <= Priority_3) DMA_UR4T_CFG |= Priority << 2;
+  546   1        if(Bus_Priority <= Priority_3) DMA_UR4T_CFG |= Bus_Priority;  //总线优先级
+  547   1        if(State == ENABLE)
+  548   1          DMA_UR4T_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  549   1        else
+  550   1          DMA_UR4T_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  551   1        return SUCCESS;
+  552   1      }
+  553          
+  554          //========================================================================
+  555          // 函数: NVIC_DMA_UART4_Rx_Init
+  556          // 功能: DMA UART4 Rx中断初始化.
+  557          // 输入: State:    状态, ENABLE/DISABLE.
+  558          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  559          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  560          // 输出: 返回值 SUCCESS/FAIL.
+  561          // 版本: V1.0, 2021-05-21
+  562          //========================================================================
+  563          u8 NVIC_DMA_UART4_Rx_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  564          {
+  565   1        DMA_UR4R_CFG &= ~0x0f;
+  566   1        if(Priority <= Priority_3) DMA_UR4R_CFG |= Priority << 2;
+  567   1        if(Bus_Priority <= Priority_3) DMA_UR4R_CFG |= Bus_Priority;  //总线优先级
+  568   1        if(State == ENABLE)
+  569   1          DMA_UR4R_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  570   1        else
+  571   1          DMA_UR4R_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  572   1        return SUCCESS;
+  573   1      }
+  574          
+  575          //========================================================================
+  576          // 函数: NVIC_DMA_LCM_Init
+  577          // 功能: DMA LCM中断初始化.
+  578          // 输入: State:    状态, ENABLE/DISABLE.
+  579          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  580          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  581          // 输出: 返回值 SUCCESS/FAIL.
+  582          // 版本: V1.0, 2021-05-21
+  583          //========================================================================
+  584          u8 NVIC_DMA_LCM_Init(u8 State, u8 Priority, u8 Bus_Priority)
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 10  
+
+  585          {
+  586   1        DMA_LCM_CFG &= ~0x0f;
+  587   1        if(Priority <= Priority_3) DMA_LCM_CFG |= Priority << 2;
+  588   1        if(Bus_Priority <= Priority_3) DMA_LCM_CFG |= Bus_Priority; //总线优先级
+  589   1        if(State == ENABLE)
+  590   1          DMA_LCM_CFG |= 0x80;    //bit7 1:Enable Interrupt
+  591   1        else
+  592   1          DMA_LCM_CFG &= ~0x80;   //bit7 0:Disable Interrupt
+  593   1        return SUCCESS;
+  594   1      }
+  595          
+  596          //========================================================================
+  597          // 函数: NVIC_LCM_Init
+  598          // 功能: LCM中断初始化.
+  599          // 输入: State:    状态, ENABLE/DISABLE.
+  600          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  601          // 输出: 返回值 SUCCESS/FAIL.
+  602          // 版本: V1.0, 2021-05-21
+  603          //========================================================================
+  604          u8 NVIC_LCM_Init(u8 State, u8 Priority)
+  605          {
+  606   1        LCMIFCFG &= ~0x30;
+  607   1        if(Priority <= Priority_3) LCMIFCFG |= Priority << 4;
+  608   1        if(State == ENABLE)
+  609   1          LCMIFCFG |= 0x80;   //bit7 1:Enable Interrupt
+  610   1        else
+  611   1          LCMIFCFG &= ~0x80;    //bit7 0:Disable Interrupt
+  612   1        return SUCCESS;
+  613   1      }
+  614          
+  615          //========================================================================
+  616          // 函数: NVIC_DMA_I2CT_Init
+  617          // 功能: DMA I2C Tx中断初始化.
+  618          // 输入: State:    状态, ENABLE/DISABLE.
+  619          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  620          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  621          // 输出: 返回值 SUCCESS/FAIL.
+  622          // 版本: V1.0, 2022-03-25
+  623          //========================================================================
+  624          u8 NVIC_DMA_I2CT_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  625          {
+  626   1        DMA_I2CT_CFG &= ~0x0f;
+  627   1        if(Priority <= Priority_3) DMA_I2CT_CFG |= Priority << 2;
+  628   1        if(Bus_Priority <= Priority_3) DMA_I2CT_CFG |= Bus_Priority;  //总线优先级
+  629   1        if(State == ENABLE)
+  630   1          DMA_I2CT_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  631   1        else
+  632   1          DMA_I2CT_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  633   1        return SUCCESS;
+  634   1      }
+  635          
+  636          //========================================================================
+  637          // 函数: NVIC_DMA_I2CR_Init
+  638          // 功能: DMA I2C Rx中断初始化.
+  639          // 输入: State:    状态, ENABLE/DISABLE.
+  640          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  641          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  642          // 输出: 返回值 SUCCESS/FAIL.
+  643          // 版本: V1.0, 2022-03-25
+  644          //========================================================================
+  645          u8 NVIC_DMA_I2CR_Init(u8 State, u8 Priority, u8 Bus_Priority)
+  646          {
+  647   1        DMA_I2CR_CFG &= ~0x0f;
+  648   1        if(Priority <= Priority_3) DMA_I2CR_CFG |= Priority << 2;
+  649   1        if(Bus_Priority <= Priority_3) DMA_I2CR_CFG |= Bus_Priority;  //总线优先级
+  650   1        if(State == ENABLE)
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 11  
+
+  651   1          DMA_I2CR_CFG |= 0x80;   //bit7 1:Enable Interrupt
+  652   1        else
+  653   1          DMA_I2CR_CFG &= ~0x80;  //bit7 0:Disable Interrupt
+  654   1        return SUCCESS;
+  655   1      }
+  656          
+  657          //========================================================================
+  658          // 函数: NVIC_CAN_Init
+  659          // 功能: CAN中断初始化.
+  660          // 输入: Channel:  通道, CAN1/CAN2.
+  661          //       State:    状态, ENABLE/DISABLE.
+  662          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  663          // 输出: 返回值 SUCCESS/FAIL.
+  664          // 版本: V1.0, 2023-03-27
+  665          //========================================================================
+  666          #ifndef CAN1
+  667          #define CAN1  0
+  668          #endif
+  669          #ifndef CAN2
+  670          #define CAN2  1
+  671          #endif
+  672          u8 NVIC_CAN_Init(u8 Channel, u8 State, u8 Priority)
+  673          {
+  674   1        if(Channel > CAN2) return FAIL;
+  675   1        if(Priority > Priority_3) return FAIL;
+  676   1        switch(Channel)
+  677   1        {
+  678   2          case CAN1:
+  679   2            if(State == ENABLE)
+  680   2              CANIE = 1;    //bit7 1:Enable Interrupt
+  681   2            else
+  682   2              CANIE = 0;    //bit7 0:Disable Interrupt
+  683   2            CAN1_Priority(Priority);
+  684   2          break;
+  685   2      
+  686   2          case CAN2:
+  687   2            if(State == ENABLE)
+  688   2              CAN2IE = 1;   //bit7 1:Enable Interrupt
+  689   2            else
+  690   2              CAN2IE = 0;   //bit7 0:Disable Interrupt
+  691   2            CAN2_Priority(Priority);
+  692   2          break;
+  693   2      
+  694   2          default:
+  695   2            return FAIL;
+  696   2          break;
+  697   2        }
+  698   1        return SUCCESS;
+  699   1      }
+  700          
+  701          //========================================================================
+  702          // 函数: NVIC_LIN_Init
+  703          // 功能: LIN中断初始化.
+  704          // 输入: State:    状态, ENABLE/DISABLE.
+  705          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
+  706          // 输出: 返回值 SUCCESS/FAIL.
+  707          // 版本: V1.0, 2020-09-29
+  708          //========================================================================
+  709          u8 NVIC_LIN_Init(u8 State, u8 Priority)
+  710          {
+  711   1        if(State <= ENABLE) LIN_Interrupt(State); else  return FAIL;
+  712   1        if(Priority <= Priority_3) LIN_Priority(Priority); else  return FAIL;
+  713   1        return SUCCESS;
+  714   1      }
+  715          
+
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 12  
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      4726     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        91     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -514,6 +514,11 @@
               <FileType>1</FileType>
               <FilePath>..\seekfree_libraries\STC32G_DMA_Isr.c</FilePath>
             </File>
+            <File>
+              <FileName>STC32G_NVIC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\seekfree_libraries\STC32G_NVIC.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

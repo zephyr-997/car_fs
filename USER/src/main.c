@@ -1,6 +1,7 @@
 #include "headfile.h"
 
 extern uint8_t track_ten_cnt;
+extern uint8 adc_dma_ready_flag;  // 引用DMA ADC数据就绪标志
 
 void main(void)
 {
@@ -9,7 +10,15 @@ void main(void)
 	uint16 value[7] = {0};   //调试用数组
 	
 	board_init();			
-	electromagnetic_init();  //初始化电磁传感器
+	
+	// 选择使用传统ADC方式或DMA ADC方式
+#define USE_DMA_ADC 1  // 1表示使用DMA ADC，0表示使用传统ADC
+	
+#if USE_DMA_ADC
+	electromagnetic_dma_init();  // 初始化电磁传感器DMA ADC
+#else
+	electromagnetic_init();      // 初始化电磁传感器
+#endif
 	
 	// ips114_init_simspi();					
 	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
@@ -36,6 +45,11 @@ void main(void)
 	
 	// ips114_clear_simspi(WHITE);	 //清屏
 	delay_ms(100); // 延时等待系统稳定
+	
+#if USE_DMA_ADC
+	// 启动第一次DMA ADC转换
+	start_adc_dma_conversion();
+#endif
 	
     while(1)
 	{		
@@ -147,8 +161,16 @@ void main(void)
 #endif
 		}
 		
+#if USE_DMA_ADC
+		// 处理DMA ADC数据
+		if(adc_dma_ready_flag)
+		{
+			process_adc_dma_data();
+		}
+#else
 		// 获取滤波后的ADC数据		
 		mid_filter();      // 使用中位值滤波获取电感数据
+#endif
 
 		// 归一化电感数组·
 		normalize_sensors();

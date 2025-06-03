@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         03/06/25  22:35:47  PAGE 1   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         04/06/25  00:04:43  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_DMA
@@ -66,7 +66,7 @@ stmt  level    source
    55          // 函数: void DMA_SPI_Inilize(DMA_SPI_InitTypeDef *DMA)
    56          // 描述: DMA SPI 初始化程序.
    57          // 参数: DMA: 结构参数,请参考DMA.h里的定义.
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         03/06/25  22:35:47  PAGE 2   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         04/06/25  00:04:43  PAGE 2   
 
    58          // 返回: none.
    59          // 版本: V1.0, 2021-05-17
@@ -134,7 +134,7 @@ stmt  level    source
                    DMA_UR2R_STA = 0x00;
                    DMA_UR2T_AMT = (u8)DMA->DMA_TX_Length;
                    DMA_UR2T_AMTH = (u8)(DMA->DMA_TX_Length>>8);
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         03/06/25  22:35:47  PAGE 3   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         04/06/25  00:04:43  PAGE 3   
 
                    DMA_UR2T_TXAH = (u8)(DMA->DMA_TX_Buffer>>8);
                    DMA_UR2T_TXAL = (u8)(DMA->DMA_TX_Buffer);
@@ -202,7 +202,7 @@ stmt  level    source
   186          void DMA_LCM_Inilize(DMA_LCM_InitTypeDef *DMA)
   187          {
   188   1        DMA_LCM_STA = 0x00;
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         03/06/25  22:35:47  PAGE 4   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         04/06/25  00:04:43  PAGE 4   
 
   189   1        DMA_LCM_RXAH = (u8)(DMA->DMA_Rx_Buffer>>8);
   190   1        DMA_LCM_RXAL = (u8)(DMA->DMA_Rx_Buffer);

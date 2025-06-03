@@ -26,6 +26,7 @@
 ".\Out_File\STC32G_ADC_Isr.obj",
 ".\Out_File\STC32G_DMA.obj",
 ".\Out_File\STC32G_DMA_Isr.obj",
+".\Out_File\STC32G_NVIC.obj",
 ".\Out_File\SEEKFREE_IMU963RA.obj",
 ".\Out_File\SEEKFREE_IPS114_SPI.obj",
 ".\Out_File\SEEKFREE_MPU6050.obj",

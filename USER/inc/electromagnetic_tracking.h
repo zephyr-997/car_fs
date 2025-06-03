@@ -2,6 +2,8 @@
 #define __ELECTROMAGNETIC_TRACKING_H__
 
 #include "headfile.h"
+#include "STC32G_ADC.h"
+#include "STC32G_DMA.h"
 
 // 电感通道定义
 #define ADC_HL  ADC_P06  // 左侧横向电感
@@ -11,6 +13,29 @@
 #define ADC_HMR ADC_P13  // 右中横向电感
 #define ADC_VR  ADC_P14  // 右侧纵向电感
 #define ADC_HR  ADC_P00  // 右侧横向电感
+
+// ADC DMA通道映射
+#define DMA_ADC_CH_HL  14  // ADC_P06 -> CH14
+#define DMA_ADC_CH_VL  13  // ADC_P05 -> CH13
+#define DMA_ADC_CH_HML 9   // ADC_P01 -> CH9
+#define DMA_ADC_CH_HC  1   // ADC_P11 -> CH1
+#define DMA_ADC_CH_HMR 3   // ADC_P13 -> CH3
+#define DMA_ADC_CH_VR  4   // ADC_P14 -> CH4
+#define DMA_ADC_CH_HR  8   // ADC_P00 -> CH8
+
+// DMA ADC配置
+#define ADC_DMA_SAMPLES_PER_CHANNEL ADC_4_Times  // 每个通道DMA采集4次
+#define ADC_DMA_SAMPLES_PER_CHANNEL_NUM 4        // 对应的数值
+#define ADC_DMA_USED_CHANNEL_COUNT 7             // 使用的通道数
+
+// 组合所有ADC通道的位掩码
+#define ELECTROMAGNETIC_DMA_CHANNELS ( (1 << DMA_ADC_CH_HL)  | \
+                                     (1 << DMA_ADC_CH_VL)  | \
+                                     (1 << DMA_ADC_CH_HML) | \
+                                     (1 << DMA_ADC_CH_HC)  | \
+                                     (1 << DMA_ADC_CH_HMR) | \
+                                     (1 << DMA_ADC_CH_VR)  | \
+                                     (1 << DMA_ADC_CH_HR)    )
 
 // 电感数组定义
 #define SENSOR_COUNT 7   // 电感个数
@@ -52,8 +77,13 @@ void average_filter(void);                     // 递推均值滤波函数
 void mid_filter(void);                         // 中位值滤波函数
 void update_min_max_values(void);              // 更新每个电感的最大最小值
 void normalize_sensors(void);                  // 归一化电感数据
-int16 calculate_position_improved(void);      // 改进版计算位置
+int16 calculate_position_improved(void);       // 改进版计算位置
 uint8 check_electromagnetic_protection(void);  // 电磁保护逻辑函数
+
+// DMA ADC相关函数声明
+void electromagnetic_dma_init(void);           // 初始化电磁传感器DMA ADC
+void process_adc_dma_data(void);               // 处理DMA ADC数据
+void start_adc_dma_conversion(void);           // 启动DMA ADC转换
 
 // 外部变量声明
 extern uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT]; // 滤波后的值
@@ -64,6 +94,10 @@ extern uint16 max_value[SENSOR_COUNT];            // 每个电感的最大值
 extern int16 position;                         // 位置偏差
 extern uint8 protection_flag;                  // 保护标志
 extern float signal_strength_value;            // 信号强度指标
+
+// DMA ADC相关变量声明
+extern uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];  // DMA ADC缓冲区
+extern uint8 adc_dma_ready_flag;               // DMA ADC数据就绪标志
 
 //电磁位置计算变量
 extern float filter_param;   // 滤波系数，可调
