@@ -135,8 +135,10 @@ float pid_poisitional_normal(PID_t* pid, float position)
 //魔改位置式pid（加二次项）
 float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
 {
-	pid->p_out = (pid->kp * position) + (pid->kp * pid->kp * position * myfabs(position));
-	pid->d_out = (pid->kd * (position - pid->lasterror) + (pid->kd * pid->kd * GyroZ));
+//	pid->p_out = (pid->kp * position) + (pid->kp * pid->kp * position * myfabs(position));
+//	pid->d_out = (pid->kd * (position - pid->lasterror) + (pid->kd * pid->kd * GyroZ));
+	pid->p_out = pid->kp * position;
+	pid->d_out = pid->kd * GyroZ;
 	
 	pid->output = pid->p_out + pid->d_out;
 	pid->lasterror = position;
