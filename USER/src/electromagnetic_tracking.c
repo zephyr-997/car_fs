@@ -5,7 +5,7 @@
 
 // DMA ADC缓冲区和标志
 uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM] = {0}; // DMA ADC缓冲区
-uint8 adc_dma_ready_flag = 0;  // DMA ADC数据就绪标志
+volatile uint8 adc_dma_ready_flag = 0;  // DMA ADC数据就绪标志
 
 // 滤波后数据 - 使用二维数组形式
 // 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HC, 4-HMR, 5-VR, 6-HR
@@ -109,9 +109,6 @@ void electromagnetic_dma_init(void)
     // 初始化DMA ADC
     DMA_ADC_Inilize(&dma_adc_init_struct);
     
-    // 使能DMA ADC中断请求
-    DMA_ADC_CR |= (1 << 6);  // 设置DMA_ADC_CR的INT_EN位(bit 6)
-    
     // 使能DMA ADC中断并设置优先级
     NVIC_DMA_ADC_Init(ENABLE, Priority_1, Priority_1);
 
@@ -123,6 +120,7 @@ void electromagnetic_dma_init(void)
             AdcDmaBuffer[i][j] = 0;
         }
     }
+    DMA_ADC_TRIG(); // 根据需要添加，用于启动第一次转换
 }
 
 //-----------------------------------------------------------------------------
@@ -152,6 +150,8 @@ void process_adc_dma_data(void)
     static uint8 is_initialized = 0;  // 初始化标志
     uint8 i, j;
     uint32 sum_values;
+    // 创建一个临时数组来按 DMA 通道顺序存储平均值
+    float dma_ordered_averages[ADC_DMA_USED_CHANNEL_COUNT];
     
     // 检查DMA ADC数据是否就绪
     if(!adc_dma_ready_flag)
@@ -162,8 +162,8 @@ void process_adc_dma_data(void)
     // 清除标志位
     adc_dma_ready_flag = 0;
     
-    // 处理DMA ADC数据
-    // 对每个通道的多次采样取平均值
+    // 1. 从 AdcDmaBuffer 计算平均值，并按 DMA 通道顺序存入 dma_ordered_averages
+    // DMA 物理存储顺序: HC(ch1), HMR(ch3), VR(ch4), HR(ch8), HML(ch9), VL(ch13), HL(ch14)
     for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
     {
         sum_values = 0;
@@ -171,13 +171,29 @@ void process_adc_dma_data(void)
         {
             sum_values += AdcDmaBuffer[i][j];
         }
-        
-        // 计算平均值并存入result数组
-        // 注意: DMA通道顺序与电感编号的映射关系需要处理
-        // 这里假设DMA通道的数据顺序与电感编号一致，实际使用时可能需要调整
-        result[i] = sum_values / ADC_DMA_SAMPLES_PER_CHANNEL_NUM;
-        
-        // 同时更新adc_fliter_data，以便与原有代码兼容
+        dma_ordered_averages[i] = (float)sum_values / ADC_DMA_SAMPLES_PER_CHANNEL_NUM;
+    }
+
+    // 2. 根据 sensor_type_e 将数据从 dma_ordered_averages 映射到 result
+    //    result[SENSOR_HL]  <-- 来自 HL (DMA channel 14, AdcDmaBuffer[6])
+    //    result[SENSOR_VL]  <-- 来自 VL (DMA channel 13, AdcDmaBuffer[5])
+    //    result[SENSOR_HML] <-- 来自 HML (DMA channel 9, AdcDmaBuffer[4])
+    //    result[SENSOR_HC]  <-- 来自 HC (DMA channel 1, AdcDmaBuffer[0])
+    //    result[SENSOR_HMR] <-- 来自 HMR (DMA channel 3, AdcDmaBuffer[1])
+    //    result[SENSOR_VR]  <-- 来自 VR (DMA channel 4, AdcDmaBuffer[2])
+    //    result[SENSOR_HR]  <-- 来自 HR (DMA channel 8, AdcDmaBuffer[3])
+
+    result[SENSOR_HL] = dma_ordered_averages[6]; // HL is the 7th in DMA sequence (index 6)
+    result[SENSOR_VL] = dma_ordered_averages[5]; // VL is the 6th in DMA sequence (index 5)
+    result[SENSOR_HML]= dma_ordered_averages[4]; // HML is the 5th in DMA sequence (index 4)
+    result[SENSOR_HC] = dma_ordered_averages[0]; // HC is the 1st in DMA sequence (index 0)
+    result[SENSOR_HMR]= dma_ordered_averages[1]; // HMR is the 2nd in DMA sequence (index 1)
+    result[SENSOR_VR] = dma_ordered_averages[2]; // VR is the 3rd in DMA sequence (index 2)
+    result[SENSOR_HR] = dma_ordered_averages[3]; // HR is the 4th in DMA sequence (index 3)
+
+    // 同时更新adc_fliter_data，以便与原有代码兼容 (保持逻辑顺序)
+    for(i = 0; i < SENSOR_COUNT; i++) // SENSOR_COUNT 也是 7
+    {
         adc_fliter_data[i][0] = result[i];
     }
     

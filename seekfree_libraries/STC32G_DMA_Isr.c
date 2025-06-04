@@ -16,12 +16,18 @@
 //========================================================================
 void DMA_ADC_ISR_Handler (void) interrupt DMA_ADC_VECTOR
 {
-	// TODO: 在此处理用户程序
-	if(DMA_ADC_STA & 0x01)	//AD转换完成
+	// 检查 DMA ADC 传输完成中断标志 (DMA_IF, bit 7 of DMA_ADC_STA)
+	if(DMA_ADC_STA & 0x80)  
 	{
-		DMA_ADC_STA &= ~0x01;	//清标志位
-		// DmaADCFlag = 1;  // 注释掉这一行
-		adc_dma_ready_flag = 1;  // 使用项目全局标志
+		DMA_ADC_STA &= ~0x80;   // 清除 DMA ADC 传输完成中断标志 (DMA_IF, bit 7)
+		adc_dma_ready_flag = 1; // 设置项目全局标志
+	}
+	
+	// 处理非法触发错误标志 (TRIG_ERR_IF, bit 0)
+	if(DMA_ADC_STA & 0x01)
+	{
+		DMA_ADC_STA &= ~0x01;	// 清除非法触发错误标志
+		// 可以在此处添加错误处理代码
 	}
 }
 

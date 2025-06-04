@@ -97,7 +97,7 @@ extern float signal_strength_value;            // 信号强度指标
 
 // DMA ADC相关变量声明
 extern uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];  // DMA ADC缓冲区
-extern uint8 adc_dma_ready_flag;               // DMA ADC数据就绪标志
+extern volatile uint8 adc_dma_ready_flag;               // DMA ADC数据就绪标志
 
 //电磁位置计算变量
 extern float filter_param;   // 滤波系数，可调

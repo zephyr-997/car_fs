@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 1   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_NVIC
@@ -66,7 +66,7 @@ stmt  level    source
    55          // 输入: State:    状态, ENABLE/DISABLE.
    56          //       Priority: 优先级, NULL.
    57          // 输出: 返回值 SUCCESS/FAIL.
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 2   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 2   
 
    58          // 版本: V1.0, 2020-09-29
    59          //========================================================================
@@ -134,7 +134,7 @@ stmt  level    source
   121          {
   122   1        if(State <= ENABLE) INT2_Interrupt(State); else  return FAIL;
   123   1        Priority = 0;
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 3   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 3   
 
   124   1        return SUCCESS;
   125   1      }
@@ -202,7 +202,7 @@ stmt  level    source
   187   1        return SUCCESS;
   188   1      }
   189          
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 4   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 4   
 
   190          //========================================================================
   191          // 函数: NVIC_I2C_Init
@@ -270,7 +270,7 @@ stmt  level    source
   253          u8 NVIC_UART3_Init(u8 State, u8 Priority)
   254          {
   255   1        if(State <= ENABLE) UART3_Interrupt(State); else  return FAIL;
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 5   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 5   
 
   256   1        if(Priority <= Priority_3) UART3_Priority(Priority); else  return FAIL;
   257   1        return SUCCESS;
@@ -338,7 +338,7 @@ stmt  level    source
                #define PWMB  10
                #endif
   320          u8 NVIC_PWM_Init(u8 Channel, u8 State, u8 Priority)
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 6   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 6   
 
   321          {
   322   1        if(Channel > 10) return FAIL;
@@ -406,7 +406,7 @@ stmt  level    source
   384   1      }
   385          
   386          //========================================================================
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 7   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 7   
 
   387          // 函数: NVIC_DMA_SPI_Init
   388          // 功能: DMA SPI中断初始化.
@@ -474,7 +474,7 @@ stmt  level    source
   450          // 函数: NVIC_DMA_UART2_Tx_Init
   451          // 功能: DMA UART2 Tx中断初始化.
   452          // 输入: State:    状态, ENABLE/DISABLE.
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 8   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 8   
 
   453          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
   454          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
@@ -542,7 +542,7 @@ stmt  level    source
   516          //       Priority: 优先级, Priority_0,Priority_1,Priority_2,Priority_3.
   517          //       Bus_Priority: 总线优先级, Priority_0,Priority_1,Priority_2,Priority_3.
   518          // 输出: 返回值 SUCCESS/FAIL.
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 9   
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 9   
 
   519          // 版本: V1.0, 2021-05-21
   520          //========================================================================
@@ -610,7 +610,7 @@ stmt  level    source
   582          // 版本: V1.0, 2021-05-21
   583          //========================================================================
   584          u8 NVIC_DMA_LCM_Init(u8 State, u8 Priority, u8 Bus_Priority)
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 10  
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 10  
 
   585          {
   586   1        DMA_LCM_CFG &= ~0x0f;
@@ -678,7 +678,7 @@ stmt  level    source
   648   1        if(Priority <= Priority_3) DMA_I2CR_CFG |= Priority << 2;
   649   1        if(Bus_Priority <= Priority_3) DMA_I2CR_CFG |= Bus_Priority;  //总线优先级
   650   1        if(State == ENABLE)
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 11  
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 11  
 
   651   1          DMA_I2CR_CFG |= 0x80;   //bit7 1:Enable Interrupt
   652   1        else
@@ -746,7 +746,7 @@ stmt  level    source
   714   1      }
   715          
 
-C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  00:04:43  PAGE 12  
+C251 COMPILER V5.60.0,  STC32G_NVIC                                                        04/06/25  14:41:49  PAGE 12  
 
 
 Module Information          Static   Overlayable

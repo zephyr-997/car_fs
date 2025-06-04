@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  pid                                                                04/06/25  00:04:40  PAGE 1   
+C251 COMPILER V5.60.0,  pid                                                                04/06/25  14:41:47  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE pid
@@ -66,7 +66,7 @@ stmt  level    source
    55   2          pid->interror = -pid->i_limit;
    56   2        }
    57   1        
-C251 COMPILER V5.60.0,  pid                                                                04/06/25  00:04:40  PAGE 2   
+C251 COMPILER V5.60.0,  pid                                                                04/06/25  14:41:47  PAGE 2   
 
    58   1        //线性、积分、微分、前馈共同作用
    59   1        pid->p_out = pid->kp * pid->error;
@@ -134,7 +134,7 @@ stmt  level    source
   121   1        //输出限幅
   122   1        if (pid->output > pid->o_limit)
   123   1        {
-C251 COMPILER V5.60.0,  pid                                                                04/06/25  00:04:40  PAGE 3   
+C251 COMPILER V5.60.0,  pid                                                                04/06/25  14:41:47  PAGE 3   
 
   124   2          pid->output = pid->o_limit;
   125   2        }

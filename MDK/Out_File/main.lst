@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               04/06/25  00:04:39  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               04/06/25  14:41:46  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -12,7 +12,7 @@ stmt  level    source
     1          #include "headfile.h"
     2          
     3          extern uint8_t track_ten_cnt;
-    4          extern uint8 adc_dma_ready_flag;  // 引用DMA ADC数据就绪标志
+    4          extern volatile uint8 adc_dma_ready_flag;  // 引用DMA ADC数据就绪标志
     5          
     6          void main(void)
     7          {
@@ -66,7 +66,7 @@ stmt  level    source
    55   1        {   
    56   2          /* 串口接收 */
    57   2          if(g_RxPointer != 0)
-C251 COMPILER V5.60.0,  main                                                               04/06/25  00:04:39  PAGE 2   
+C251 COMPILER V5.60.0,  main                                                               04/06/25  14:41:46  PAGE 2   
 
    58   2          {
    59   3            int temp = g_RxPointer;
@@ -134,7 +134,7 @@ stmt  level    source
   121   3      //          g_EncoderLeft,
   122   3      //          g_RightPoint,
   123   3      //          g_EncoderRight);
-C251 COMPILER V5.60.0,  main                                                               04/06/25  00:04:39  PAGE 3   
+C251 COMPILER V5.60.0,  main                                                               04/06/25  14:41:46  PAGE 3   
 
   124   3      //      uart_putstr(UART_4, g_TxData);
   125   3                
@@ -202,7 +202,7 @@ stmt  level    source
   187   2          //  // 这里需要添加控制电机停止的代码
   188   2            
   189   2          //  // 显示保护触发信息
-C251 COMPILER V5.60.0,  main                                                               04/06/25  00:04:39  PAGE 4   
+C251 COMPILER V5.60.0,  main                                                               04/06/25  14:41:46  PAGE 4   
 
   190   2          //  ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
   191   2            
@@ -271,7 +271,7 @@ Module Information          Static   Overlayable
   ebitaddressable size =    ------     ------
   far data size        =    ------     ------
   huge data size       =    ------     ------
-C251 COMPILER V5.60.0,  main                                                               04/06/25  00:04:39  PAGE 5   
+C251 COMPILER V5.60.0,  main                                                               04/06/25  14:41:46  PAGE 5   
 
   const size           =    ------     ------
   hconst size          =        47     ------

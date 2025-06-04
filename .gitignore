@@ -1,0 +1,68 @@
+# STC32G12K128智能车项目Git忽略配置
+
+# Keil5生成的中间文件和输出文件
+/Objects/
+/Listings/
+/Output/
+/MDK/Out_File/
+*.axf
+*.elf
+*.hex
+*.bin
+*.lib
+*.map
+*.sct
+*.lst
+*.crf
+*.htm
+*.uvoptx
+*.uvgui.*
+*.uvguix.*
+*.uvopt
+*.uvproj.bak
+*.dep
+JLinkLog.txt
+*.iex
+*.tra
+*.bak
+
+# 编译器生成的临时文件
+*.o
+*.obj
+*.d
+*.bat
+*.lnp
+
+# IDE配置文件
+.vscode/
+.idea/
+*.user
+*.suo
+
+# 日志和调试文件
+*.log
+*.tlog
+*.ilk
+*.pdb
+*.db
+*.opendb
+*.swp
+*.swo
+
+# 临时文件
+*~
+*.tmp
+*.DS_Store
+Thumbs.db
+
+# Cursor相关文件（可选，取决于是否希望共享Cursor配置）
+.cursor/
+
+# 自定义排除的文件和文件夹（可根据需要调整）
+# 例如，如果不想包含某些特定文档或备份
+# /docs/private/
+# *_backup/ 
+docs/
+cursor_dma_adc.md
+
+

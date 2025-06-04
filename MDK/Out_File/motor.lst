@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  motor                                                              04/06/25  00:04:40  PAGE 1   
+C251 COMPILER V5.60.0,  motor                                                              04/06/25  14:41:47  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE motor
@@ -66,7 +66,7 @@ stmt  level    source
    55   1        {
    56   2          if (right_duty < -MOTOR_PWM_LIMIT)
    57   2          {
-C251 COMPILER V5.60.0,  motor                                                              04/06/25  00:04:40  PAGE 2   
+C251 COMPILER V5.60.0,  motor                                                              04/06/25  14:41:47  PAGE 2   
 
    58   3            right_duty = -MOTOR_PWM_LIMIT;
    59   3          }

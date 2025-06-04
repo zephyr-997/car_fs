@@ -1,7 +1,7 @@
 #include "headfile.h"
 
 extern uint8_t track_ten_cnt;
-extern uint8 adc_dma_ready_flag;  // 引用DMA ADC数据就绪标志
+extern volatile uint8 adc_dma_ready_flag;  // 引用DMA ADC数据就绪标志
 
 void main(void)
 {
@@ -173,13 +173,13 @@ void main(void)
 #endif
 
 		// 归一化电感数组·
-		normalize_sensors();
+		// normalize_sensors();
 		
 		// 计算位置偏差
-		position = calculate_position_improved();
+		// position = calculate_position_improved();
 		
 		//检查电磁保护
-		protection_flag = check_electromagnetic_protection();
+		// protection_flag = check_electromagnetic_protection();
 
 		// if(protection_flag)
 		// {
