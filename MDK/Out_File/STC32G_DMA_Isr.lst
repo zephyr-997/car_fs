@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     04/06/25  14:41:49  PAGE 1   
+C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     04/06/25  21:31:56  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_DMA_Isr
@@ -15,9 +15,9 @@ stmt  level    source
     3          /*---------------------------------------------------------------------*/
     4          
     5          #include "STC32G_DMA.h"
-    6          #include "electromagnetic_tracking.h"  // 添加头文件以使用 adc_dma_ready_flag
+    6          #include "electromagnetic_tracking.h"  // 添加头文件以使用 g_adc_dma_completed_flag
     7          
-    8          // bit DmaADCFlag = 0;  // 注释掉这个变量，因为我们将使用 adc_dma_ready_flag
+    8          // bit DmaADCFlag = 0;  // 注释掉这个变量，因为我们将使用 g_adc_dma_completed_flag
     9          
    10          //========================================================================
    11          // 函数: DMA_ADC_ISR_Handler
@@ -32,7 +32,7 @@ stmt  level    source
    20   1        if(DMA_ADC_STA & 0x80)  
    21   1        {
    22   2          DMA_ADC_STA &= ~0x80;   // 清除 DMA ADC 传输完成中断标志 (DMA_IF, bit 7)
-   23   2          adc_dma_ready_flag = 1; // 设置项目全局标志
+   23   2          g_adc_dma_completed_flag = 1; // 设置项目全局标志
    24   2        }
    25   1        
    26   1        // 处理非法触发错误标志 (TRIG_ERR_IF, bit 0)
@@ -66,7 +66,7 @@ stmt  level    source
    54   1      }
 
 
-C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     04/06/25  14:41:49  PAGE 2   
+C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     04/06/25  21:31:56  PAGE 2   
 
 Module Information          Static   Overlayable
 ------------------------------------------------

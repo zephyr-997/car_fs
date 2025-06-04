@@ -88,7 +88,6 @@ typedef enum //枚举串口引脚
 
 
 extern uint8 busy[5];
-
 //声明
 extern uint8_t g_TxData[UART_TX_LENGTH];
 extern uint8_t g_RxData[UART_RX_LENGTH];

@@ -3,9 +3,9 @@
 /*---------------------------------------------------------------------*/
 
 #include "STC32G_DMA.h"
-#include "electromagnetic_tracking.h"  // 添加头文件以使用 adc_dma_ready_flag
+#include "electromagnetic_tracking.h"  // 添加头文件以使用 g_adc_dma_completed_flag
 
-// bit DmaADCFlag = 0;  // 注释掉这个变量，因为我们将使用 adc_dma_ready_flag
+// bit DmaADCFlag = 0;  // 注释掉这个变量，因为我们将使用 g_adc_dma_completed_flag
 
 //========================================================================
 // 函数: DMA_ADC_ISR_Handler
@@ -20,7 +20,7 @@ void DMA_ADC_ISR_Handler (void) interrupt DMA_ADC_VECTOR
 	if(DMA_ADC_STA & 0x80)  
 	{
 		DMA_ADC_STA &= ~0x80;   // 清除 DMA ADC 传输完成中断标志 (DMA_IF, bit 7)
-		adc_dma_ready_flag = 1; // 设置项目全局标志
+		g_adc_dma_completed_flag = 1; // 设置项目全局标志
 	}
 	
 	// 处理非法触发错误标志 (TRIG_ERR_IF, bit 0)

@@ -1,7 +1,7 @@
 #include "headfile.h"
 
 extern uint8_t track_ten_cnt;
-extern volatile uint8 adc_dma_ready_flag;  // 引用DMA ADC数据就绪标志
+extern volatile uint8 g_adc_dma_completed_flag;  // 引用DMA ADC数据就绪标志
 
 void main(void)
 {
@@ -13,11 +13,13 @@ void main(void)
 	
 	// 选择使用传统ADC方式或DMA ADC方式
 #define USE_DMA_ADC 1  // 1表示使用DMA ADC，0表示使用传统ADC
-	
+
+	// 初始化电磁传感器
 #if USE_DMA_ADC
-	electromagnetic_dma_init();  // 初始化电磁传感器DMA ADC
+	electromagnetic_dma_init();     // 初始化DMA ADC电磁传感器
 #else
-	electromagnetic_init();      // 初始化电磁传感器
+	// electromagnetic_init() 函数已被移除，改为使用 electromagnetic_dma_init()
+	electromagnetic_dma_init();      // 使用DMA ADC初始化电磁传感器
 #endif
 	
 	// ips114_init_simspi();					
@@ -101,7 +103,7 @@ void main(void)
 			uart_putstr(UART_4, g_TxData);
 #endif
 					
-#if 1
+#if 0
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
 					g_SpeedPoint,
 					g_EncoderAverage,
@@ -163,19 +165,52 @@ void main(void)
 		
 #if USE_DMA_ADC
 		// 处理DMA ADC数据
-		if(adc_dma_ready_flag)
+		if(g_adc_dma_completed_flag)
 		{
-			process_adc_dma_data();
+			process_adc_dma_data(); // 使用DMA数据更新 result[]		
+
+			//读取七电感ADC值（用于调试）
+			value[SENSOR_HL] =  result[SENSOR_HL];
+			value[SENSOR_VL] =  result[SENSOR_VL];
+			value[SENSOR_HML] =  result[SENSOR_HML];
+			value[SENSOR_HC] =  result[SENSOR_HC];
+			value[SENSOR_HMR] =  result[SENSOR_HMR];
+			value[SENSOR_VR] =  result[SENSOR_VR];
+			value[SENSOR_HR] =  result[SENSOR_HR];
+
+			// 通过串口输出七电感原始数据
+			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
+						value[SENSOR_HL], 
+						value[SENSOR_VL], 
+						value[SENSOR_HML], 
+						value[SENSOR_HC], 
+						value[SENSOR_HMR],
+						value[SENSOR_VR],
+			value[SENSOR_HR]);
+			uart_putstr(UART_4, g_TxData);
+
+			delay_ms(5);
 		}
+
+		sprintf(g_TxData,"error1\n");
+		uart_putstr(UART_4, g_TxData);
+		delay_ms(1000);
 #else
 		// 获取滤波后的ADC数据		
-		mid_filter();      // 使用中位值滤波获取电感数据
+		mid_filter();      // 使用中位值滤波获取电感数据 (此通路已不再可用，因get_adc()函数已被移除)
+		sprintf(g_TxData,"error2\n");
+		uart_putstr(UART_4, g_TxData);
+		delay_ms(1000);
 #endif
 
-		// 归一化电感数组·
+
+		// // 对DMA获取的数据进行进一步滤波
+		// mid_filter();          // 内部会调用 average_filter() 并进行中位值滤波，更新 result[]
+
+		// // 归一化电感数组
 		// normalize_sensors();
 		
-		// 计算位置偏差
+		// // 计算位置偏差
 		// position = calculate_position_improved();
 		
 		//检查电磁保护
@@ -202,30 +237,23 @@ void main(void)
 		/*调试功能*/
 #if 0
 		 //读取七电感ADC值（用于调试）
-		value[0] = adc_once(ADC_HL,  ADC_10BIT);
-		value[1] = adc_once(ADC_VL,  ADC_10BIT);
-		value[2] = adc_once(ADC_HML, ADC_10BIT);
-		value[3] = adc_once(ADC_HC,  ADC_10BIT); 
-		value[4] = adc_once(ADC_HMR, ADC_10BIT);
-		value[5] = adc_once(ADC_VR,  ADC_10BIT);
-		value[6] = adc_once(ADC_HR,  ADC_10BIT);	
-
-		// 计算所有电感值的总和
-//		sum_value = (uint16)normalized_data[SENSOR_HL] + (uint16)normalized_data[SENSOR_VL] + 
-//		            (uint16)normalized_data[SENSOR_HML] + (uint16)normalized_data[SENSOR_HC] + 
-//		            (uint16)normalized_data[SENSOR_HMR] + (uint16)normalized_data[SENSOR_VR] + 
-//		            (uint16)normalized_data[SENSOR_HR];
-
+		value[SENSOR_HL] =  result[SENSOR_HL];
+		value[SENSOR_VL] =  result[SENSOR_VL];
+		value[SENSOR_HML] =  result[SENSOR_HML];
+		value[SENSOR_HC] =  result[SENSOR_HC];
+		value[SENSOR_HMR] =  result[SENSOR_HMR];
+		value[SENSOR_VR] =  result[SENSOR_VR];
+		value[SENSOR_HR] =  result[SENSOR_HR];
 
 		 // 通过串口输出七电感原始数据
 		  sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d\n",
-					value[0], 
-					value[1], 
-					value[2], 
-					value[3], 
-					value[4],
-					value[5],
-          value[6]);
+					value[SENSOR_HL], 
+					value[SENSOR_VL], 
+					value[SENSOR_HML], 
+					value[SENSOR_HC], 
+					value[SENSOR_HMR],
+					value[SENSOR_VR],
+          value[SENSOR_HR]);
 		  uart_putstr(UART_4, g_TxData);
 
 		  delay_ms(5);

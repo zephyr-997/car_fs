@@ -5,7 +5,7 @@
 
 // DMA ADC缓冲区和标志
 uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM] = {0}; // DMA ADC缓冲区
-volatile uint8 adc_dma_ready_flag = 0;  // DMA ADC数据就绪标志
+volatile uint8 g_adc_dma_completed_flag = 0;  // DMA ADC数据就绪标志（统一标志）
 
 // 滤波后数据 - 使用二维数组形式
 // 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HC, 4-HMR, 5-VR, 6-HR
@@ -112,7 +112,7 @@ void electromagnetic_dma_init(void)
     // 使能DMA ADC中断并设置优先级
     NVIC_DMA_ADC_Init(ENABLE, Priority_1, Priority_1);
 
-    // 初始化缓冲区
+    // 初始化DMA缓冲区
     for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
     {
         for(j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
@@ -120,6 +120,18 @@ void electromagnetic_dma_init(void)
             AdcDmaBuffer[i][j] = 0;
         }
     }
+    
+    // 初始化数据数组 (从electromagnetic_init函数移植过来)
+    for(i = 0; i < SENSOR_COUNT; i++)
+    {
+        for(j = 0; j < HISTORY_COUNT; j++)
+        {
+            adc_fliter_data[i][j] = 0;
+            sum[i][j] = 0;
+        }
+        normalized_data[i] = 0.0f;  // 初始化归一化数据数组
+    }
+    
     DMA_ADC_TRIG(); // 根据需要添加，用于启动第一次转换
 }
 
@@ -132,7 +144,7 @@ void electromagnetic_dma_init(void)
 //-----------------------------------------------------------------------------
 void start_adc_dma_conversion(void)
 {
-    if(!adc_dma_ready_flag)  // 只有当上一次转换完成后才启动新的转换
+    if(!g_adc_dma_completed_flag)  // 只有当上一次转换完成后才启动新的转换
     {
         DMA_ADC_TRIG();      // 触发DMA ADC转换
     }
@@ -147,20 +159,19 @@ void start_adc_dma_conversion(void)
 //-----------------------------------------------------------------------------
 void process_adc_dma_data(void)
 {
-    static uint8 is_initialized = 0;  // 初始化标志
     uint8 i, j;
     uint32 sum_values;
     // 创建一个临时数组来按 DMA 通道顺序存储平均值
     float dma_ordered_averages[ADC_DMA_USED_CHANNEL_COUNT];
     
     // 检查DMA ADC数据是否就绪
-    if(!adc_dma_ready_flag)
+    if(!g_adc_dma_completed_flag)
     {
         return;
     }
     
     // 清除标志位
-    adc_dma_ready_flag = 0;
+    g_adc_dma_completed_flag = 0;
     
     // 1. 从 AdcDmaBuffer 计算平均值，并按 DMA 通道顺序存入 dma_ordered_averages
     // DMA 物理存储顺序: HC(ch1), HMR(ch3), VR(ch4), HR(ch8), HML(ch9), VL(ch13), HL(ch14)
@@ -190,78 +201,9 @@ void process_adc_dma_data(void)
     result[SENSOR_HMR]= dma_ordered_averages[1]; // HMR is the 2nd in DMA sequence (index 1)
     result[SENSOR_VR] = dma_ordered_averages[2]; // VR is the 3rd in DMA sequence (index 2)
     result[SENSOR_HR] = dma_ordered_averages[3]; // HR is the 4th in DMA sequence (index 3)
-
-    // 同时更新adc_fliter_data，以便与原有代码兼容 (保持逻辑顺序)
-    for(i = 0; i < SENSOR_COUNT; i++) // SENSOR_COUNT 也是 7
-    {
-        adc_fliter_data[i][0] = result[i];
-    }
-    
-    // 标记初始化完成
-    is_initialized = 1;
     
     // 启动下一次DMA ADC转换
     start_adc_dma_conversion();
-}
-
-//-----------------------------------------------------------------------------
-// @brief  	电磁传感器初始化
-// @param   无
-// @return  无
-// @author  ZP
-// Sample usage: electromagnetic_init();
-//-----------------------------------------------------------------------------
-void electromagnetic_init(void)
-{
-   uint8 i = 0, j = 0;
-
-   adc_init(ADC_HL, 0);   // 左侧横向电感
-   adc_init(ADC_VL, 0);   // 左侧纵向电感
-   adc_init(ADC_HML, 0);  // 左中横向电感
-   adc_init(ADC_HC, 0);   // 中间横向电感
-   adc_init(ADC_HMR, 0);  // 右中横向电感
-   adc_init(ADC_VR, 0);   // 右侧纵向电感
-   adc_init(ADC_HR, 0);   // 右侧横向电感
-   
-   // 初始化二维数组
-   for(i = 0; i < SENSOR_COUNT; i++)
-   {
-       for(j = 0; j < HISTORY_COUNT; j++)
-       {
-           adc_fliter_data[i][j] = 0;
-           sum[i][j] = 0;
-       }
-       normalized_data[i] = 0.0f;  // 初始化归一化数据数组
-   }
-}
-
-//-----------------------------------------------------------------------------
-// @brief  	得到adc的值
-// @param   测的ADC/电感序号
-// @return  测出的adc值
-// @author  ZP
-// Sample usage: get_adc(1)
-//-----------------------------------------------------------------------------
-uint16 get_adc(uint16 i)
-{
-	switch(i){
-		case 0:
-			return adc_once(ADC_HL, ADC_10BIT);  //ADC_10BIT是电磁寻迹最佳分辨率
-		case 1:
-			return adc_once(ADC_VL, ADC_10BIT);
-		case 2:
-			return adc_once(ADC_HML, ADC_10BIT);
-		case 3:
-			return adc_once(ADC_HC, ADC_10BIT); 
-		case 4:
-			return adc_once(ADC_HMR, ADC_10BIT);
-		case 5:
-			return adc_once(ADC_VR, ADC_10BIT);
-		case 6:
-			return adc_once(ADC_HR, ADC_10BIT);
-		default:
-			return 0;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -271,51 +213,35 @@ uint16 get_adc(uint16 i)
 // @author  zp
 // Sample usage: average_filter();
 //-----------------------------------------------------------------------------
-
-
 void average_filter(void)
 {
-    static uint16 filter_index = 0;  // 递推次数计数器
-    static uint8 is_initialized = 0; // 初始化标志,只在第一次调用时进行多次采样,后续调用时使用真正的递推算法   
-    uint16 a = 0, b = 0;
+    static uint8 is_initialized = 0; // 初始化标志
+    uint16 a = 0;
     
-    // 检查是否需要初始化
+    // process_adc_dma_data() 应该在此函数之前被调用, 
+    // 因此 result[a] 包含最新的DMA平均值。
+    
     if (!is_initialized)
     {
-        // 重置累加器
+        // 初始化 sum[a][0] 使用来自 result[a] 的第一个样本
+        // 并假设这个样本在初始化阶段是稳定的。
         for(a = 0; a < i_num; a++)
         {
-            sum[a][0] = 0;
+            sum[a][0] = (uint32)result[a] * times; // 用当前的 result 值 priming sum
+            adc_fliter_data[a][0] = result[a];   // 第一个平均值就是当前的 result 值
         }
-        
-        // 前几次采集，累积足够的数据
-        for(filter_index = 0; filter_index < times; filter_index++)
-        {
-            for(b = 0; b < i_num; b++)
-            {
-                sum[b][0] += get_adc(b);  // 采集一次ADC并累加
-            }
-            delay_us(5); // 添加短暂延时提高采样稳定性
-        }
-        
-        // 计算初始平均值
-        for(a = 0; a < i_num; a++)
-        {
-            adc_fliter_data[a][0] = sum[a][0] / times;  // 求平均
-            result[a] = adc_fliter_data[a][0];
-        }
-        
         is_initialized = 1; // 标记初始化完成
     }
     else  // 已初始化，执行递推均值滤波
     {
         for(a = 0; a < i_num; a++)
         {
-            // 递推均值滤波核心算法：减去平均值，加上新值，重新计算平均值
-            sum[a][0] -= (sum[a][0] / times);         // 每次去除平均值的贡献
-            sum[a][0] += get_adc(a);              // 加上新值
-            adc_fliter_data[a][0] = (sum[a][0] / times);  // 求新的平均值
-            result[a] = adc_fliter_data[a][0];      // 保存结果
+            // 递推均值滤波核心算法：减去近似最旧值的贡献，加上新值，重新计算平均值
+            // result[a] 此刻是由 process_adc_dma_data() 更新的最新DMA平均值
+            sum[a][0] -= (sum[a][0] / times);     // 减去旧的平均值的贡献（近似移除最旧样本）
+            sum[a][0] += (uint32)result[a];       // 加上新的样本 (来自DMA的 result[a])
+            adc_fliter_data[a][0] = (sum[a][0] / times);  // 计算新的平均值
+            result[a] = adc_fliter_data[a][0];    // 用这个更长期的平均值更新 result[a]
         }
     }
 }

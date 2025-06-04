@@ -71,8 +71,7 @@ typedef enum {
 } sensor_type_e;
 
 // 函数声明
-void electromagnetic_init(void);               // 初始化电磁传感器
-uint16 get_adc(uint16 i);                      // 获取ADC的值
+// void electromagnetic_init(void);               // 初始化电磁传感器 - 已被electromagnetic_dma_init替代
 void average_filter(void);                     // 递推均值滤波函数
 void mid_filter(void);                         // 中位值滤波函数
 void update_min_max_values(void);              // 更新每个电感的最大最小值
@@ -97,7 +96,7 @@ extern float signal_strength_value;            // 信号强度指标
 
 // DMA ADC相关变量声明
 extern uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];  // DMA ADC缓冲区
-extern volatile uint8 adc_dma_ready_flag;               // DMA ADC数据就绪标志
+extern volatile uint8 g_adc_dma_completed_flag;  // DMA ADC数据就绪标志（统一标志）
 
 //电磁位置计算变量
 extern float filter_param;   // 滤波系数，可调
