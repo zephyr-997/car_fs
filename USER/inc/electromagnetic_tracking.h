@@ -25,7 +25,8 @@
 
 // DMA ADC配置
 #define ADC_DMA_SAMPLES_PER_CHANNEL ADC_4_Times  // 每个通道DMA采集4次
-#define ADC_DMA_SAMPLES_PER_CHANNEL_NUM  12        // 对应的数值
+#define ADC_DMA_SAMPLES_PER_CHANNEL_NUM  4        // 每个通道采样次数
+#define ADC_DMA_BLOCK_SIZE 12                    // 每个通道的数据块大小(字节)：8字节原始数据 + 4字节附加信息
 #define ADC_DMA_USED_CHANNEL_COUNT 7             // 使用的通道数
 
 // 组合所有ADC通道的位掩码
@@ -67,11 +68,10 @@ typedef struct {
     char *name;            // 赛道类型名称，便于调试
 } TrackWeights;
 
-
 // 电感类型枚举
 typedef enum {
     SENSOR_HL  = 0,  // 左侧横向电感
-    SENSOR_VL  = 1,  // 左侧纵向电感-8
+    SENSOR_VL  = 1,  // 左侧纵向电感
     SENSOR_HML = 2,  // 左中横向电感
     SENSOR_HC  = 3,  // 中间横向电感
     SENSOR_HMR = 4,  // 右中横向电感
@@ -115,8 +115,8 @@ extern int16 position;                         // 位置偏差
 extern uint8 protection_flag;                  // 保护标志
 extern float signal_strength_value;            // 信号强度指标
 
-// DMA ADC相关变量声明
-extern uint8_t xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];  // DMA ADC缓冲区
+// DMA ADC相关变量声明 - 修改为简单的字节数组
+extern volatile uint8 xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT * ADC_DMA_BLOCK_SIZE];  // DMA ADC缓冲区
 extern volatile uint8 g_adc_dma_completed_flag;  // DMA ADC数据就绪标志（统一标志）
 
 //电磁位置计算变量

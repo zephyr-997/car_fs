@@ -8,17 +8,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-// DMA ADC错误码定义
-#define DMA_ADC_ERROR_NONE          0  // 无错误
-#define DMA_ADC_ERROR_TIMEOUT       1  // DMA转换超时
-#define DMA_ADC_ERROR_INVALID_DATA  2  // 数据异常
-#define DMA_ADC_ERROR_CONFLICT      3  // 资源冲突
+// DMA ADC错误码定义已移至electromagnetic_tracking.h
 
-// DMA ADC缓冲区和标志
-//uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM] = {0}; // DMA ADC缓冲区
-volatile uint8 g_adc_dma_completed_flag = 0;  // DMA ADC数据就绪标志（统一标志）
-
-unsigned char xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];
+// 使用简单的字节数组来定义DMA缓冲区
+// 这样C51编译器可以正确处理xdata关键字
+volatile uint8 xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT * ADC_DMA_BLOCK_SIZE];
+volatile uint8 g_adc_dma_completed_flag;  // DMA ADC数据就绪标志（统一标志）
 
 // 滤波后数据 - 使用二维数组形式
 // 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HC, 4-HMR, 5-VR, 6-HR
@@ -38,58 +33,44 @@ unsigned char xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER
 // 定义电感权重结构体	
 
 // 定义全局权重配置，只保留四种基本元素
-TrackWeights track_weights[4] = {
-    // 普通直道
+// C51编译器限制：不能在全局变量声明时初始化复杂类型
+TrackWeights track_weights[4];
 
-    {0.15f, 0.40f, 0.30f, 0.15f, 0.80f, 35, "直道"},
-    
-    // 直角弯道
-    {0.25f, 0.30f, 0.35f, 0.35f, 1.00f, 50, "直角弯道"},
-    
-    // 十字圆环
-    {0.35f, 0.25f, 0.20f, 0.15f, 0.90f, 40, "十字圆环"},
-    
-    // 环岛
-    {0.31f, 0.43f, 0.10f, 0.21f, 1.00f, 40, "环岛"}
-};
-
-uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
-float result[SENSOR_COUNT] = {0};		//电存储每个电感滤波后的最终结果值（尚未归一化），是连接滤波处理和归一化处理的中间变量
-uint16 sum[SENSOR_COUNT][HISTORY_COUNT] = {0};      	//累加的和
+uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT]; //滤波后的值
+float result[SENSOR_COUNT];		//电存储每个电感滤波后的最终结果值（尚未归一化），是连接滤波处理和归一化处理的中间变量
+uint16 sum[SENSOR_COUNT][HISTORY_COUNT];      	//累加的和
 
 // 递推均值滤波相关参数
 uint16 times = HISTORY_COUNT;  // 滤波次数
 uint16 i_num = SENSOR_COUNT;  // 电感数量
 
 // 归一化数据 - 改为数组形式
-float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};  // 归一化后的电感数据数组
+float normalized_data[SENSOR_COUNT];  // 归一化后的电感数据数组
 
 // 存储每个电感的最大最小值，用于动态校准 - 改为数组形式
-// uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
-// uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
-uint16 min_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {910, 930, 920, 730, 920, 930, 910};  // 每个电感的最大值
+uint16 min_value[SENSOR_COUNT];  // 每个电感的最小值
+uint16 max_value[SENSOR_COUNT];  // 每个电感的最大值
 
 // 电感位置计算相关变量
-float signal_strength_value = 0;   // 信号强度指标
-int16 position = 0;
-float filter_param = 0.4f;   // 滤波系数，可调 越大越灵敏
+float signal_strength_value;   // 信号强度指标
+int16 position;
+float filter_param;   // 滤波系数，可调 越大越灵敏
 
 
 // 赛道信息相关标志位
-uint8 track_type = 0;         // 赛道类型：0-普通，1-直角弯道，2-十字圆环，3-环岛
-uint8 track_type_last = 0;         // 赛道类型：0-普通，1-直角弯道，2-十字圆环，3-环岛
+uint8 track_type;         // 赛道类型：0-普通，1-直角弯道，2-十字圆环，3-环岛
+uint8 track_type_last;         // 赛道类型：0-普通，1-直角弯道，2-十字圆环，3-环岛
 
-uint8 track_type_zj = 0;	  //1-左直角，2-右直角
-uint8 track_route = 0; 		  //1-右环，2-左环
-uint8 track_route_status = 0; //1-入环，2-环中，3-出环
-uint8 track_ten_flag = 1;	//十字圆环：0表示到计时0.5s再开始判断，1-可以开始判断
-uint8 ten_change_flag = 0; //1表示0.5后track_ten_flag=1
+uint8 track_type_zj;	  //1-左直角，2-右直角
+uint8 track_route; 		  //1-右环，2-左环
+uint8 track_route_status; //1-入环，2-环中，3-出环
+uint8 track_ten_flag;	//十字圆环：0表示到计时0.5s再开始判断，1-可以开始判断
+uint8 ten_change_flag; //1表示0.5后track_ten_flag=1
 
-uint8 protection_flag = 0;// 电磁保护逻辑变量,0表示未保护，1表示保护
+uint8 protection_flag;// 电磁保护逻辑变量,0表示未保护，1表示保护
 
 
-uint8 speed_count = 0;
+uint8 speed_count;
 
 //-----------------------------------------------------------------------------
 // @brief    电磁传感器DMA ADC初始化
@@ -107,6 +88,59 @@ void electromagnetic_dma_init(void)
     uint32 test_channel_num = 0; // 测试通道数
 
     unsigned char debug_buffer[60];
+    
+    // 初始化全局变量
+    signal_strength_value = 0;
+    position = 0;
+    filter_param = 0.4f;   // 滤波系数，可调 越大越灵敏
+    
+    track_type = 0;
+    track_type_last = 0;
+    track_type_zj = 0;
+    track_route = 0;
+    track_route_status = 0;
+    track_ten_flag = 1;
+    ten_change_flag = 0;
+    protection_flag = 0;
+    speed_count = 0;
+    
+    // C51编译器限制：在函数中初始化全局复杂变量
+    // 初始化 track_weights 数组
+    // 普通直道
+    track_weights[0].weight_outer = 0.15f;
+    track_weights[0].weight_middle = 0.40f;
+    track_weights[0].weight_vertical = 0.30f;
+    track_weights[0].weight_center = 0.15f;
+    track_weights[0].filter_param = 0.80f;
+    track_weights[0].max_change_rate = 35;
+    track_weights[0].name = "直道";
+    
+    // 直角弯道
+    track_weights[1].weight_outer = 0.25f;
+    track_weights[1].weight_middle = 0.30f;
+    track_weights[1].weight_vertical = 0.35f;
+    track_weights[1].weight_center = 0.35f;
+    track_weights[1].filter_param = 1.00f;
+    track_weights[1].max_change_rate = 50;
+    track_weights[1].name = "直角弯道";
+    
+    // 十字圆环
+    track_weights[2].weight_outer = 0.35f;
+    track_weights[2].weight_middle = 0.25f;
+    track_weights[2].weight_vertical = 0.20f;
+    track_weights[2].weight_center = 0.15f;
+    track_weights[2].filter_param = 0.90f;
+    track_weights[2].max_change_rate = 40;
+    track_weights[2].name = "十字圆环";
+    
+    // 环岛
+    track_weights[3].weight_outer = 0.31f;
+    track_weights[3].weight_middle = 0.43f;
+    track_weights[3].weight_vertical = 0.10f;
+    track_weights[3].weight_center = 0.21f;
+    track_weights[3].filter_param = 1.00f;
+    track_weights[3].max_change_rate = 40;
+    track_weights[3].name = "环岛";
     
     // 配置ADC参数
     adc_init_struct.ADC_SMPduty = 15;                // ADC 模拟信号采样时间控制, 0~31, 一般大于10
@@ -140,15 +174,6 @@ void electromagnetic_dma_init(void)
     // 使能DMA ADC中断并设置优先级
     NVIC_DMA_ADC_Init(ENABLE, Priority_1, Priority_1);
     uart_putstr(UART_4, "DMA ADC interrupt enabled\r\n");
-
-    // 初始化DMA缓冲区
-    for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
-    {
-        for(j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
-        {
-            AdcDmaBuffer[i][j] = 0;
-        }
-    }
 
     // 初始化数据数组 (从electromagnetic_init函数移植过来)
     for(i = 0; i < SENSOR_COUNT; i++)
@@ -200,11 +225,10 @@ void start_adc_dma_conversion(void)
 //-----------------------------------------------------------------------------
 void process_adc_dma_data(void)
 {
-    uint8 i, j;
-    uint32 sum_values;
-
-    // 创建一个临时数组来按 DMA 通道顺序存储平均值
-    float dma_ordered_averages[ADC_DMA_USED_CHANNEL_COUNT];
+    // C51编译器要求：所有变量必须在函数开始处声明
+    uint8 i;
+    uint16 *pAvgValue;
+    uint8 *pBuffer;
     
     // 检查DMA ADC数据是否就绪
     if(!g_adc_dma_completed_flag)
@@ -212,40 +236,35 @@ void process_adc_dma_data(void)
         return;
     }
     
-    // 清除标志位
+    // 清除标志位，为下一次转换做准备
     g_adc_dma_completed_flag = 0;
     
-    // 1. 从 AdcDmaBuffer 计算平均值，并按 DMA 通道顺序存入 dma_ordered_averages
     // DMA 物理存储顺序: HC(ch1), HMR(ch3), VR(ch4), HR(ch8), HML(ch9), VL(ch13), HL(ch14)
+    // 通道映射关系: 
+    // 0->HC, 1->HMR, 2->VR, 3->HR, 4->HML, 5->VL, 6->HL
+    
+    // 优化访问方式：直接访问平均值位置，避免结构体指针转换
     for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
     {
-        sum_values = 0;
-        for(j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
+        // 计算平均值在缓冲区中的位置
+        // 平均值在每个通道数据块的最后2个字节
+        pBuffer = (uint8 *)&AdcDmaBuffer[i * ADC_DMA_BLOCK_SIZE];
+        pAvgValue = (uint16 *)&pBuffer[ADC_DMA_BLOCK_SIZE - 2];
+        
+        // 根据通道索引将数据存入对应的result数组位置
+        switch(i)
         {
-            sum_values += AdcDmaBuffer[i][j];
+            case 0: result[SENSOR_HC] = *pAvgValue; break;
+            case 1: result[SENSOR_HMR] = *pAvgValue; break;
+            case 2: result[SENSOR_VR] = *pAvgValue; break;
+            case 3: result[SENSOR_HR] = *pAvgValue; break;
+            case 4: result[SENSOR_HML] = *pAvgValue; break;
+            case 5: result[SENSOR_VL] = *pAvgValue; break;
+            case 6: result[SENSOR_HL] = *pAvgValue; break;
         }
-        dma_ordered_averages[i] = (float)sum_values / ADC_DMA_SAMPLES_PER_CHANNEL_NUM;
     }
-
-    // 2. 根据 sensor_type_e 将数据从 dma_ordered_averages 映射到 result
-    //    result[SENSOR_HL]  <-- 来自 HL (DMA channel 14, AdcDmaBuffer[6])
-    //    result[SENSOR_VL]  <-- 来自 VL (DMA channel 13, AdcDmaBuffer[5])
-    //    result[SENSOR_HML] <-- 来自 HML (DMA channel 9, AdcDmaBuffer[4])
-    //    result[SENSOR_HC]  <-- 来自 HC (DMA channel 1, AdcDmaBuffer[0])
-    //    result[SENSOR_HMR] <-- 来自 HMR (DMA channel 3, AdcDmaBuffer[1])
-    //    result[SENSOR_VR]  <-- 来自 VR (DMA channel 4, AdcDmaBuffer[2])
-    //    result[SENSOR_HR]  <-- 来自 HR (DMA channel 8, AdcDmaBuffer[3])
-
-    result[SENSOR_HL] = dma_ordered_averages[6]; // HL is the 7th in DMA sequence (index 6)
-    result[SENSOR_VL] = dma_ordered_averages[5]; // VL is the 6th in DMA sequence (index 5)
-    result[SENSOR_HML]= dma_ordered_averages[4]; // HML is the 5th in DMA sequence (index 4)
-    result[SENSOR_HC] = dma_ordered_averages[0]; // HC is the 1st in DMA sequence (index 0)
-
-    result[SENSOR_HMR]= dma_ordered_averages[1]; // HMR is the 2nd in DMA sequence (index 1)
-    result[SENSOR_VR] = dma_ordered_averages[2]; // VR is the 3rd in DMA sequence (index 2)
-    result[SENSOR_HR] = dma_ordered_averages[3]; // HR is the 4th in DMA sequence (index 3)
     
-    // 启动下一次DMA ADC转换
+    // 启动下一次DMA ADC转换，形成连续采集
     start_adc_dma_conversion();
 }
 
@@ -898,76 +917,28 @@ uint8 check_electromagnetic_protection(void)
 }
 
 
-
-// 显示电磁传感器数据
-void display_electromagnetic_data(void)
-{
-    // 显示原始滤波数据和归一化数据
-    ips114_showstr_simspi(0,0,"HL:");   
-    ips114_showuint16_simspi(3*8, 0, result[SENSOR_HL]);
-    ips114_showstr_simspi(9*8,0,"N:");
-    ips114_showfloat_simspi(11*8, 0, normalized_data[SENSOR_HL], 2, 2);
-    
-    ips114_showstr_simspi(0,1,"VL:");  
-    ips114_showuint16_simspi(3*8, 1, result[SENSOR_VL]);
-    ips114_showstr_simspi(9*8,1,"N:");
-    ips114_showfloat_simspi(11*8, 1, normalized_data[SENSOR_VL], 2, 2);
-    
-    ips114_showstr_simspi(0,2,"HML:");  
-    ips114_showuint16_simspi(4*8, 2, result[SENSOR_HML]);
-    ips114_showstr_simspi(9*8,2,"N:");
-    ips114_showfloat_simspi(11*8, 2, normalized_data[SENSOR_HML], 2, 2);
-    
-    ips114_showstr_simspi(0,3,"HC:");   
-    ips114_showuint16_simspi(3*8, 3, result[SENSOR_HC]);
-    ips114_showstr_simspi(9*8,3,"N:");
-    ips114_showfloat_simspi(11*8, 3, normalized_data[SENSOR_HC], 2, 2);
-    
-    ips114_showstr_simspi(0,4,"HMR:");   
-    ips114_showuint16_simspi(4*8, 4, result[SENSOR_HMR]);
-    ips114_showstr_simspi(9*8,4,"N:");
-    ips114_showfloat_simspi(11*8, 4, normalized_data[SENSOR_HMR], 2, 2);
-    
-    ips114_showstr_simspi(0,5,"VR:");   
-    ips114_showuint16_simspi(3*8, 5, result[SENSOR_VR]);
-    ips114_showstr_simspi(9*8,5,"N:");
-    ips114_showfloat_simspi(11*8, 5, normalized_data[SENSOR_VR], 2, 2);
-    
-    ips114_showstr_simspi(0,6,"HR:");   
-    ips114_showuint16_simspi(3*8, 6, result[SENSOR_HR]);
-    ips114_showstr_simspi(9*8,6,"N:");
-    ips114_showfloat_simspi(11*8, 6, normalized_data[SENSOR_HR], 2, 2);
-    
-    // 显示位置和差比和数据
-    ips114_showstr_simspi(0,7,"Pos:");
-    ips114_showint16_simspi(5*8, 7, position);
-    
-    // 显示保护状态
-    ips114_showstr_simspi(10*8,7,"P:");
-    ips114_showuint8_simspi(12*8, 7, protection_flag);
-}
-
 /**
  * @brief DMA数据搬运测试函数
  * @return 测试结果，0表示成功，非0表示错误码
  */
 uint8 test_dma_data_transfer(void)
 {
+    // C51编译器要求：所有变量必须在函数开始处声明
     uint8 i, j;
     uint8 error_code = DMA_ADC_ERROR_NONE;
-    uint16 min_value = 65535, max_value = 0;
-	uint16 timeout_count = 0;
-    uint8 test = 0;
+    uint16 timeout_count = 0;
+    uint8 *pBuffer;
+    uint16 *pRawSample;
+    uint8 *pChannelId;
+    uint8 *pAverageRem;
+    uint16 *pAverageValue;
+    uint32 manual_sum;
+    uint16 manual_avg;
+    uint8 manual_rem;
+    uint16 sample;
+    char test_buffer[60];
     
-    char test_buffer[50];
-    
-    // 打印初始状态
-    uart_putstr(UART_4, "DMA Test Starting \r\n");
-    uart_putstr(UART_4, "DMA Flag before test ");
-    if(g_adc_dma_completed_flag) 
-        uart_putstr(UART_4, "1\r\n");
-    else
-        uart_putstr(UART_4, "0\r\n");
+    uart_putstr(UART_4, "DMA Test Starting\r\n");
     
     // 清除DMA完成标志
     g_adc_dma_completed_flag = 0;
@@ -976,113 +947,72 @@ uint8 test_dma_data_transfer(void)
     uart_putstr(UART_4, "Triggering DMA conversion...\r\n");
     start_adc_dma_conversion();
     
-    // 等待DMA完成，最多等待100ms
+    // 等待DMA完成，最多等待约100ms
     uart_putstr(UART_4, "Waiting for DMA completion...\r\n");
-
-    while (!g_adc_dma_completed_flag && timeout_count < 1000)
+    while (!g_adc_dma_completed_flag && timeout_count < 100)
     {
         delay_ms(1);
         timeout_count++;
-        
-        // 每200ms打印一次状态
-        if(timeout_count % 200 == 0) {
-            uart_putstr(UART_4, "Still waiting... count");
-            sprintf(test_buffer, "%d\r\n", timeout_count);
-            uart_putstr(UART_4, test_buffer);
-        }
     }
     
     // 检查是否超时
-    if (timeout_count >= 1000)
+    if (timeout_count >= 100)
     {
-        uart_putstr(UART_4, "TIMEOUT ERROR DMA completion flag not set!\r\n");
+        uart_putstr(UART_4, "TIMEOUT ERROR  DMA completion flag not set!\r\n");
         return DMA_ADC_ERROR_TIMEOUT;
     }
     
-    // 打印DMA采集的原始数据
-    uart_putstr(UART_4, "DMA Test Raw data transfer test\r\n");
+    // 打印并验证DMA采集的数据
+    uart_putstr(UART_4, "DMA Test  Verifying raw data and hardware averages...\r\n");
     
-    // // 测试数据缓冲区地址
-    // sprintf(test_buffer, "DMA_ADC_RXAH %08LX\r\n ", DMA_ADC_RXAH);
-    // uart_putstr(UART_4, test_buffer);
-
-    // sprintf(test_buffer, "DMA_ADC_RXAL %08LX\r\n ", DMA_ADC_RXAL);
-    // uart_putstr(UART_4, test_buffer);
-
-    // sprintf(test_buffer, "(uint16)AdcDmaBuffer %p\r\n ", (uint16)AdcDmaBuffer);
-    // uart_putstr(UART_4, test_buffer);
-
-    // 检查每个通道的数据
     for (i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
     {
-        sprintf(test_buffer, "Channel %d\r\n ", i);
-        uart_putstr(UART_4, test_buffer);
+        manual_sum = 0;
         
+        // 直接访问缓冲区而不是使用结构体指针
+        pBuffer = (uint8 *)&AdcDmaBuffer[i * ADC_DMA_BLOCK_SIZE];
+        
+        // 获取通道ID（位于原始数据后的第1个字节）
+        pChannelId = &pBuffer[ADC_DMA_SAMPLES_PER_CHANNEL_NUM * 2];
+        
+        // 获取平均值余数（位于通道ID后的第1个字节）
+        pAverageRem = &pBuffer[ADC_DMA_SAMPLES_PER_CHANNEL_NUM * 2 + 1];
+        
+        // 获取硬件计算的平均值（位于余数后的2个字节）
+        pAverageValue = (uint16 *)&pBuffer[ADC_DMA_SAMPLES_PER_CHANNEL_NUM * 2 + 2];
+        
+        sprintf(test_buffer, "Block %d (HW Channel ID  %u)\r\n", i, *pChannelId);
+        uart_putstr(UART_4, test_buffer);
 
-        // 打印该通道的所有采样值
         for (j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
         {
-            sprintf(test_buffer, "%d\r\n ", AdcDmaBuffer[i][j]);
-            uart_putstr(UART_4, test_buffer);
+            // 获取原始采样值（每个采样值占2个字节）
+            pRawSample = (uint16 *)&pBuffer[j * 2];
+            sample = *pRawSample;
             
-            // 统计最大最小值，用于检查数据合理性
-            if (AdcDmaBuffer[i][j] < min_value)
-                min_value = AdcDmaBuffer[i][j];
-            if (AdcDmaBuffer[i][j] > max_value)
-                max_value = AdcDmaBuffer[i][j];
+            manual_sum += sample;
+            sprintf(test_buffer, "  Raw[%u]  %u\r\n", j, sample);
+            uart_putstr(UART_4, test_buffer);
         }
+
+        manual_avg = manual_sum / ADC_DMA_SAMPLES_PER_CHANNEL_NUM;
+        manual_rem = manual_sum % ADC_DMA_SAMPLES_PER_CHANNEL_NUM;
         
-        sprintf(test_buffer, "\r\n");
+        sprintf(test_buffer, "  HW Avg  %u, Rem  %u\r\n", *pAverageValue, *pAverageRem);
         uart_putstr(UART_4, test_buffer);
+        sprintf(test_buffer, "  SW Avg  %u, Rem  %u\r\n", manual_avg, manual_rem);
+        uart_putstr(UART_4, test_buffer);
+
+        // 验证硬件计算的平均值是否与软件计算的相符
+        if(manual_avg != *pAverageValue) {
+            uart_putstr(UART_4, "  -> ERROR  HW/SW Average Mismatch!\r\n");
+            error_code = DMA_ADC_ERROR_INVALID_DATA;
+        }
     }
-    
 
-    test = 0;
-
-    sprintf(test_buffer, "AdcDmaBuffer[test][8] %d\r\n ", AdcDmaBuffer[test][8]);
-    uart_putstr(UART_4, test_buffer);
-    sprintf(test_buffer, "AdcDmaBuffer[test][0] %d\r\n ", AdcDmaBuffer[test][0]);
-    uart_putstr(UART_4, test_buffer);
-    sprintf(test_buffer, "AdcDmaBuffer[test][1] %d\r\n ", AdcDmaBuffer[test][1]);
-    uart_putstr(UART_4, test_buffer);
-    sprintf(test_buffer, "AdcDmaBuffer[test][10] %d\r\n ", AdcDmaBuffer[test][10]);
-    uart_putstr(UART_4, test_buffer);
-    sprintf(test_buffer, "AdcDmaBuffer[test][11] %d\r\n ", AdcDmaBuffer[test][11]);
-    uart_putstr(UART_4, test_buffer);
-
-    // sprintf(test_buffer, "AdcDmaBuffer[1][0] %d\r\n ", AdcDmaBuffer[1][0]);
-    // uart_putstr(UART_4, test_buffer);
-    // sprintf(test_buffer, "AdcDmaBuffer[2][0] %d\r\n ", AdcDmaBuffer[2][0]);
-    // uart_putstr(UART_4, test_buffer);
-    // sprintf(test_buffer, "AdcDmaBuffer[3][0] %d\r\n ", AdcDmaBuffer[3][0]);
-    // uart_putstr(UART_4, test_buffer);
-    // sprintf(test_buffer, "AdcDmaBuffer[4][0] %d\r\n ", AdcDmaBuffer[4][0]);
-    // uart_putstr(UART_4, test_buffer);
-    // sprintf(test_buffer, "AdcDmaBuffer[5][0] %d\r\n ", AdcDmaBuffer[5][0]);
-    // uart_putstr(UART_4, test_buffer);
-    // sprintf(test_buffer, "AdcDmaBuffer[6][0] %d\r\n ", AdcDmaBuffer[6][0]);
-    // uart_putstr(UART_4, test_buffer);
-
-
-
-    // 检查数据是否在合理范围内
-    // ADC值通常在0-4095范围内（12位ADC）
-    sprintf(test_buffer, "Min value  %d, Max value  %d\r\n", min_value, max_value);
-    uart_putstr(UART_4, test_buffer);
-    
-    if (min_value == 0 && max_value == 0)
+    if (error_code == DMA_ADC_ERROR_NONE)
     {
-        uart_putstr(UART_4, "ERROR  All values are zero, possible DMA failure\r\n");
-        error_code = DMA_ADC_ERROR_INVALID_DATA;
-    }
-    else if (max_value > 4095)  // 假设使用12位ADC
-    {
-        uart_putstr(UART_4, "ERROR  Values out of range, possible ADC config error\r\n");
-        error_code = DMA_ADC_ERROR_INVALID_DATA;
-    }
-    else
-    {
-        uart_putstr(UART_4, "SUCCESS  Data transfer successful\r\n");
+        uart_putstr(UART_4, "SUCCESS  Data transfer and hardware averaging verified.\r\n");
     }
     
     // 再次启动DMA转换以保持连续性

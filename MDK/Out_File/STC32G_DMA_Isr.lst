@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     05/06/25  17:13:06  PAGE 1   
+C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     06/06/25  05:27:46  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_DMA_Isr
@@ -67,7 +67,7 @@ stmt  level    source
 Module Information          Static   Overlayable
 ------------------------------------------------
   code size            =        66     ------
-C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     05/06/25  17:13:06  PAGE 2   
+C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     06/06/25  05:27:46  PAGE 2   
 
   ecode size           =    ------     ------
   data size            =    ------     ------

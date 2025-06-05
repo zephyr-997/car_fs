@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         05/06/25  17:13:06  PAGE 1   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         06/06/25  05:27:46  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_DMA
@@ -17,11 +17,11 @@ stmt  level    source
     6          //#include "STC32G_UART.h"
     7          
     8          //========================================================================
-    9          // ∫Ø ˝: void DMA_ADC_Inilize(DMA_ADC_InitTypeDef *DMA)
-   10          // √Ë ˆ: DMA ADC ≥ı ºªØ≥Ã–Ú.
-   11          // ≤Œ ˝: DMA: Ω·ππ≤Œ ˝,«Î≤ŒøºDMA.h¿Ôµƒ∂®“Â.
-   12          // ∑µªÿ: none.
-   13          // ∞Ê±æ: V1.0, 2021-05-17
+    9          // ÂáΩÊï∞: void DMA_ADC_Inilize(DMA_ADC_InitTypeDef *DMA)
+   10          // ÊèèËø∞: DMA ADC ÂàùÂßãÂåñÁ®ãÂ∫è.
+   11          // ÂèÇÊï∞: DMA: ÁªìÊûÑÂèÇÊï∞,ËØ∑ÂèÇËÄÉDMA.hÈáåÁöÑÂÆö‰πâ.
+   12          // ËøîÂõû: none.
+   13          // ÁâàÊú¨: V1.0, 2021-05-17
    14          //========================================================================
    15          void DMA_ADC_Inilize(DMA_ADC_InitTypeDef *DMA)
    16          {
@@ -32,16 +32,16 @@ stmt  level    source
    21   1        DMA_ADC_RXAL = (u8)(DMA->DMA_Buffer);
    22   1        DMA_ADC_CFG2 = DMA->DMA_Times;
    23   1      
-   24   1        if(DMA->DMA_Enable == ENABLE)   DMA_ADC_CR |= 0x80; // πƒ‹ADC DMA
-   25   1        else DMA_ADC_CR &= ~0x80; //Ω˚÷πADC DMA
+   24   1        if(DMA->DMA_Enable == ENABLE)   DMA_ADC_CR |= 0x80; //‰ΩøËÉΩADC DMA
+   25   1        else DMA_ADC_CR &= ~0x80; //Á¶ÅÊ≠¢ADC DMA
    26   1      }
    27          
    28          //========================================================================
-   29          // ∫Ø ˝: void DMA_M2M_Inilize(DMA_M2M_InitTypeDef *DMA)
-   30          // √Ë ˆ: DMA M2M ≥ı ºªØ≥Ã–Ú.
-   31          // ≤Œ ˝: DMA: Ω·ππ≤Œ ˝,«Î≤ŒøºDMA.h¿Ôµƒ∂®“Â.
-   32          // ∑µªÿ: none.
-   33          // ∞Ê±æ: V1.0, 2021-05-17
+   29          // ÂáΩÊï∞: void DMA_M2M_Inilize(DMA_M2M_InitTypeDef *DMA)
+   30          // ÊèèËø∞: DMA M2M ÂàùÂßãÂåñÁ®ãÂ∫è.
+   31          // ÂèÇÊï∞: DMA: ÁªìÊûÑÂèÇÊï∞,ËØ∑ÂèÇËÄÉDMA.hÈáåÁöÑÂÆö‰πâ.
+   32          // ËøîÂõû: none.
+   33          // ÁâàÊú¨: V1.0, 2021-05-17
    34          //========================================================================
    35          void DMA_M2M_Inilize(DMA_M2M_InitTypeDef *DMA)
    36          {
@@ -50,26 +50,26 @@ stmt  level    source
    39   1        DMA_M2M_RXAL = (u8)(DMA->DMA_Rx_Buffer);
    40   1        DMA_M2M_TXAH = (u8)(DMA->DMA_Tx_Buffer>>8);
    41   1        DMA_M2M_TXAL = (u8)(DMA->DMA_Tx_Buffer);
-   42   1        DMA_M2M_AMT = (u8)DMA->DMA_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-   43   1        DMA_M2M_AMTH = (u8)(DMA->DMA_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+   42   1        DMA_M2M_AMT = (u8)DMA->DMA_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+   43   1        DMA_M2M_AMTH = (u8)(DMA->DMA_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
    44   1        
-   45   1        if(DMA->DMA_SRC_Dir == M2M_ADDR_DEC)    DMA_M2M_CFG |= 0x20;  // ˝æ›∂¡ÕÍ∫Ûµÿ÷∑◊‘ºı
-   46   1        else DMA_M2M_CFG &= ~0x20;  // ˝æ›∂¡ÕÍ∫Ûµÿ÷∑◊‘ºı
-   47   1        if(DMA->DMA_DEST_Dir == M2M_ADDR_DEC)   DMA_M2M_CFG |= 0x10;  // ˝æ›–¥»Î∫Ûµÿ÷∑◊‘ºı
-   48   1        else DMA_M2M_CFG &= ~0x10;  // ˝æ›–¥»Î∫Ûµÿ÷∑◊‘ºı
+   45   1        if(DMA->DMA_SRC_Dir == M2M_ADDR_DEC)    DMA_M2M_CFG |= 0x20;  //Êï∞ÊçÆËØªÂÆåÂêéÂú∞ÂùÄËá™Âáè
+   46   1        else DMA_M2M_CFG &= ~0x20;  //Êï∞ÊçÆËØªÂÆåÂêéÂú∞ÂùÄËá™Âáè
+   47   1        if(DMA->DMA_DEST_Dir == M2M_ADDR_DEC)   DMA_M2M_CFG |= 0x10;  //Êï∞ÊçÆÂÜôÂÖ•ÂêéÂú∞ÂùÄËá™Âáè
+   48   1        else DMA_M2M_CFG &= ~0x10;  //Êï∞ÊçÆÂÜôÂÖ•ÂêéÂú∞ÂùÄËá™Âáè
    49   1        
-   50   1        if(DMA->DMA_Enable == ENABLE)   DMA_M2M_CR |= 0x80; // πƒ‹M2M DMA
-   51   1        else DMA_M2M_CR &= ~0x80; //Ω˚÷πM2M DMA
+   50   1        if(DMA->DMA_Enable == ENABLE)   DMA_M2M_CR |= 0x80; //‰ΩøËÉΩM2M DMA
+   51   1        else DMA_M2M_CR &= ~0x80; //Á¶ÅÊ≠¢M2M DMA
    52   1      }
    53          
    54          //========================================================================
-   55          // ∫Ø ˝: void DMA_SPI_Inilize(DMA_SPI_InitTypeDef *DMA)
-   56          // √Ë ˆ: DMA SPI ≥ı ºªØ≥Ã–Ú.
-   57          // ≤Œ ˝: DMA: Ω·ππ≤Œ ˝,«Î≤ŒøºDMA.h¿Ôµƒ∂®“Â.
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         05/06/25  17:13:06  PAGE 2   
+   55          // ÂáΩÊï∞: void DMA_SPI_Inilize(DMA_SPI_InitTypeDef *DMA)
+   56          // ÊèèËø∞: DMA SPI ÂàùÂßãÂåñÁ®ãÂ∫è.
+   57          // ÂèÇÊï∞: DMA: ÁªìÊûÑÂèÇÊï∞,ËØ∑ÂèÇËÄÉDMA.hÈáåÁöÑÂÆö‰πâ.
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         06/06/25  05:27:46  PAGE 2   
 
-   58          // ∑µªÿ: none.
-   59          // ∞Ê±æ: V1.0, 2021-05-17
+   58          // ËøîÂõû: none.
+   59          // ÁâàÊú¨: V1.0, 2021-05-17
    60          //========================================================================
    61          void DMA_SPI_Inilize(DMA_SPI_InitTypeDef *DMA)
    62          {
@@ -78,31 +78,31 @@ stmt  level    source
    65   1        DMA_SPI_RXAL = (u8)(DMA->DMA_Rx_Buffer);
    66   1        DMA_SPI_TXAH = (u8)(DMA->DMA_Tx_Buffer>>8);
    67   1        DMA_SPI_TXAL = (u8)(DMA->DMA_Tx_Buffer);
-   68   1        DMA_SPI_AMT = (u8)DMA->DMA_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-   69   1        DMA_SPI_AMTH = (u8)(DMA->DMA_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+   68   1        DMA_SPI_AMT = (u8)DMA->DMA_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+   69   1        DMA_SPI_AMTH = (u8)(DMA->DMA_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
    70   1        
-   71   1        if(DMA->DMA_SS_Sel <= SPI_SS_P35) DMA_SPI_CFG2 = (DMA_SPI_CFG2 & 0xfc) | DMA->DMA_SS_Sel; //◊‘∂Øøÿ÷∆SSΩ≈
-             -—°‘Ò
+   71   1        if(DMA->DMA_SS_Sel <= SPI_SS_P35) DMA_SPI_CFG2 = (DMA_SPI_CFG2 & 0xfc) | DMA->DMA_SS_Sel; //Ëá™Âä®ÊéßÂà∂
+             -SSËÑöÈÄâÊã©
    72   1      
-   73   1        if(DMA->DMA_Tx_Enable == ENABLE)    DMA_SPI_CFG |= 0x40;  // πƒ‹SPI∑¢ÀÕ ˝æ›
-   74   1        else DMA_SPI_CFG &= ~0x40;  //Ω˚÷πSPI∑¢ÀÕ ˝æ›
+   73   1        if(DMA->DMA_Tx_Enable == ENABLE)    DMA_SPI_CFG |= 0x40;  //‰ΩøËÉΩSPIÂèëÈÄÅÊï∞ÊçÆ
+   74   1        else DMA_SPI_CFG &= ~0x40;  //Á¶ÅÊ≠¢SPIÂèëÈÄÅÊï∞ÊçÆ
    75   1        
-   76   1        if(DMA->DMA_Rx_Enable == ENABLE)    DMA_SPI_CFG |= 0x20;  // πƒ‹SPIΩ” ’ ˝æ›
-   77   1        else DMA_SPI_CFG &= ~0x20;  //Ω˚÷πSPIΩ” ’ ˝æ›
+   76   1        if(DMA->DMA_Rx_Enable == ENABLE)    DMA_SPI_CFG |= 0x20;  //‰ΩøËÉΩSPIÊé•Êî∂Êï∞ÊçÆ
+   77   1        else DMA_SPI_CFG &= ~0x20;  //Á¶ÅÊ≠¢SPIÊé•Êî∂Êï∞ÊçÆ
    78   1        
-   79   1        if(DMA->DMA_AUTO_SS == ENABLE)    DMA_SPI_CFG2 |= 0x04; // πƒ‹SS◊‘∂Øøÿ÷∆
-   80   1        else DMA_SPI_CFG2 &= ~0x04; //Ω˚÷πSS◊‘∂Øøÿ÷∆
+   79   1        if(DMA->DMA_AUTO_SS == ENABLE)    DMA_SPI_CFG2 |= 0x04; //‰ΩøËÉΩSSËá™Âä®ÊéßÂà∂
+   80   1        else DMA_SPI_CFG2 &= ~0x04; //Á¶ÅÊ≠¢SSËá™Âä®ÊéßÂà∂
    81   1        
-   82   1        if(DMA->DMA_Enable == ENABLE)   DMA_SPI_CR |= 0x80; // πƒ‹SPI DMA
-   83   1        else DMA_SPI_CR &= ~0x80; //Ω˚÷πSPI DMA
+   82   1        if(DMA->DMA_Enable == ENABLE)   DMA_SPI_CR |= 0x80; //‰ΩøËÉΩSPI DMA
+   83   1        else DMA_SPI_CR &= ~0x80; //Á¶ÅÊ≠¢SPI DMA
    84   1      }
    85          
    86          //========================================================================
-   87          // ∫Ø ˝: void DMA_UART_Inilize(u8 UARTx, DMA_UART_InitTypeDef *DMA)
-   88          // √Ë ˆ: DMA UART ≥ı ºªØ≥Ã–Ú.
-   89          // ≤Œ ˝: UARTx: UART◊È∫≈, DMA: Ω·ππ≤Œ ˝,«Î≤ŒøºDMA.h¿Ôµƒ∂®“Â.
-   90          // ∑µªÿ: none.
-   91          // ∞Ê±æ: V1.0, 2021-05-17
+   87          // ÂáΩÊï∞: void DMA_UART_Inilize(u8 UARTx, DMA_UART_InitTypeDef *DMA)
+   88          // ÊèèËø∞: DMA UART ÂàùÂßãÂåñÁ®ãÂ∫è.
+   89          // ÂèÇÊï∞: UARTx: UARTÁªÑÂè∑, DMA: ÁªìÊûÑÂèÇÊï∞,ËØ∑ÂèÇËÄÉDMA.hÈáåÁöÑÂÆö‰πâ.
+   90          // ËøîÂõû: none.
+   91          // ÁâàÊú¨: V1.0, 2021-05-17
    92          //========================================================================
    93          #if 0
                void DMA_UART_Inilize(u8 UARTx, DMA_UART_InitTypeDef *DMA)
@@ -118,13 +118,13 @@ stmt  level    source
                    DMA_UR1T_TXAL = (u8)(DMA->DMA_TX_Buffer);
                    DMA_UR1R_RXAH = (u8)(DMA->DMA_RX_Buffer>>8);
                    DMA_UR1R_RXAL = (u8)(DMA->DMA_RX_Buffer);
-                   DMA_UR1R_AMT = (u8)DMA->DMA_RX_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-                   DMA_UR1R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+                   DMA_UR1R_AMT = (u8)DMA->DMA_RX_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+                   DMA_UR1R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
                
-                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR1T_CR |= 0x80;  // πƒ‹UART1 TX DMA
-                   else DMA_UR1T_CR &= ~0x80;  //Ω˚÷πUART1 TX DMA
-                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR1R_CR |= 0x80;  // πƒ‹UART1 RX DMA
-                   else DMA_UR1R_CR &= ~0x80;  //Ω˚÷πUART1 RX DMA
+                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR1T_CR |= 0x80;  //‰ΩøËÉΩUART1 TX DMA
+                   else DMA_UR1T_CR &= ~0x80;  //Á¶ÅÊ≠¢UART1 TX DMA
+                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR1R_CR |= 0x80;  //‰ΩøËÉΩUART1 RX DMA
+                   else DMA_UR1R_CR &= ~0x80;  //Á¶ÅÊ≠¢UART1 RX DMA
                  }
                #endif
                #ifdef UART2
@@ -134,19 +134,19 @@ stmt  level    source
                    DMA_UR2R_STA = 0x00;
                    DMA_UR2T_AMT = (u8)DMA->DMA_TX_Length;
                    DMA_UR2T_AMTH = (u8)(DMA->DMA_TX_Length>>8);
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         05/06/25  17:13:06  PAGE 3   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         06/06/25  05:27:46  PAGE 3   
 
                    DMA_UR2T_TXAH = (u8)(DMA->DMA_TX_Buffer>>8);
                    DMA_UR2T_TXAL = (u8)(DMA->DMA_TX_Buffer);
                    DMA_UR2R_RXAH = (u8)(DMA->DMA_RX_Buffer>>8);
                    DMA_UR2R_RXAL = (u8)(DMA->DMA_RX_Buffer);
-                   DMA_UR2R_AMT = (u8)DMA->DMA_RX_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-                   DMA_UR2R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+                   DMA_UR2R_AMT = (u8)DMA->DMA_RX_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+                   DMA_UR2R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
                
-                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR2T_CR |= 0x80;  // πƒ‹UART2 TX DMA
-                   else DMA_UR2T_CR &= ~0x80;  //Ω˚÷πUART2 TX DMA
-                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR2R_CR |= 0x80;  // πƒ‹UART2 RX DMA
-                   else DMA_UR2R_CR &= ~0x80;  //Ω˚÷πUART2 RX DMA
+                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR2T_CR |= 0x80;  //‰ΩøËÉΩUART2 TX DMA
+                   else DMA_UR2T_CR &= ~0x80;  //Á¶ÅÊ≠¢UART2 TX DMA
+                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR2R_CR |= 0x80;  //‰ΩøËÉΩUART2 RX DMA
+                   else DMA_UR2R_CR &= ~0x80;  //Á¶ÅÊ≠¢UART2 RX DMA
                  }
                #endif
                #ifdef UART3
@@ -160,13 +160,13 @@ stmt  level    source
                    DMA_UR3T_TXAL = (u8)(DMA->DMA_TX_Buffer);
                    DMA_UR3R_RXAH = (u8)(DMA->DMA_RX_Buffer>>8);
                    DMA_UR3R_RXAL = (u8)(DMA->DMA_RX_Buffer);
-                   DMA_UR3R_AMT = (u8)DMA->DMA_RX_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-                   DMA_UR3R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+                   DMA_UR3R_AMT = (u8)DMA->DMA_RX_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+                   DMA_UR3R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
                
-                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR3T_CR |= 0x80;  // πƒ‹UART3 TX DMA
-                   else DMA_UR3T_CR &= ~0x80;  //Ω˚÷πUART3 TX DMA
-                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR3R_CR |= 0x80;  // πƒ‹UART3 RX DMA
-                   else DMA_UR3R_CR &= ~0x80;  //Ω˚÷πUART3 RX DMA
+                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR3T_CR |= 0x80;  //‰ΩøËÉΩUART3 TX DMA
+                   else DMA_UR3T_CR &= ~0x80;  //Á¶ÅÊ≠¢UART3 TX DMA
+                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR3R_CR |= 0x80;  //‰ΩøËÉΩUART3 RX DMA
+                   else DMA_UR3R_CR &= ~0x80;  //Á¶ÅÊ≠¢UART3 RX DMA
                  }
                #endif
                #ifdef UART4
@@ -180,66 +180,66 @@ stmt  level    source
                    DMA_UR4T_TXAL = (u8)(DMA->DMA_TX_Buffer);
                    DMA_UR4R_RXAH = (u8)(DMA->DMA_RX_Buffer>>8);
                    DMA_UR4R_RXAL = (u8)(DMA->DMA_RX_Buffer);
-                   DMA_UR4R_AMT = (u8)DMA->DMA_RX_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-                   DMA_UR4R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+                   DMA_UR4R_AMT = (u8)DMA->DMA_RX_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+                   DMA_UR4R_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
                
-                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR4T_CR |= 0x80;  // πƒ‹UART4 TX DMA
-                   else DMA_UR4T_CR &= ~0x80;  //Ω˚÷πUART4 TX DMA
-                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR4R_CR |= 0x80;  // πƒ‹UART4 RX DMA
-                   else DMA_UR4R_CR &= ~0x80;  //Ω˚÷πUART4 RX DMA
+                   if(DMA->DMA_TX_Enable == ENABLE)    DMA_UR4T_CR |= 0x80;  //‰ΩøËÉΩUART4 TX DMA
+                   else DMA_UR4T_CR &= ~0x80;  //Á¶ÅÊ≠¢UART4 TX DMA
+                   if(DMA->DMA_RX_Enable == ENABLE)    DMA_UR4R_CR |= 0x80;  //‰ΩøËÉΩUART4 RX DMA
+                   else DMA_UR4R_CR &= ~0x80;  //Á¶ÅÊ≠¢UART4 RX DMA
                  }
                #endif
                }
                #endif
   178          
   179          //========================================================================
-  180          // ∫Ø ˝: void DMA_LCM_Inilize(DMA_LCM_InitTypeDef *DMA)
-  181          // √Ë ˆ: DMA LCM ≥ı ºªØ≥Ã–Ú.
-  182          // ≤Œ ˝: DMA: Ω·ππ≤Œ ˝,«Î≤ŒøºDMA.h¿Ôµƒ∂®“Â.
-  183          // ∑µªÿ: none.
-  184          // ∞Ê±æ: V1.0, 2021-05-17
+  180          // ÂáΩÊï∞: void DMA_LCM_Inilize(DMA_LCM_InitTypeDef *DMA)
+  181          // ÊèèËø∞: DMA LCM ÂàùÂßãÂåñÁ®ãÂ∫è.
+  182          // ÂèÇÊï∞: DMA: ÁªìÊûÑÂèÇÊï∞,ËØ∑ÂèÇËÄÉDMA.hÈáåÁöÑÂÆö‰πâ.
+  183          // ËøîÂõû: none.
+  184          // ÁâàÊú¨: V1.0, 2021-05-17
   185          //========================================================================
   186          void DMA_LCM_Inilize(DMA_LCM_InitTypeDef *DMA)
   187          {
   188   1        DMA_LCM_STA = 0x00;
-C251 COMPILER V5.60.0,  STC32G_DMA                                                         05/06/25  17:13:06  PAGE 4   
+C251 COMPILER V5.60.0,  STC32G_DMA                                                         06/06/25  05:27:46  PAGE 4   
 
   189   1        DMA_LCM_RXAH = (u8)(DMA->DMA_Rx_Buffer>>8);
   190   1        DMA_LCM_RXAL = (u8)(DMA->DMA_Rx_Buffer);
   191   1        DMA_LCM_TXAH = (u8)(DMA->DMA_Tx_Buffer>>8);
   192   1        DMA_LCM_TXAL = (u8)(DMA->DMA_Tx_Buffer);
-  193   1        DMA_LCM_AMT = (u8)DMA->DMA_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-  194   1        DMA_LCM_AMTH = (u8)(DMA->DMA_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+  193   1        DMA_LCM_AMT = (u8)DMA->DMA_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+  194   1        DMA_LCM_AMTH = (u8)(DMA->DMA_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
   195   1        
-  196   1        if(DMA->DMA_Enable == ENABLE)   DMA_LCM_CR |= 0x80; // πƒ‹LCM DMA
-  197   1        else DMA_LCM_CR &= ~0x80; //Ω˚÷πLCM DMA
+  196   1        if(DMA->DMA_Enable == ENABLE)   DMA_LCM_CR |= 0x80; //‰ΩøËÉΩLCM DMA
+  197   1        else DMA_LCM_CR &= ~0x80; //Á¶ÅÊ≠¢LCM DMA
   198   1      }
   199          
   200          //========================================================================
-  201          // ∫Ø ˝: void DMA_I2C_Inilize(DMA_I2C_InitTypeDef *DMA)
-  202          // √Ë ˆ: DMA I2C ≥ı ºªØ≥Ã–Ú.
-  203          // ≤Œ ˝: DMA: Ω·ππ≤Œ ˝,«Î≤ŒøºDMA.h¿Ôµƒ∂®“Â.
-  204          // ∑µªÿ: none.
-  205          // ∞Ê±æ: V1.0, 2021-05-17
+  201          // ÂáΩÊï∞: void DMA_I2C_Inilize(DMA_I2C_InitTypeDef *DMA)
+  202          // ÊèèËø∞: DMA I2C ÂàùÂßãÂåñÁ®ãÂ∫è.
+  203          // ÂèÇÊï∞: DMA: ÁªìÊûÑÂèÇÊï∞,ËØ∑ÂèÇËÄÉDMA.hÈáåÁöÑÂÆö‰πâ.
+  204          // ËøîÂõû: none.
+  205          // ÁâàÊú¨: V1.0, 2021-05-17
   206          //========================================================================
   207          void DMA_I2C_Inilize(DMA_I2C_InitTypeDef *DMA)
   208          {
   209   1        DMA_I2CT_STA = 0x00;
   210   1        DMA_I2CT_TXAH = (u8)(DMA->DMA_TX_Buffer>>8);
   211   1        DMA_I2CT_TXAL = (u8)(DMA->DMA_TX_Buffer);
-  212   1        DMA_I2CT_AMT = (u8)DMA->DMA_TX_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-  213   1        DMA_I2CT_AMTH = (u8)(DMA->DMA_TX_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+  212   1        DMA_I2CT_AMT = (u8)DMA->DMA_TX_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+  213   1        DMA_I2CT_AMTH = (u8)(DMA->DMA_TX_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
   214   1      
   215   1        DMA_I2CR_STA = 0x00;
   216   1        DMA_I2CR_RXAH = (u8)(DMA->DMA_RX_Buffer>>8);
   217   1        DMA_I2CR_RXAL = (u8)(DMA->DMA_RX_Buffer);
-  218   1        DMA_I2CR_AMT = (u8)DMA->DMA_RX_Length;        //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(µÕ8Œª)£∫n+1
-  219   1        DMA_I2CR_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //…Ë÷√¥´ ‰◊‹◊÷Ω⁄ ˝(∏ﬂ8Œª)£∫n+1
+  218   1        DMA_I2CR_AMT = (u8)DMA->DMA_RX_Length;        //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(‰Ωé8‰Ωç)Ôºön+1
+  219   1        DMA_I2CR_AMTH = (u8)(DMA->DMA_RX_Length>>8);  //ËÆæÁΩÆ‰º†ËæìÊÄªÂ≠óËäÇÊï∞(È´ò8‰Ωç)Ôºön+1
   220   1        
-  221   1        if(DMA->DMA_TX_Enable == ENABLE)    DMA_I2CT_CR |= 0x80;  // πƒ‹I2CT DMA
-  222   1        else DMA_I2CT_CR &= ~0x80;  //Ω˚÷πI2CT DMA
-  223   1        if(DMA->DMA_RX_Enable == ENABLE)    DMA_I2CR_CR |= 0x80;  // πƒ‹I2CR DMA
-  224   1        else DMA_I2CR_CR &= ~0x80;  //Ω˚÷πI2CT DMA
+  221   1        if(DMA->DMA_TX_Enable == ENABLE)    DMA_I2CT_CR |= 0x80;  //‰ΩøËÉΩI2CT DMA
+  222   1        else DMA_I2CT_CR &= ~0x80;  //Á¶ÅÊ≠¢I2CT DMA
+  223   1        if(DMA->DMA_RX_Enable == ENABLE)    DMA_I2CR_CR |= 0x80;  //‰ΩøËÉΩI2CR DMA
+  224   1        else DMA_I2CR_CR &= ~0x80;  //Á¶ÅÊ≠¢I2CT DMA
   225   1      }
   226          
 

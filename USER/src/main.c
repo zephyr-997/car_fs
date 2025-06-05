@@ -15,8 +15,7 @@ void main(void)
 	uint16 value[7] = {0};   //调试用数组
 	
 	board_init();			
-
-	// ips114_init_simspi();					
+					
 	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
 
 	uart_putstr(UART_4, "test0...\r\n");
@@ -40,15 +39,15 @@ void main(void)
 	pit_timer_ms(TIM_1, 10);
 	pit_timer_ms(TIM_2, 5);
 	
-	// ips114_clear_simspi(WHITE);	 //清屏
+
 	delay_ms(100); // 延时等待系统稳定
 
 	// 初始化电磁传感器
 #if USE_DMA_ADC
 
 	electromagnetic_dma_init();     // 初始化DMA ADC电磁传感器
-	// 启动第一次DMA ADC转换
-	start_adc_dma_conversion();
+	// 此处的启动调用是多余的，因为测试函数会自己启动转换
+	// start_adc_dma_conversion();
 
 #endif
 
