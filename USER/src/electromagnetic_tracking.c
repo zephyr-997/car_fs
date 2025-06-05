@@ -489,7 +489,7 @@ int16 calculate_position_improved(void)
         //     track_type = 2; //十字圆环
         //     track_ten_flag = 0; 
         //     ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
-            
+				
         // }
         else if((normalized_data[SENSOR_HR] > 70.0f && normalized_data[SENSOR_HC] > 90.0f && ((normalized_data[SENSOR_HR] + normalized_data[SENSOR_VR]) - (normalized_data[SENSOR_HL] + normalized_data[SENSOR_VL]) > 80.0f))  //右环岛
                  && signal_strength > 48.0f )    
@@ -499,12 +499,11 @@ int16 calculate_position_improved(void)
     }
     else if (track_type == WEIGHT_RIGHT_ANGLE) // 1. 直角弯道
 	{
-		if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 20.0f )
+		if (normalized_data[SENSOR_VL] > 60.0f && normalized_data[SENSOR_VR] < 30.0f )
 		{
 			track_type_zj = 1; //左转
-			
 		}
-		else if (normalized_data[SENSOR_VR] > 70.0f && normalized_data[SENSOR_VL] < 20.0f )
+		else if (normalized_data[SENSOR_VR] > 60.0f && normalized_data[SENSOR_VL] < 30.0f )
 		{
 			track_type_zj = 2; //右转
 		}
@@ -555,7 +554,7 @@ int16 calculate_position_improved(void)
         //     track_route = 2;
 		// 	track_route_status = 1;
         // }
-		if(track_route_status == 2 &&(normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HC] < 75.0f && normalized_data[SENSOR_HML] < 45.0f && normalized_data[SENSOR_HMR] > 70.0f && normalized_data[SENSOR_VR] > 70.0f)) //右环
+		if(track_route_status == 2 &&(normalized_data[SENSOR_VL] > 30.0f && normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HC] < 65.0f && normalized_data[SENSOR_HML] < 35.0f && normalized_data[SENSOR_HMR] > 70.0f && normalized_data[SENSOR_VR] > 75.0f)) //右环
 		{
 //			track_route = 0;
 			track_route_status = 3;

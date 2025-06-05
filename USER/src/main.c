@@ -132,7 +132,7 @@ void main(void)
 
 #if 1
 			// 通过串口输出七电感数据
-			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
 			 (uint16)normalized_data[SENSOR_HL], 
 			 (uint16)normalized_data[SENSOR_VL], 
 			 (uint16)normalized_data[SENSOR_HML], 
@@ -145,8 +145,7 @@ void main(void)
 			  track_type,
 			  track_route,
 			  track_route_status,
-			  g_intencoderL,
-			  g_intencoderR);
+			  track_type_zj);
 			 uart_putstr(UART_4, g_TxData);
 #endif
 		}
