@@ -2,10 +2,23 @@
 #include "headfile.h"
 #include "common.h"
 #include "STC32G_NVIC.h"
+#include "zf_uart.h"
+#include "zf_delay.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// DMA ADC错误码定义
+#define DMA_ADC_ERROR_NONE          0  // 无错误
+#define DMA_ADC_ERROR_TIMEOUT       1  // DMA转换超时
+#define DMA_ADC_ERROR_INVALID_DATA  2  // 数据异常
+#define DMA_ADC_ERROR_CONFLICT      3  // 资源冲突
 
 // DMA ADC缓冲区和标志
-uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM] = {0}; // DMA ADC缓冲区
+//uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM] = {0}; // DMA ADC缓冲区
 volatile uint8 g_adc_dma_completed_flag = 0;  // DMA ADC数据就绪标志（统一标志）
+
+unsigned char xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];
 
 // 滤波后数据 - 使用二维数组形式
 // 第一维表示电感编号：0-HL, 1-VL, 2-HML, 3-HC, 4-HMR, 5-VR, 6-HR
@@ -19,6 +32,8 @@ volatile uint8 g_adc_dma_completed_flag = 0;  // DMA ADC数据就绪标志（统
 #define WEIGHT_CROSS       2  // 十字圆环
 #define WEIGHT_ROUNDABOUT  3  // 环岛
 #define WEIGHT_SPEED       4  //深度加速 
+
+
 
 // 定义电感权重结构体	
 
@@ -89,6 +104,10 @@ void electromagnetic_dma_init(void)
     DMA_ADC_InitTypeDef dma_adc_init_struct;
     uint8 i = 0, j = 0; // 变量声明移到函数开始处
 
+    uint32 test_channel_num = 0; // 测试通道数
+
+    unsigned char debug_buffer[60];
+    
     // 配置ADC参数
     adc_init_struct.ADC_SMPduty = 15;                // ADC 模拟信号采样时间控制, 0~31, 一般大于10
     adc_init_struct.ADC_Speed = ADC_SPEED_2X16T;     // ADC 转换速度, 相对于 SYSCLK/2
@@ -99,18 +118,28 @@ void electromagnetic_dma_init(void)
     // 初始化ADC
     ADC_Inilize(&adc_init_struct);
     ADC_PowerControl(ENABLE);                        // 使能ADC模块
+    uart_putstr(UART_4, "ADC initialized and powered on\r\n");
 
     // 配置DMA ADC参数
     dma_adc_init_struct.DMA_Enable = ENABLE;         // 使能DMA
+    
+    // 打印DMA通道配置
+    test_channel_num = ELECTROMAGNETIC_DMA_CHANNELS;
+
+    sprintf(debug_buffer, "DMA Channels 0x%08LX\r\n", test_channel_num);
+    uart_putstr(UART_4, debug_buffer);
+    
     dma_adc_init_struct.DMA_Channel = ELECTROMAGNETIC_DMA_CHANNELS; // 使能的通道
-    dma_adc_init_struct.DMA_Buffer = (uint16)AdcDmaBuffer; // DMA缓冲区地址
+    dma_adc_init_struct.DMA_Buffer = (unsigned int)AdcDmaBuffer; // DMA缓冲区地址
     dma_adc_init_struct.DMA_Times = ADC_4_Times;     // 每个通道采样4次，对应ADC_DMA_SAMPLES_PER_CHANNEL_NUM=4
 
     // 初始化DMA ADC
     DMA_ADC_Inilize(&dma_adc_init_struct);
+    uart_putstr(UART_4, "DMA ADC initialized\r\n");
     
     // 使能DMA ADC中断并设置优先级
     NVIC_DMA_ADC_Init(ENABLE, Priority_1, Priority_1);
+    uart_putstr(UART_4, "DMA ADC interrupt enabled\r\n");
 
     // 初始化DMA缓冲区
     for(i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
@@ -120,7 +149,7 @@ void electromagnetic_dma_init(void)
             AdcDmaBuffer[i][j] = 0;
         }
     }
-    
+
     // 初始化数据数组 (从electromagnetic_init函数移植过来)
     for(i = 0; i < SENSOR_COUNT; i++)
     {
@@ -132,7 +161,15 @@ void electromagnetic_dma_init(void)
         normalized_data[i] = 0.0f;  // 初始化归一化数据数组
     }
     
-    DMA_ADC_TRIG(); // 根据需要添加，用于启动第一次转换
+    // 确保DMA完成标志初始状态为0
+    g_adc_dma_completed_flag = 0;
+    
+    uart_putstr(UART_4, "DMA ADC initialization complete\r\n");
+    
+    // 启动第一次DMA ADC转换
+    DMA_ADC_TRIG(); 
+
+    uart_putstr(UART_4, "First DMA ADC conversion triggered\r\n");
 }
 
 //-----------------------------------------------------------------------------
@@ -144,10 +181,14 @@ void electromagnetic_dma_init(void)
 //-----------------------------------------------------------------------------
 void start_adc_dma_conversion(void)
 {
-    if(!g_adc_dma_completed_flag)  // 只有当上一次转换完成后才启动新的转换
-    {
-        DMA_ADC_TRIG();      // 触发DMA ADC转换
-    }
+    // 注意：我们改变了逻辑，无论标志位状态如何都尝试启动转换
+    // 如果上一次转换尚未完成，可能会出现非法触发错误，但这将在中断中处理
+    
+    // 可选：清除可能的错误标志
+    // DMA_ADC_STA &= ~0x01; // 清除非法触发错误标志
+    
+    // 触发DMA ADC转换
+    DMA_ADC_TRIG();
 }
 
 //-----------------------------------------------------------------------------
@@ -161,6 +202,7 @@ void process_adc_dma_data(void)
 {
     uint8 i, j;
     uint32 sum_values;
+
     // 创建一个临时数组来按 DMA 通道顺序存储平均值
     float dma_ordered_averages[ADC_DMA_USED_CHANNEL_COUNT];
     
@@ -198,6 +240,7 @@ void process_adc_dma_data(void)
     result[SENSOR_VL] = dma_ordered_averages[5]; // VL is the 6th in DMA sequence (index 5)
     result[SENSOR_HML]= dma_ordered_averages[4]; // HML is the 5th in DMA sequence (index 4)
     result[SENSOR_HC] = dma_ordered_averages[0]; // HC is the 1st in DMA sequence (index 0)
+
     result[SENSOR_HMR]= dma_ordered_averages[1]; // HMR is the 2nd in DMA sequence (index 1)
     result[SENSOR_VR] = dma_ordered_averages[2]; // VR is the 3rd in DMA sequence (index 2)
     result[SENSOR_HR] = dma_ordered_averages[3]; // HR is the 4th in DMA sequence (index 3)
@@ -902,4 +945,194 @@ void display_electromagnetic_data(void)
     // 显示保护状态
     ips114_showstr_simspi(10*8,7,"P:");
     ips114_showuint8_simspi(12*8, 7, protection_flag);
-} 
+}
+
+/**
+ * @brief DMA数据搬运测试函数
+ * @return 测试结果，0表示成功，非0表示错误码
+ */
+uint8 test_dma_data_transfer(void)
+{
+    uint8 i, j;
+    uint8 error_code = DMA_ADC_ERROR_NONE;
+    uint16 min_value = 65535, max_value = 0;
+	uint16 timeout_count = 0;
+    uint8 test = 0;
+    
+    char test_buffer[50];
+    
+    // 打印初始状态
+    uart_putstr(UART_4, "DMA Test Starting \r\n");
+    uart_putstr(UART_4, "DMA Flag before test ");
+    if(g_adc_dma_completed_flag) 
+        uart_putstr(UART_4, "1\r\n");
+    else
+        uart_putstr(UART_4, "0\r\n");
+    
+    // 清除DMA完成标志
+    g_adc_dma_completed_flag = 0;
+    
+    // 触发DMA ADC转换
+    uart_putstr(UART_4, "Triggering DMA conversion...\r\n");
+    start_adc_dma_conversion();
+    
+    // 等待DMA完成，最多等待100ms
+    uart_putstr(UART_4, "Waiting for DMA completion...\r\n");
+
+    while (!g_adc_dma_completed_flag && timeout_count < 1000)
+    {
+        delay_ms(1);
+        timeout_count++;
+        
+        // 每200ms打印一次状态
+        if(timeout_count % 200 == 0) {
+            uart_putstr(UART_4, "Still waiting... count");
+            sprintf(test_buffer, "%d\r\n", timeout_count);
+            uart_putstr(UART_4, test_buffer);
+        }
+    }
+    
+    // 检查是否超时
+    if (timeout_count >= 1000)
+    {
+        uart_putstr(UART_4, "TIMEOUT ERROR DMA completion flag not set!\r\n");
+        return DMA_ADC_ERROR_TIMEOUT;
+    }
+    
+    // 打印DMA采集的原始数据
+    uart_putstr(UART_4, "DMA Test Raw data transfer test\r\n");
+    
+    // // 测试数据缓冲区地址
+    // sprintf(test_buffer, "DMA_ADC_RXAH %08LX\r\n ", DMA_ADC_RXAH);
+    // uart_putstr(UART_4, test_buffer);
+
+    // sprintf(test_buffer, "DMA_ADC_RXAL %08LX\r\n ", DMA_ADC_RXAL);
+    // uart_putstr(UART_4, test_buffer);
+
+    // sprintf(test_buffer, "(uint16)AdcDmaBuffer %p\r\n ", (uint16)AdcDmaBuffer);
+    // uart_putstr(UART_4, test_buffer);
+
+    // 检查每个通道的数据
+    for (i = 0; i < ADC_DMA_USED_CHANNEL_COUNT; i++)
+    {
+        sprintf(test_buffer, "Channel %d\r\n ", i);
+        uart_putstr(UART_4, test_buffer);
+        
+
+        // 打印该通道的所有采样值
+        for (j = 0; j < ADC_DMA_SAMPLES_PER_CHANNEL_NUM; j++)
+        {
+            sprintf(test_buffer, "%d\r\n ", AdcDmaBuffer[i][j]);
+            uart_putstr(UART_4, test_buffer);
+            
+            // 统计最大最小值，用于检查数据合理性
+            if (AdcDmaBuffer[i][j] < min_value)
+                min_value = AdcDmaBuffer[i][j];
+            if (AdcDmaBuffer[i][j] > max_value)
+                max_value = AdcDmaBuffer[i][j];
+        }
+        
+        sprintf(test_buffer, "\r\n");
+        uart_putstr(UART_4, test_buffer);
+    }
+    
+
+    test = 0;
+
+    sprintf(test_buffer, "AdcDmaBuffer[test][8] %d\r\n ", AdcDmaBuffer[test][8]);
+    uart_putstr(UART_4, test_buffer);
+    sprintf(test_buffer, "AdcDmaBuffer[test][0] %d\r\n ", AdcDmaBuffer[test][0]);
+    uart_putstr(UART_4, test_buffer);
+    sprintf(test_buffer, "AdcDmaBuffer[test][1] %d\r\n ", AdcDmaBuffer[test][1]);
+    uart_putstr(UART_4, test_buffer);
+    sprintf(test_buffer, "AdcDmaBuffer[test][10] %d\r\n ", AdcDmaBuffer[test][10]);
+    uart_putstr(UART_4, test_buffer);
+    sprintf(test_buffer, "AdcDmaBuffer[test][11] %d\r\n ", AdcDmaBuffer[test][11]);
+    uart_putstr(UART_4, test_buffer);
+
+    // sprintf(test_buffer, "AdcDmaBuffer[1][0] %d\r\n ", AdcDmaBuffer[1][0]);
+    // uart_putstr(UART_4, test_buffer);
+    // sprintf(test_buffer, "AdcDmaBuffer[2][0] %d\r\n ", AdcDmaBuffer[2][0]);
+    // uart_putstr(UART_4, test_buffer);
+    // sprintf(test_buffer, "AdcDmaBuffer[3][0] %d\r\n ", AdcDmaBuffer[3][0]);
+    // uart_putstr(UART_4, test_buffer);
+    // sprintf(test_buffer, "AdcDmaBuffer[4][0] %d\r\n ", AdcDmaBuffer[4][0]);
+    // uart_putstr(UART_4, test_buffer);
+    // sprintf(test_buffer, "AdcDmaBuffer[5][0] %d\r\n ", AdcDmaBuffer[5][0]);
+    // uart_putstr(UART_4, test_buffer);
+    // sprintf(test_buffer, "AdcDmaBuffer[6][0] %d\r\n ", AdcDmaBuffer[6][0]);
+    // uart_putstr(UART_4, test_buffer);
+
+
+
+    // 检查数据是否在合理范围内
+    // ADC值通常在0-4095范围内（12位ADC）
+    sprintf(test_buffer, "Min value  %d, Max value  %d\r\n", min_value, max_value);
+    uart_putstr(UART_4, test_buffer);
+    
+    if (min_value == 0 && max_value == 0)
+    {
+        uart_putstr(UART_4, "ERROR  All values are zero, possible DMA failure\r\n");
+        error_code = DMA_ADC_ERROR_INVALID_DATA;
+    }
+    else if (max_value > 4095)  // 假设使用12位ADC
+    {
+        uart_putstr(UART_4, "ERROR  Values out of range, possible ADC config error\r\n");
+        error_code = DMA_ADC_ERROR_INVALID_DATA;
+    }
+    else
+    {
+        uart_putstr(UART_4, "SUCCESS  Data transfer successful\r\n");
+    }
+    
+    // 再次启动DMA转换以保持连续性
+    start_adc_dma_conversion();
+    
+    return error_code;
+}
+
+/**
+ * @brief 运行所有DMA ADC测试
+ */
+void run_electromagnetic_dma_tests(void)
+{
+    char test_buffer[50];
+    uint8 result1 = 0;
+    
+    uart_putstr(UART_4, "Starting DMA ADC tests...\r\n");
+    
+    // 确保DMA已初始化
+    uart_putstr(UART_4, "Checking DMA initialization status...\r\n");
+    
+    // 检查DMA状态寄存器
+    sprintf(test_buffer, "DMA_ADC_STA 0x%02X\r\n", DMA_ADC_STA);
+    uart_putstr(UART_4, test_buffer);
+    
+    // 检查DMA控制寄存器
+    sprintf(test_buffer, "DMA_ADC_CR 0x%02X\r\n", DMA_ADC_CR);
+    uart_putstr(UART_4, test_buffer);
+    
+    // 检查DMA中断使能状态
+    sprintf(test_buffer, "DMA_ADC_IE %d\r\n", (DMA_ADC_CR & 0x80) ? 1 : 0);
+    uart_putstr(UART_4, test_buffer);
+    
+    // 测试1: DMA数据搬运测试
+    uart_putstr(UART_4, "Running Test 1 DMA data transfer test\r\n");
+    result1 = test_dma_data_transfer();
+    sprintf(test_buffer, "Test 1 result %d\r\n", result1);
+    uart_putstr(UART_4, test_buffer);
+    
+    // 延时一段时间，确保DMA完成
+    delay_ms(100);
+    
+    // 再次检查DMA状态
+    sprintf(test_buffer, "Final DMA_ADC_STA 0x%02X\r\n", DMA_ADC_STA);
+    uart_putstr(UART_4, test_buffer);
+    
+    // 后续可添加其他测试
+    // uint8 result2 = test_channel_mapping();
+    // uint8 result3 = test_dma_interrupt();
+    
+    uart_putstr(UART_4, "DMA ADC tests completed\r\n");
+}
+

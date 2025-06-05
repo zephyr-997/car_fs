@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     04/06/25  21:31:56  PAGE 1   
+C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     05/06/25  17:13:06  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_DMA_Isr
@@ -16,68 +16,66 @@ stmt  level    source
     4          
     5          #include "STC32G_DMA.h"
     6          #include "electromagnetic_tracking.h"  // 添加头文件以使用 g_adc_dma_completed_flag
-    7          
-    8          // bit DmaADCFlag = 0;  // 注释掉这个变量，因为我们将使用 g_adc_dma_completed_flag
-    9          
-   10          //========================================================================
-   11          // 函数: DMA_ADC_ISR_Handler
-   12          // 描述: DMA ADC 中断函数.
-   13          // 参数: none.
-   14          // 返回: none.
-   15          // 版本: V1.0, 2022-03-23
-   16          //========================================================================
-   17          void DMA_ADC_ISR_Handler (void) interrupt DMA_ADC_VECTOR
-   18          {
-   19   1        // 检查 DMA ADC 传输完成中断标志 (DMA_IF, bit 7 of DMA_ADC_STA)
-   20   1        if(DMA_ADC_STA & 0x80)  
-   21   1        {
-   22   2          DMA_ADC_STA &= ~0x80;   // 清除 DMA ADC 传输完成中断标志 (DMA_IF, bit 7)
-   23   2          g_adc_dma_completed_flag = 1; // 设置项目全局标志
-   24   2        }
-   25   1        
-   26   1        // 处理非法触发错误标志 (TRIG_ERR_IF, bit 0)
-   27   1        if(DMA_ADC_STA & 0x01)
-   28   1        {
-   29   2          DMA_ADC_STA &= ~0x01; // 清除非法触发错误标志
-   30   2          // 可以在此处添加错误处理代码
-   31   2        }
-   32   1      }
-   33          
-   34          //========================================================================
-   35          // 函数: DMA_ISR_Handler
-   36          // 描述: DMA中断函数.
-   37          // 参数: none.
-   38          // 返回: none.
-   39          // 版本: V1.0, 2021-05-25
-   40          //========================================================================
-   41          void DMA_ISR_Handler (void) interrupt 13
-   42          {
-   43   1        // TODO: 在此处理用户程序
-   44   1        
-   45   1        //----------- DMA ADC --------------
-   46   1        // 注释掉这部分，因为我们使用 DMA_ADC_ISR_Handler 处理 DMA ADC 中断
-   47   1        /*
-   48   1        if(DMA_ADC_STA & 0x01)  //AD转换完成
-   49   1        {
-   50   1          DMA_ADC_STA &= ~0x01; //清标志位
-   51   1          DmaADCFlag = 1;
-   52   1        }
-   53   1        */
-   54   1      }
+    7          #include "zf_uart.h"  // 添加串口头文件用于调试输出
+    8          
+    9          // bit DmaADCFlag = 0;  // 注释掉这个变量，因为我们将使用 g_adc_dma_completed_flag
+   10          
+   11          //========================================================================
+   12          // 函数: DMA_ADC_ISR_Handler
+   13          // 描述: DMA ADC 中断函数.
+   14          // 参数: none.
+   15          // 返回: none.
+   16          // 版本: V1.0, 2022-03-23
+   17          //========================================================================
+   18          void DMA_ADC_ISR_Handler (void) interrupt DMA_ADC_VECTOR
+   19          {
+   20   1        // 保存当前状态寄存器值用于调试
+   21   1        uint8 status = DMA_ADC_STA;
+   22   1        if(status & 0x01)
+   23   1        {
+   24   2          DMA_ADC_STA &= ~0x01; 
+   25   2      
+   26   2          g_adc_dma_completed_flag = 1; // 设置项目全局标志，表示DMA正常完成
+   27   2          // 可以在这里添加调试代码，如果需要
+   28   2      
+   29   2        }
+   30   1      }
+   31          
+   32          //========================================================================
+   33          // 函数: DMA_ISR_Handler
+   34          // 描述: DMA中断函数.
+   35          // 参数: none.
+   36          // 返回: none.
+   37          // 版本: V1.0, 2021-05-25
+   38          //========================================================================
+   39          void DMA_ISR_Handler (void) interrupt 13
+   40          {
+   41   1        // TODO: 在此处理用户程序
+   42   1        
+   43   1        //----------- DMA ADC --------------
+   44   1        // 注释掉这部分，因为我们使用 DMA_ADC_ISR_Handler 处理 DMA ADC 中断
+   45   1        /*
+   46   1        if(DMA_ADC_STA & 0x01)  //AD转换完成
+   47   1        {
+   48   1          DMA_ADC_STA &= ~0x01; //清标志位
+   49   1          DmaADCFlag = 1;
+   50   1        }
+   51   1        */
+   52   1      }
 
-
-C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     04/06/25  21:31:56  PAGE 2   
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =        90     ------
+  code size            =        66     ------
+C251 COMPILER V5.60.0,  STC32G_DMA_Isr                                                     05/06/25  17:13:06  PAGE 2   
+
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
   pdata size           =    ------     ------
   xdata size           =    ------     ------
   xdata-const size     =    ------     ------
-  edata size           =    ------     ------
+  edata size           =         1     ------
   bit size             =    ------     ------
   ebit size            =    ------     ------
   bitaddressable size  =    ------     ------

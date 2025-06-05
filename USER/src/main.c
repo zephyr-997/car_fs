@@ -1,7 +1,12 @@
 #include "headfile.h"
 
+// 选择使用传统ADC方式或DMA ADC方式
+#define USE_DMA_ADC 1  // 1表示使用DMA ADC，0表示使用传统ADC
+#define DMA_ADC_TEST_MODE  1
+
 extern uint8_t track_ten_cnt;
 extern volatile uint8 g_adc_dma_completed_flag;  // 引用DMA ADC数据就绪标志
+
 
 void main(void)
 {
@@ -10,21 +15,11 @@ void main(void)
 	uint16 value[7] = {0};   //调试用数组
 	
 	board_init();			
-	
-	// 选择使用传统ADC方式或DMA ADC方式
-#define USE_DMA_ADC 1  // 1表示使用DMA ADC，0表示使用传统ADC
 
-	// 初始化电磁传感器
-#if USE_DMA_ADC
-	electromagnetic_dma_init();     // 初始化DMA ADC电磁传感器
-#else
-	// electromagnetic_init() 函数已被移除，改为使用 electromagnetic_dma_init()
-	electromagnetic_dma_init();      // 使用DMA ADC初始化电磁传感器
-#endif
-	
 	// ips114_init_simspi();					
 	uart_init(UART_4, UART4_RX_P02, UART4_TX_P03, 115200, TIM_4);
-	
+
+	uart_putstr(UART_4, "test0...\r\n");
 	motor_init();
 	encoder_init();
 	
@@ -47,10 +42,23 @@ void main(void)
 	
 	// ips114_clear_simspi(WHITE);	 //清屏
 	delay_ms(100); // 延时等待系统稳定
-	
+
+	// 初始化电磁传感器
 #if USE_DMA_ADC
+
+	electromagnetic_dma_init();     // 初始化DMA ADC电磁传感器
 	// 启动第一次DMA ADC转换
 	start_adc_dma_conversion();
+
+#endif
+
+
+    // 添加DMA测试功能入口
+#ifdef DMA_ADC_TEST_MODE
+
+	// 运行DMA ADC测试
+	run_electromagnetic_dma_tests();
+
 #endif
 	
     while(1)
@@ -163,7 +171,7 @@ void main(void)
 #endif
 		}
 		
-#if USE_DMA_ADC
+#if 0
 		// 处理DMA ADC数据
 		if(g_adc_dma_completed_flag)
 		{
@@ -192,15 +200,15 @@ void main(void)
 			delay_ms(5);
 		}
 
-		sprintf(g_TxData,"error1\n");
-		uart_putstr(UART_4, g_TxData);
-		delay_ms(1000);
+		// sprintf(g_TxData,"error1\n");
+		// uart_putstr(UART_4, g_TxData);
+		// delay_ms(1000);
 #else
 		// 获取滤波后的ADC数据		
-		mid_filter();      // 使用中位值滤波获取电感数据 (此通路已不再可用，因get_adc()函数已被移除)
-		sprintf(g_TxData,"error2\n");
-		uart_putstr(UART_4, g_TxData);
-		delay_ms(1000);
+		// mid_filter();      // 使用中位值滤波获取电感数据 (此通路已不再可用，因get_adc()函数已被移除)
+		// sprintf(g_TxData,"error2\n");
+		// uart_putstr(UART_4, g_TxData);
+		// delay_ms(1000);
 #endif
 
 

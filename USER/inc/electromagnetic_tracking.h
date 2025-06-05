@@ -25,7 +25,7 @@
 
 // DMA ADC配置
 #define ADC_DMA_SAMPLES_PER_CHANNEL ADC_4_Times  // 每个通道DMA采集4次
-#define ADC_DMA_SAMPLES_PER_CHANNEL_NUM 4        // 对应的数值
+#define ADC_DMA_SAMPLES_PER_CHANNEL_NUM  12        // 对应的数值
 #define ADC_DMA_USED_CHANNEL_COUNT 7             // 使用的通道数
 
 // 组合所有ADC通道的位掩码
@@ -46,6 +46,15 @@
 #define WEIGHT_RIGHT_ANGLE 1  // 直角弯道
 #define WEIGHT_CROSS       2  // 十字圆环
 #define WEIGHT_ROUNDABOUT  3  // 环岛
+
+// DMA ADC错误码定义
+#define DMA_ADC_ERROR_NONE          0
+#define DMA_ADC_ERROR_TIMEOUT       1  // DMA转换超时
+#define DMA_ADC_ERROR_INVALID_DATA  2  // 数据异常
+#define DMA_ADC_ERROR_CONFLICT      3  // 资源冲突
+
+// 测试模式开关
+#define DMA_ADC_TEST_MODE  1
 
 // 定义电感权重结构体
 typedef struct {
@@ -84,6 +93,18 @@ void electromagnetic_dma_init(void);           // 初始化电磁传感器DMA AD
 void process_adc_dma_data(void);               // 处理DMA ADC数据
 void start_adc_dma_conversion(void);           // 启动DMA ADC转换
 
+// DMA ADC测试函数声明
+#ifdef DMA_ADC_TEST_MODE
+uint8 test_dma_data_transfer(void);            // DMA数据搬运测试
+uint8 test_channel_mapping(void);              // 通道映射测试
+uint8 test_dma_interrupt(void);                // DMA中断响应测试
+
+/**
+ * @brief 运行所有DMA ADC测试
+ */
+void run_electromagnetic_dma_tests(void);
+#endif
+
 // 外部变量声明
 extern uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT]; // 滤波后的值
 extern float result[SENSOR_COUNT];                // 电感结果数据
@@ -95,7 +116,7 @@ extern uint8 protection_flag;                  // 保护标志
 extern float signal_strength_value;            // 信号强度指标
 
 // DMA ADC相关变量声明
-extern uint16 AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];  // DMA ADC缓冲区
+extern uint8_t xdata AdcDmaBuffer[ADC_DMA_USED_CHANNEL_COUNT][ADC_DMA_SAMPLES_PER_CHANNEL_NUM];  // DMA ADC缓冲区
 extern volatile uint8 g_adc_dma_completed_flag;  // DMA ADC数据就绪标志（统一标志）
 
 //电磁位置计算变量

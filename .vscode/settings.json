@@ -22,6 +22,11 @@
         "filter.h": "c",
         "zf_iic.h": "c",
         "key.h": "c",
-        "zf_uart.h": "c"
+        "zf_uart.h": "c",
+        "stc32g_dma.h": "c",
+        "stdlib.h": "c",
+        "STDLIB.H": "cpp",
+        "stc32g_adc.h": "c",
+        "config.h": "c"
     }
 }

@@ -5,32 +5,32 @@
 #include	"STC32G_ADC.h"
 
 //========================================================================
-// º¯Êý: u8	ADC_Inilize(ADC_InitTypeDef *ADCx)
-// ÃèÊö: ADC³õÊ¼»¯³ÌÐò.
-// ²ÎÊý: ADCx: ½á¹¹²ÎÊý,Çë²Î¿¼adc.hÀïµÄ¶¨Òå.
-// ·µ»Ø: none.
-// °æ±¾: V1.0, 2012-10-22
+// å‡½æ•°: u8	ADC_Inilize(ADC_InitTypeDef *ADCx)
+// æè¿°: ADCåˆå§‹åŒ–ç¨‹åº.
+// å‚æ•°: ADCx: ç»“æž„å‚æ•°,è¯·å‚è€ƒadc.hé‡Œçš„å®šä¹‰.
+// è¿”å›ž: none.
+// ç‰ˆæœ¬: V1.0, 2012-10-22
 //========================================================================
 u8	ADC_Inilize(ADC_InitTypeDef *ADCx)
 {
-	ADCCFG = (ADCCFG & ~ADC_SPEED_2X16T) | ADCx->ADC_Speed;	//ÉèÖÃADC¹¤×÷Ê±ÖÓÆµÂÊ
-	ADC_Justify(ADCx->ADC_AdjResult);		//AD×ª»»½á¹û¶ÔÆë·½Ê½
+	ADCCFG = (ADCCFG & ~ADC_SPEED_2X16T) | ADCx->ADC_Speed;	//è®¾ç½®ADCå·¥ä½œæ—¶é’Ÿé¢‘çŽ‡
+	ADC_Justify(ADCx->ADC_AdjResult);		//ADè½¬æ¢ç»“æžœå¯¹é½æ–¹å¼
 
-	if(ADCx->ADC_SMPduty > 31)	return FAIL;	//´íÎó
-	if(ADCx->ADC_CsSetup > 1)	return FAIL;	//´íÎó
-	if(ADCx->ADC_CsHold > 3)	return FAIL;	//´íÎó
+	if(ADCx->ADC_SMPduty > 31)	return FAIL;	//é”™è¯¯
+	if(ADCx->ADC_CsSetup > 1)	return FAIL;	//é”™è¯¯
+	if(ADCx->ADC_CsHold > 3)	return FAIL;	//é”™è¯¯
 
-	ADCTIM = (ADCx->ADC_CsSetup << 7) | (ADCx->ADC_CsHold << 5) | ADCx->ADC_SMPduty ;		//ÉèÖÃ ADC ÄÚ²¿Ê±Ðò£¬ADC²ÉÑùÊ±¼ä½¨ÒéÉè×î´óÖµ
+	ADCTIM = (ADCx->ADC_CsSetup << 7) | (ADCx->ADC_CsHold << 5) | ADCx->ADC_SMPduty ;		//è®¾ç½® ADC å†…éƒ¨æ—¶åºï¼ŒADCé‡‡æ ·æ—¶é—´å»ºè®®è®¾æœ€å¤§å€¼
 	return SUCCESS;
 }
 
 
 //========================================================================
-// º¯Êý: void	ADC_PowerControl(u8 pwr)
-// ÃèÊö: ADCµçÔ´¿ØÖÆ³ÌÐò.
-// ²ÎÊý: pwr: µçÔ´¿ØÖÆ,ENABLE»òDISABLE.
-// ·µ»Ø: none.
-// °æ±¾: V1.0, 2012-10-22
+// å‡½æ•°: void	ADC_PowerControl(u8 pwr)
+// æè¿°: ADCç”µæºæŽ§åˆ¶ç¨‹åº.
+// å‚æ•°: pwr: ç”µæºæŽ§åˆ¶,ENABLEæˆ–DISABLE.
+// è¿”å›ž: none.
+// ç‰ˆæœ¬: V1.0, 2012-10-22
 //========================================================================
 void	ADC_PowerControl(u8 pwr)
 {
@@ -39,35 +39,35 @@ void	ADC_PowerControl(u8 pwr)
 }
 
 //========================================================================
-// º¯Êý: u16	Get_ADCResult(u8 channel)
-// ÃèÊö: ²éÑ¯·¨¶ÁÒ»´ÎADC×ª»»½á¹û.
-// ²ÎÊý: channel: Ñ¡ÔñÒª×ª»»µÄADCÍ¨µÀ.
-// ·µ»Ø: ADC×ª»»½á¹û.
-// °æ±¾: V1.0, 2012-10-22
+// å‡½æ•°: u16	Get_ADCResult(u8 channel)
+// æè¿°: æŸ¥è¯¢æ³•è¯»ä¸€æ¬¡ADCè½¬æ¢ç»“æžœ.
+// å‚æ•°: channel: é€‰æ‹©è¦è½¬æ¢çš„ADCé€šé“.
+// è¿”å›ž: ADCè½¬æ¢ç»“æžœ.
+// ç‰ˆæœ¬: V1.0, 2012-10-22
 //========================================================================
 u16	Get_ADCResult(u8 channel)	//channel = 0~15
 {
 	u16	adc;
 	u8	i;
 
-	if(channel > ADC_CH15)	return	4096;	//´íÎó,·µ»Ø4096,µ÷ÓÃµÄ³ÌÐòÅÐ¶Ï	
+	if(channel > ADC_CH15)	return	4096;	//é”™è¯¯,è¿”å›ž4096,è°ƒç”¨çš„ç¨‹åºåˆ¤æ–­	
 	ADC_RES = 0;
 	ADC_RESL = 0;
 
-	ADC_CONTR = (ADC_CONTR & 0xf0) | channel; //ÉèÖÃADC×ª»»Í¨µÀ
-	ADC_START = 1;//Æô¶¯ADC×ª»»
-	NOP(10);			//¶ÔADC_CONTR²Ù×÷ºóÒª4TÖ®ºó²ÅÄÜ·ÃÎÊ
+	ADC_CONTR = (ADC_CONTR & 0xf0) | channel; //è®¾ç½®ADCè½¬æ¢é€šé“
+	ADC_START = 1;//å¯åŠ¨ADCè½¬æ¢
+	NOP(10);			//å¯¹ADC_CONTRæ“ä½œåŽè¦4Tä¹‹åŽæ‰èƒ½è®¿é—®
 
-	for(i=0; i<250; i++)		//³¬Ê±·µ»Ø£¬Õý³£iµÈÓÚ10ÒÔÄÚ¾Í¿ÉÒÔ×ª»»Íê³É
+	for(i=0; i<250; i++)		//è¶…æ—¶è¿”å›žï¼Œæ­£å¸¸iç­‰äºŽ10ä»¥å†…å°±å¯ä»¥è½¬æ¢å®Œæˆ
 	{
 		if(ADC_FLAG)
 		{
-			ADC_FLAG = 0;	//Çå³ýADC×ª»»½áÊø±êÖ¾
-			if(RESFMT)		//×ª»»½á¹ûÓÒ¶ÔÆë¡£ 
+			ADC_FLAG = 0;	//æ¸…é™¤ADCè½¬æ¢ç»“æŸæ ‡å¿—
+			if(RESFMT)		//è½¬æ¢ç»“æžœå³å¯¹é½ã€‚ 
 			{
 				adc = ((u16)ADC_RES << 8) | ADC_RESL;
 			}
-			else		//×ª»»½á¹û×ó¶ÔÆë¡£ 
+			else		//è½¬æ¢ç»“æžœå·¦å¯¹é½ã€‚ 
 			{
 				adc = (u16)ADC_RES;
 				adc = (adc << 4) | ((ADC_RESL >> 4) & 0x0f);
@@ -75,5 +75,5 @@ u16	Get_ADCResult(u8 channel)	//channel = 0~15
 			return	adc;
 		}
 	}
-	return	4096;	//´íÎó,·µ»Ø4096,µ÷ÓÃµÄ³ÌÐòÅÐ¶Ï
+	return	4096;	//é”™è¯¯,è¿”å›ž4096,è°ƒç”¨çš„ç¨‹åºåˆ¤æ–­
 }
