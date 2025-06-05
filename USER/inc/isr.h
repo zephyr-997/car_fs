@@ -22,9 +22,9 @@
 
 
 #define SPEED_STRAIGHT     80
-#define SPEED_ANGLE        70
+#define SPEED_ANGLE        50
 #define SPEED_CROSS        80
-#define SPEED_ROUNDABOUT   80
+#define SPEED_ROUNDABOUT   60
 #define SPEED_SPEED        80
 
 

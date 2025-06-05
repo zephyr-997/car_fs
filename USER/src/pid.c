@@ -138,7 +138,9 @@ float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
 //	pid->p_out = (pid->kp * position) + (pid->kp * pid->kp * position * myfabs(position));
 //	pid->d_out = (pid->kd * (position - pid->lasterror) + (pid->kd * pid->kd * GyroZ));
 	pid->p_out = pid->kp * position;
+//	pid->d_out = (pid->kd * (position - pid->lasterror);
 	pid->d_out = pid->kd * GyroZ;
+//	pid->d_out = 0.8*pid->kd*pid->kd * GyroZ+0.2*pid->kd * (position - pid->lasterror);
 	
 	pid->output = pid->p_out + pid->d_out;
 	pid->lasterror = position;
@@ -154,6 +156,13 @@ float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ)
 	}
 	
 	return pid->output;
+}
+
+void pid_set(PID_t* pid, float kp, float ki, float kd)
+{
+	pid->kp = kp;
+	pid->ki = ki;
+	pid->kd = kd;
 }
 
 void pid_clean(PID_t* pid)

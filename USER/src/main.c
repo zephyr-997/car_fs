@@ -23,7 +23,7 @@ void main(void)
 //	pid_init(&RightPID, 0.0f, 0.0f, 0.0f, 0.0f, 5000.0f, 6000.0f);
 //	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 250.0f);
 	
-	pid_init(&SpeedPID, 110.0f, 0.6f, 0.0f, 0.0f, 5000.0f, 6000.0f);
+	pid_init(&SpeedPID, 100.0f, 0.7f, 0.0f, 0.0f, 5000.0f, 6000.0f);
 	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 6000.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
@@ -88,17 +88,21 @@ void main(void)
 #endif
 					
 #if 1
-			sprintf(g_TxData,"%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d\n",
+			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d,%d,%d\n",
 					g_SpeedPoint,
 					g_EncoderAverage,
+					g_EncoderLeft,
+					g_EncoderRight,
 					(int)speed_pid,
 					position,
 					(int)turn_pid,
 					g_DutyLeft,
 					g_DutyRight,
-					(int)SpeedPID.interror,
+					track_type,
 					(int)SpeedPID.p_out,
-					(int)SpeedPID.i_out);
+					(int)TurnPID.d_out,
+					(int)Gyro_Z,
+					(int)filtered_GyroZ);
 			uart_putstr(UART_4, g_TxData);
 #endif
 					

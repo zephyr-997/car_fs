@@ -39,6 +39,7 @@ float pid_poisitional_feedforward(PID_t* pid, float real, float target);
 float pid_increment_feedforward(PID_t* pid, float real, float target);
 float pid_poisitional_normal(PID_t* pid, float position);
 float pid_poisitional_quadratic(PID_t* pid, float position, float GyroZ);
+void pid_set(PID_t* pid, float kp, float ki, float kd);
 void pid_clean(PID_t* pid);
 
 #endif

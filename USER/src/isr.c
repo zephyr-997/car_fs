@@ -338,26 +338,26 @@ void TM2_Isr() interrupt 12
 	Gyro_Z = imu963ra_gyro_transition(imu963ra_gyro_z);
 	
 	if (track_type == 0)//普通直线
-	{
+	{		
 		positionReal = position;
 		g_SpeedPoint = SPEED_STRAIGHT;
 	}
 	else if (track_type == 1)//直角
-	{
+	{		
 		positionReal = position;
 		g_SpeedPoint = SPEED_ANGLE;
 	}
 	else if (track_type == 2)//十字圆环内部
-	{
+	{		
 		positionReal = position;
 		g_SpeedPoint = SPEED_CROSS;
 	}
 	else if (track_type == 3 && track_route_status == 1)//圆环入环
 	{
-		g_SpeedPoint = SPEED_STRAIGHT;
+		g_SpeedPoint = SPEED_ROUNDABOUT;
 		g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
 		
-		if(g_intencoderALL <= 4000)//第一阶段先直行
+		if(g_intencoderALL <= 3000)//第一阶段先直行
 		{
 			positionReal = 0;
 		}
@@ -365,14 +365,14 @@ void TM2_Isr() interrupt 12
 		{
 			if (track_route == 1)//右环
 			{
-				positionReal = -60;
+				positionReal = -40;
 			}
 			else if (track_route == 2)//左环
 			{
-				positionReal = 60;
+				positionReal = 40;
 			}
 						
-			if (g_intencoderALL >= 6500)//入环完毕
+			if (g_intencoderALL >= 5500)//入环完毕
 			{
 				track_route_status = 2;
 				g_intencoderALL = 0;
@@ -386,18 +386,18 @@ void TM2_Isr() interrupt 12
 	}
 	else if (track_type == 3 && track_route_status == 3)//圆环出环
 	{
-		g_SpeedPoint = SPEED_STRAIGHT;
+		g_SpeedPoint = SPEED_ROUNDABOUT;
 		g_intencoderALL += (g_EncoderLeft + g_EncoderRight) / 2;
 		
 		if (g_intencoderALL <= 2000)//第一阶段打死出环
 		{
 			if (track_route == 1)//右环
 			{
-				positionReal = -65;
+				positionReal = -50;
 			}
 			else if (track_route == 2)//左环
 			{
-				positionReal = 65;
+				positionReal = 50;
 			}
 		}
 		else//第二阶段直走
