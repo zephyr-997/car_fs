@@ -30,6 +30,9 @@ uint8_t g_RxPointer = 0, g_RxDat = 0;
 uint8_t type_track = 1; // 0: 直道 1: 十字圆环 2: 环岛 3: 直角弯道
 float temp = 0;
 extern TrackWeights track_weights[4];
+extern volatile uint8_t r_position;
+extern volatile uint16_t r_distance;
+extern volatile uint16_t s_distance;
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      串口初始化
 //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
@@ -397,6 +400,27 @@ void uart4_interrupt_callback(void)
 			// sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
 			// uart_putstr(UART_4, g_TxData);
 		}
+		else if (strncmp(g_RxData, "r_p", 3) == 0)
+		{
+			sscanf(g_RxData, "r_p:%f", &temp);
+			r_position = (uint8_t)temp;
+			// sprintf(g_TxData, "r_p:%d\n", r_position);
+			// uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "r_d", 3) == 0)
+		{
+			sscanf(g_RxData, "r_d:%f", &temp);
+			r_distance = (uint16_t)temp;
+			// sprintf(g_TxData, "r_d:%d\n", r_distance);
+			// uart_putstr(UART_4, g_TxData);
+		}
+		else if (strncmp(g_RxData, "s_d", 3) == 0)
+		{
+			sscanf(g_RxData, "s_d:%f", &temp);
+			s_distance = (uint16_t)temp;
+			// sprintf(g_TxData, "r_d:%d\n", r_distance);
+			// uart_putstr(UART_4, g_TxData);
+		}		
 		else if (strncmp(g_RxData, "stop", 4) == 0)
 		{
 			set_motor_pwm(0, 0);

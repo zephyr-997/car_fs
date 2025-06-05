@@ -24,7 +24,7 @@ void main(void)
 //	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 250.0f);
 	
 	pid_init(&SpeedPID, 100.0f, 0.7f, 0.0f, 0.0f, 5000.0f, 6000.0f);
-	pid_init(&TurnPID, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 6000.0f);
+	pid_init(&TurnPID, 80.0f, 0.0f, 14.0f, 0.0f, 0.0f, 6000.0f);
 	
 	LowPass_init(&leftSpeedFilt, 0.556);   //初始化低通滤波器
 	LowPass_init(&rightSpeedFilt, 0.556);
@@ -87,7 +87,7 @@ void main(void)
 			uart_putstr(UART_4, g_TxData);
 #endif
 					
-#if 1
+#if 0
 			sprintf(g_TxData,"%d,%d,%d,%d,%d,%d,%d,%ld,%ld,%d,%d,%d,%d,%d\n",
 					g_SpeedPoint,
 					g_EncoderAverage,
@@ -130,7 +130,7 @@ void main(void)
 //			sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
 //			uart_putstr(UART_4, g_TxData);
 
-#if 0
+#if 1
 			// 通过串口输出七电感数据
 			sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
 			 (uint16)normalized_data[SENSOR_HL], 

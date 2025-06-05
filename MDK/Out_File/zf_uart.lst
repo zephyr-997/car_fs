@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 1   
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_uart
@@ -43,456 +43,480 @@ stmt  level    source
    30          uint8_t type_track = 1; // 0: 直道 1: 十字圆环 2: 环岛 3: 直角弯道
    31          float temp = 0;
    32          extern TrackWeights track_weights[4];
-   33          //-------------------------------------------------------------------------------------------------------
+   33          extern volatile uint8_t r_position;
+   34          extern volatile uint16_t r_distance;
+   35          extern volatile uint16_t s_distance;
+   36          //-------------------------------------------------------------------------------------------------------
              -------------
-   34          //  @brief      串口初始化
-   35          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
-   36          //  @param      uart_rx_pin     串口接收引脚
-   37          //  @param      uart_tx_pin     串口发送引脚
-   38          //  @param      baud          串口波特率
-   39          //  @param      tim_n         使用tim_n作为串口波特率发生器(TIM1-TIM4)
-   40          //  @return     NULL            
-   41          //  Sample usage:               uart_init(UART_1, UART1_RX_P30, UART1_TX_P31, 115200, TIM_2);        //�
+   37          //  @brief      串口初始化
+   38          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
+   39          //  @param      uart_rx_pin     串口接收引脚
+   40          //  @param      uart_tx_pin     串口发送引脚
+   41          //  @param      baud          串口波特率
+   42          //  @param      tim_n         使用tim_n作为串口波特率发生器(TIM1-TIM4)
+   43          //  @return     NULL            
+   44          //  Sample usage:               uart_init(UART_1, UART1_RX_P30, UART1_TX_P31, 115200, TIM_2);        //�
              -�始化串口1 波特率115200 发送引脚使用P31 接收引脚使用P30 ,使用定时器2作为波特率发生器
-   42          //  @note                       串口1使用 定时器1或者定时器2 作为波特率发生器。
-   43          //                串口2使用 定时器2       作为波特率发生器。
-   44          //                串口3使用 定时器3或者定时器2 作为波特率发生器。
-   45          //                串口4使用 定时器4或者定时器2 作为波特率发生器。
-   46          //                              STC32G仅有 定时器0-定时器4，这5个定时器。
-   47          //                编码器采集数据也需要定时器作为外部计数。
-   48          //                如果不同的串口，使用同一个定时器，串口的波特率以最后一个初始化�
+   45          //  @note                       串口1使用 定时器1或者定时器2 作为波特率发生器。
+   46          //                串口2使用 定时器2       作为波特率发生器。
+   47          //                串口3使用 定时器3或者定时器2 作为波特率发生器。
+   48          //                串口4使用 定时器4或者定时器2 作为波特率发生器。
+   49          //                              STC32G仅有 定时器0-定时器4，这5个定时器。
+   50          //                编码器采集数据也需要定时器作为外部计数。
+   51          //                如果不同的串口，使用同一个定时器，串口的波特率以最后一个初始化�
              -�准
-   49          //-------------------------------------------------------------------------------------------------------
+   52          //-------------------------------------------------------------------------------------------------------
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 2   
+
              -------------
-   50          void uart_init(UARTN_enum uart_n, UARTPIN_enum uart_rx_pin, UARTPIN_enum uart_tx_pin, uint32 baud, TIMN_e
+   53          void uart_init(UARTN_enum uart_n, UARTPIN_enum uart_rx_pin, UARTPIN_enum uart_tx_pin, uint32 baud, TIMN_e
              -num tim_n)
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 2   
-
-   51          {
-   52   1          uint16 brt;
-   53   1      
-   54   1        brt = (uint16)(65536 - (sys_clk/baud/4));
-   55   1      
+   54          {
+   55   1          uint16 brt;
    56   1      
-   57   1        switch(uart_n)
-   58   1        {
-   59   2          case UART_1:
-   60   2          {
-   61   3            if(TIM_1 == tim_n)
-   62   3            {
-   63   4              SCON |= 0x50;
-   64   4              TMOD |= 0x00;
-   65   4              TL1 = brt;
-   66   4              TH1 = brt >> 8;
-   67   4              AUXR |= 0x40;
-   68   4              TR1 = 1;
-   69   4              busy[1] = 0;
-   70   4            }
-   71   3            else if(TIM_2 == tim_n)
-   72   3            {
-   73   4              SCON |= 0x50;
-   74   4              T2L = brt;
-   75   4              T2H = brt >> 8;
-   76   4              AUXR |= 0x15;
-   77   4            }
-   78   3            P_SW1 &= ~(0x03<<6);
-   79   3            if((UART1_RX_P30 == uart_rx_pin) && (UART1_TX_P31 == uart_tx_pin))
-   80   3            {
-   81   4              P_SW1 |= 0x00;
-   82   4            }
-   83   3            else if((UART1_RX_P36 == uart_rx_pin) && (UART1_TX_P37 == uart_tx_pin))
-   84   3            {
-   85   4              P_SW1 |= 0x40;
-   86   4            }
-   87   3            else if((UART1_RX_P16 == uart_rx_pin) && (UART1_TX_P17 == uart_tx_pin))
-   88   3            {
-   89   4              P_SW1 |= 0x80;
-   90   4            }
-   91   3            else if((UART1_RX_P43 == uart_rx_pin) && (UART1_TX_P44 == uart_tx_pin))
-   92   3            {
-   93   4              P_SW1 |= 0xc0;
-   94   4            }
-   95   3            busy[1] = 0;
-   96   3            ES = 1;
-   97   3            break;
-   98   3          }
-   99   2          
-  100   2          case UART_2:
-  101   2          {
-  102   3            if(TIM_2 == tim_n)
-  103   3            {
-  104   4              S2CON |= 0x50;
-  105   4              T2L = brt;
-  106   4              T2H = brt >> 8;
-  107   4              AUXR |= 0x14;
-  108   4            }
-  109   3            
-  110   3            P_SW2 &= ~(0x01<<0);
-  111   3            if((UART2_RX_P10 == uart_rx_pin) && (UART2_TX_P11 == uart_tx_pin))
-  112   3            {
-  113   4              P_SW2 |= 0x00;
-  114   4            }
-  115   3            else if((UART2_RX_P46 == uart_rx_pin) && (UART2_TX_P47 == uart_tx_pin))
-  116   3            {
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 3   
+   57   1        brt = (uint16)(65536 - (sys_clk/baud/4));
+   58   1      
+   59   1      
+   60   1        switch(uart_n)
+   61   1        {
+   62   2          case UART_1:
+   63   2          {
+   64   3            if(TIM_1 == tim_n)
+   65   3            {
+   66   4              SCON |= 0x50;
+   67   4              TMOD |= 0x00;
+   68   4              TL1 = brt;
+   69   4              TH1 = brt >> 8;
+   70   4              AUXR |= 0x40;
+   71   4              TR1 = 1;
+   72   4              busy[1] = 0;
+   73   4            }
+   74   3            else if(TIM_2 == tim_n)
+   75   3            {
+   76   4              SCON |= 0x50;
+   77   4              T2L = brt;
+   78   4              T2H = brt >> 8;
+   79   4              AUXR |= 0x15;
+   80   4            }
+   81   3            P_SW1 &= ~(0x03<<6);
+   82   3            if((UART1_RX_P30 == uart_rx_pin) && (UART1_TX_P31 == uart_tx_pin))
+   83   3            {
+   84   4              P_SW1 |= 0x00;
+   85   4            }
+   86   3            else if((UART1_RX_P36 == uart_rx_pin) && (UART1_TX_P37 == uart_tx_pin))
+   87   3            {
+   88   4              P_SW1 |= 0x40;
+   89   4            }
+   90   3            else if((UART1_RX_P16 == uart_rx_pin) && (UART1_TX_P17 == uart_tx_pin))
+   91   3            {
+   92   4              P_SW1 |= 0x80;
+   93   4            }
+   94   3            else if((UART1_RX_P43 == uart_rx_pin) && (UART1_TX_P44 == uart_tx_pin))
+   95   3            {
+   96   4              P_SW1 |= 0xc0;
+   97   4            }
+   98   3            busy[1] = 0;
+   99   3            ES = 1;
+  100   3            break;
+  101   3          }
+  102   2          
+  103   2          case UART_2:
+  104   2          {
+  105   3            if(TIM_2 == tim_n)
+  106   3            {
+  107   4              S2CON |= 0x50;
+  108   4              T2L = brt;
+  109   4              T2H = brt >> 8;
+  110   4              AUXR |= 0x14;
+  111   4            }
+  112   3            
+  113   3            P_SW2 &= ~(0x01<<0);
+  114   3            if((UART2_RX_P10 == uart_rx_pin) && (UART2_TX_P11 == uart_tx_pin))
+  115   3            {
+  116   4              P_SW2 |= 0x00;
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 3   
 
-  117   4              P_SW2 |= 0x01;
-  118   4            }
-  119   3            
-  120   3            IE2 |= 0x01 << 0; //�������п�2�ж�
-  121   3            busy[2] = 0;
-  122   3            break;
-  123   3          }
-  124   2          
-  125   2          case UART_3:
-  126   2          {
-  127   3            if(TIM_2 == tim_n)
-  128   3            {
-  129   4              S3CON |= 0x10;
-  130   4              T2L = brt;
-  131   4              T2H = brt >> 8;
-  132   4              AUXR |= 0x14;
-  133   4            }
-  134   3            else if(TIM_3 == tim_n)
-  135   3            {
-  136   4              S3CON |= 0x50;
-  137   4              T3L = brt;
-  138   4              T3H = brt >> 8;
-  139   4              T4T3M |= 0x0a;
-  140   4            }
-  141   3            
-  142   3            P_SW2 &= ~(0x01<<1);
-  143   3            if((UART3_RX_P00 == uart_rx_pin) && (UART3_TX_P01 == uart_tx_pin))
-  144   3            {
-  145   4              P_SW2 |= 0x00;
-  146   4            }
-  147   3            else if((UART3_RX_P50 == uart_rx_pin) && (UART3_TX_P51 == uart_tx_pin))
-  148   3            {
-  149   4              P_SW2 |= 0x02;
-  150   4            }
-  151   3            
-  152   3            IE2 |= 0x01<<3; //�������п�3�ж�
-  153   3            busy[3] = 0;
-  154   3            break;
-  155   3          }
-  156   2          
-  157   2          case UART_4:
-  158   2          {
-  159   3            if(TIM_2 == tim_n)
-  160   3            {
-  161   4              S4CON |= 0x10;
-  162   4              T2L = brt;
-  163   4              T2H = brt >> 8;
-  164   4              AUXR |= 0x14;
-  165   4            }
-  166   3            else if(TIM_4 == tim_n)
-  167   3            {
-  168   4              S4CON |= 0x50;
-  169   4              T4L = brt;
-  170   4              T4H = brt >> 8;
-  171   4              T4T3M |= 0xa0;
-  172   4            }
-  173   3      
-  174   3            P_SW2 &= ~(0x01<<2);
-  175   3            if((UART4_RX_P02 == uart_rx_pin) && (UART4_TX_P03 == uart_tx_pin))
-  176   3            {
-  177   4              P_SW2 |= 0x00;
-  178   4            }
-  179   3            else if((UART4_RX_P52 == uart_rx_pin) && (UART4_TX_P53 == uart_tx_pin))
-  180   3            {
-  181   4              P5M0 = 0x00;
-  182   4              P5M1 = 0x01<<2;//P5.2 ��Ҫ����Ϊ����
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 4   
+  117   4            }
+  118   3            else if((UART2_RX_P46 == uart_rx_pin) && (UART2_TX_P47 == uart_tx_pin))
+  119   3            {
+  120   4              P_SW2 |= 0x01;
+  121   4            }
+  122   3            
+  123   3            IE2 |= 0x01 << 0; //�������п�2�ж�
+  124   3            busy[2] = 0;
+  125   3            break;
+  126   3          }
+  127   2          
+  128   2          case UART_3:
+  129   2          {
+  130   3            if(TIM_2 == tim_n)
+  131   3            {
+  132   4              S3CON |= 0x10;
+  133   4              T2L = brt;
+  134   4              T2H = brt >> 8;
+  135   4              AUXR |= 0x14;
+  136   4            }
+  137   3            else if(TIM_3 == tim_n)
+  138   3            {
+  139   4              S3CON |= 0x50;
+  140   4              T3L = brt;
+  141   4              T3H = brt >> 8;
+  142   4              T4T3M |= 0x0a;
+  143   4            }
+  144   3            
+  145   3            P_SW2 &= ~(0x01<<1);
+  146   3            if((UART3_RX_P00 == uart_rx_pin) && (UART3_TX_P01 == uart_tx_pin))
+  147   3            {
+  148   4              P_SW2 |= 0x00;
+  149   4            }
+  150   3            else if((UART3_RX_P50 == uart_rx_pin) && (UART3_TX_P51 == uart_tx_pin))
+  151   3            {
+  152   4              P_SW2 |= 0x02;
+  153   4            }
+  154   3            
+  155   3            IE2 |= 0x01<<3; //�������п�3�ж�
+  156   3            busy[3] = 0;
+  157   3            break;
+  158   3          }
+  159   2          
+  160   2          case UART_4:
+  161   2          {
+  162   3            if(TIM_2 == tim_n)
+  163   3            {
+  164   4              S4CON |= 0x10;
+  165   4              T2L = brt;
+  166   4              T2H = brt >> 8;
+  167   4              AUXR |= 0x14;
+  168   4            }
+  169   3            else if(TIM_4 == tim_n)
+  170   3            {
+  171   4              S4CON |= 0x50;
+  172   4              T4L = brt;
+  173   4              T4H = brt >> 8;
+  174   4              T4T3M |= 0xa0;
+  175   4            }
+  176   3      
+  177   3            P_SW2 &= ~(0x01<<2);
+  178   3            if((UART4_RX_P02 == uart_rx_pin) && (UART4_TX_P03 == uart_tx_pin))
+  179   3            {
+  180   4              P_SW2 |= 0x00;
+  181   4            }
+  182   3            else if((UART4_RX_P52 == uart_rx_pin) && (UART4_TX_P53 == uart_tx_pin))
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 4   
 
-  183   4              P_SW2 |= 0x04;
-  184   4            }
-  185   3            IE2 |= 0x01<<4; //�������п�4�ж�
-  186   3            busy[4] = 0;
-  187   3            break;
-  188   3          }
-  189   2          
-  190   2        }
-  191   1      
-  192   1      }
-  193          
-  194          //-------------------------------------------------------------------------------------------------------
+  183   3            {
+  184   4              P5M0 = 0x00;
+  185   4              P5M1 = 0x01<<2;//P5.2 ��Ҫ����Ϊ����
+  186   4              P_SW2 |= 0x04;
+  187   4            }
+  188   3            IE2 |= 0x01<<4; //�������п�4�ж�
+  189   3            busy[4] = 0;
+  190   3            break;
+  191   3          }
+  192   2          
+  193   2        }
+  194   1      
+  195   1      }
+  196          
+  197          //-------------------------------------------------------------------------------------------------------
              -------------
-  195          //  @brief      串口发送字符串
-  196          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
-  197          //  @param      *str            要发送的字符串地址
-  198          //  @return     void
-  199          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
-  200          //-------------------------------------------------------------------------------------------------------
+  198          //  @brief      串口发送字符串
+  199          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
+  200          //  @param      *str            要发送的字符串地址
+  201          //  @return     void
+  202          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
+  203          //-------------------------------------------------------------------------------------------------------
              -------------
-  201          void uart_putchar(UARTN_enum uart_n,uint8 dat)
-  202          {
-  203   1        switch(uart_n)
-  204   1        {
-  205   2          case UART_1:
-  206   2            while (busy[1]);
-  207   2            busy[1] = 1;
-  208   2            SBUF = dat;
-  209   2              break;
-  210   2          case UART_2:
-  211   2            while (busy[2]);
-  212   2            busy[2] = 1;
-  213   2            S2BUF = dat;
-  214   2              break;
-  215   2          case UART_3:
-  216   2            while (busy[3]);
-  217   2            busy[3] = 1;
-  218   2            S3BUF = dat;
-  219   2              break;
-  220   2          case UART_4:
-  221   2            while (busy[4]);
-  222   2            busy[4] = 1;
-  223   2            S4BUF = dat;
-  224   2              break;
-  225   2        }
-  226   1      }
-  227          
-  228          
-  229          //-------------------------------------------------------------------------------------------------------
+  204          void uart_putchar(UARTN_enum uart_n,uint8 dat)
+  205          {
+  206   1        switch(uart_n)
+  207   1        {
+  208   2          case UART_1:
+  209   2            while (busy[1]);
+  210   2            busy[1] = 1;
+  211   2            SBUF = dat;
+  212   2              break;
+  213   2          case UART_2:
+  214   2            while (busy[2]);
+  215   2            busy[2] = 1;
+  216   2            S2BUF = dat;
+  217   2              break;
+  218   2          case UART_3:
+  219   2            while (busy[3]);
+  220   2            busy[3] = 1;
+  221   2            S3BUF = dat;
+  222   2              break;
+  223   2          case UART_4:
+  224   2            while (busy[4]);
+  225   2            busy[4] = 1;
+  226   2            S4BUF = dat;
+  227   2              break;
+  228   2        }
+  229   1      }
+  230          
+  231          
+  232          //-------------------------------------------------------------------------------------------------------
              -------------
-  230          //  @brief      串口发送字符串
-  231          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
-  232          //  @param      *str            要发送的字符串地址
-  233          //  @return     void
-  234          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
-  235          //-------------------------------------------------------------------------------------------------------
+  233          //  @brief      串口发送字符串
+  234          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
+  235          //  @param      *str            要发送的字符串地址
+  236          //  @return     void
+  237          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
+  238          //-------------------------------------------------------------------------------------------------------
              -------------
-  236          void uart_putbuff(UARTN_enum uart_n,uint8 *p,uint32 len)
-  237          {
-  238   1          while(len--)
-  239   1              uart_putchar(uart_n,*p++);
-  240   1      }
-  241          
-  242          
-  243          //-------------------------------------------------------------------------------------------------------
-             -------------
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 5   
+  239          void uart_putbuff(UARTN_enum uart_n,uint8 *p,uint32 len)
+  240          {
+  241   1          while(len--)
+  242   1              uart_putchar(uart_n,*p++);
+  243   1      }
+  244          
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 5   
 
-  244          //  @brief      串口发送字符串
-  245          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
-  246          //  @param      *str            要发送的字符串地址
-  247          //  @return     void
-  248          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
-  249          //-------------------------------------------------------------------------------------------------------
+  245          
+  246          //-------------------------------------------------------------------------------------------------------
              -------------
-  250          void uart_putstr(UARTN_enum uart_n,uint8 *str)
-  251          {
-  252   1          while(*str)
-  253   1          {
-  254   2              uart_putchar(uart_n, *str++);
-  255   2          }
-  256   1      }
-  257          
-  258          
-  259          void uart4_interrupt_callback(void)
-  260          {
-  261   1        float weight_value = 0;
-  262   1        float filter_value = 0;
-  263   1        int16 rate_value = 0;
-  264   1      
-  265   1        if(g_RxPointer > 0)
-  266   1        {
-  267   2      //    if (strncmp(g_RxData, "left_kp", 7) == 0)
-  268   2      //    {
-  269   2      //      sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
-  270   2      //      
-  271   2      ////      sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
-  272   2      ////      uart_putstr(UART_4, g_TxData);
-  273   2      //    }
-  274   2      //    else if (strncmp(g_RxData, "left_ki", 7) == 0)
-  275   2      //    {
-  276   2      //      sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
-  277   2      //      
-  278   2      ////      sprintf(g_TxData, "left_ki:%f\n", LeftPID.ki);
-  279   2      ////      uart_putstr(UART_4, g_TxData);
-  280   2      //    }
-  281   2      //    else if (strncmp(g_RxData, "left_kd", 7) == 0)
-  282   2      //    {
-  283   2      //      sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
-  284   2      //      
-  285   2      ////      sprintf(g_TxData, "left_kd:%f\n", LeftPID.kd);
-  286   2      ////      uart_putstr(UART_4, g_TxData);
-  287   2      //    }
-  288   2      //    else if (strncmp(g_RxData, "left_kf", 7) == 0)
-  289   2      //    {
-  290   2      //      sscanf(g_RxData, "left_kf:%f", &LeftPID.kf);
-  291   2      //      
-  292   2      ////      sprintf(g_TxData, "left_kd:%f\n", LeftPID.kf);
-  293   2      ////      uart_putstr(UART_4, g_TxData);
-  294   2      //    }
-  295   2      //    else if (strncmp(g_RxData, "right_kp", 8) == 0)
-  296   2      //    {
-  297   2      //      sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
-  298   2      //      
-  299   2      ////      sprintf(g_TxData, "right_kp:%f\n", RightPID.kp);
-  300   2      ////      uart_putstr(UART_4, g_TxData);
-  301   2      //    }
-  302   2      //    else if (strncmp(g_RxData, "right_ki", 8) == 0)
-  303   2      //    {
-  304   2      //      sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
-  305   2      //      
-  306   2      ////      sprintf(g_TxData, "right_ki:%f\n", RightPID.ki);
-  307   2      ////      uart_putstr(UART_4, g_TxData);
-  308   2      //    }
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 6   
+  247          //  @brief      串口发送字符串
+  248          //  @param      uart_n          串口模块号(USART_1,USART_2,USART_3,USART_4)
+  249          //  @param      *str            要发送的字符串地址
+  250          //  @return     void
+  251          //  Sample usage:               uart_putstr(UART_1,"i lvoe you"); 
+  252          //-------------------------------------------------------------------------------------------------------
+             -------------
+  253          void uart_putstr(UARTN_enum uart_n,uint8 *str)
+  254          {
+  255   1          while(*str)
+  256   1          {
+  257   2              uart_putchar(uart_n, *str++);
+  258   2          }
+  259   1      }
+  260          
+  261          
+  262          void uart4_interrupt_callback(void)
+  263          {
+  264   1        float weight_value = 0;
+  265   1        float filter_value = 0;
+  266   1        int16 rate_value = 0;
+  267   1      
+  268   1        if(g_RxPointer > 0)
+  269   1        {
+  270   2      //    if (strncmp(g_RxData, "left_kp", 7) == 0)
+  271   2      //    {
+  272   2      //      sscanf(g_RxData, "left_kp:%f", &LeftPID.kp);
+  273   2      //      
+  274   2      ////      sprintf(g_TxData, "left_kp:%f\n", LeftPID.kp);
+  275   2      ////      uart_putstr(UART_4, g_TxData);
+  276   2      //    }
+  277   2      //    else if (strncmp(g_RxData, "left_ki", 7) == 0)
+  278   2      //    {
+  279   2      //      sscanf(g_RxData, "left_ki:%f", &LeftPID.ki);
+  280   2      //      
+  281   2      ////      sprintf(g_TxData, "left_ki:%f\n", LeftPID.ki);
+  282   2      ////      uart_putstr(UART_4, g_TxData);
+  283   2      //    }
+  284   2      //    else if (strncmp(g_RxData, "left_kd", 7) == 0)
+  285   2      //    {
+  286   2      //      sscanf(g_RxData, "left_kd:%f", &LeftPID.kd);
+  287   2      //      
+  288   2      ////      sprintf(g_TxData, "left_kd:%f\n", LeftPID.kd);
+  289   2      ////      uart_putstr(UART_4, g_TxData);
+  290   2      //    }
+  291   2      //    else if (strncmp(g_RxData, "left_kf", 7) == 0)
+  292   2      //    {
+  293   2      //      sscanf(g_RxData, "left_kf:%f", &LeftPID.kf);
+  294   2      //      
+  295   2      ////      sprintf(g_TxData, "left_kd:%f\n", LeftPID.kf);
+  296   2      ////      uart_putstr(UART_4, g_TxData);
+  297   2      //    }
+  298   2      //    else if (strncmp(g_RxData, "right_kp", 8) == 0)
+  299   2      //    {
+  300   2      //      sscanf(g_RxData, "right_kp:%f", &RightPID.kp);
+  301   2      //      
+  302   2      ////      sprintf(g_TxData, "right_kp:%f\n", RightPID.kp);
+  303   2      ////      uart_putstr(UART_4, g_TxData);
+  304   2      //    }
+  305   2      //    else if (strncmp(g_RxData, "right_ki", 8) == 0)
+  306   2      //    {
+  307   2      //      sscanf(g_RxData, "right_ki:%f", &RightPID.ki);
+  308   2      //      
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 6   
 
-  309   2      //    else if (strncmp(g_RxData, "right_kd", 8) == 0)
-  310   2      //    {
-  311   2      //      sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
-  312   2      //      
-  313   2      ////      sprintf(g_TxData, "right_kd:%f\n", RightPID.kd);
-  314   2      ////      uart_putstr(UART_4, g_TxData);
-  315   2      //    }
-  316   2      //    else if (strncmp(g_RxData, "right_kf", 8) == 0)
-  317   2      //    {
-  318   2      //      sscanf(g_RxData, "right_kf:%f", &RightPID.kf);
-  319   2      //      
-  320   2      ////      sprintf(g_TxData, "right_kd:%f\n", RightPID.kf);
-  321   2      ////      uart_putstr(UART_4, g_TxData);
-  322   2      //    }
-  323   2      
-  324   2          if (strncmp(g_RxData, "speed_kp", 8) == 0)
-  325   2          {
-  326   3            sscanf(g_RxData, "speed_kp:%f", &SpeedPID.kp);
-  327   3            
-  328   3      //      sprintf(g_TxData, "speed_kp:%f\n", SpeedPID.kp);
-  329   3      //      uart_putstr(UART_4, g_TxData);
-  330   3          }
-  331   2          else if (strncmp(g_RxData, "speed_ki", 8) == 0)
-  332   2          {
-  333   3            sscanf(g_RxData, "speed_ki:%f", &SpeedPID.ki);
-  334   3            
-  335   3      //      sprintf(g_TxData, "speed_ki:%f\n", SpeedPID.ki);
-  336   3      //      uart_putstr(UART_4, g_TxData);
-  337   3          }
-  338   2          else if (strncmp(g_RxData, "speed_kd", 8) == 0)
-  339   2          {
-  340   3            sscanf(g_RxData, "speed_kd:%f", &SpeedPID.kd);
-  341   3            
-  342   3      //      sprintf(g_TxData, "speed_kd:%f\n", SpeedPID.kd);
-  343   3      //      uart_putstr(UART_4, g_TxData);
-  344   3          }
-  345   2          else if (strncmp(g_RxData, "turn_kp", 7) == 0)
-  346   2          {
-  347   3            sscanf(g_RxData, "turn_kp:%f", &TurnPID.kp);
-  348   3            
-  349   3      //      sprintf(g_TxData, "turn_kp:%f\n", TurnPID.kp);
-  350   3      //      uart_putstr(UART_4, g_TxData);
-  351   3          }
-  352   2          else if (strncmp(g_RxData, "turn_ki", 7) == 0)
-  353   2          {
-  354   3            sscanf(g_RxData, "turn_ki:%f", &TurnPID.ki);
-  355   3            
-  356   3      //      sprintf(g_TxData, "turn_ki:%f\n", TurnPID.ki);
-  357   3      //      uart_putstr(UART_4, g_TxData);
-  358   3          }
-  359   2          else if (strncmp(g_RxData, "turn_kd", 7) == 0)
-  360   2          {
-  361   3            sscanf(g_RxData, "turn_kd:%f", &TurnPID.kd);
-  362   3            
-  363   3      //      sprintf(g_TxData, "turn_kd:%f\n", TurnPID.kd);
-  364   3      //      uart_putstr(UART_4, g_TxData);
-  365   3          }
-  366   2          else if (strncmp(g_RxData, "type", 4) == 0)
-  367   2          {
-  368   3            sscanf(g_RxData, "type:%f", &temp);
-  369   3            type_track = (uint8_t)temp;
-  370   3            sprintf(g_TxData, "type=%d\n", type_track);
-  371   3            uart_putstr(UART_4, g_TxData);
-  372   3          }
-  373   2          else if (strncmp(g_RxData, "outer", 5) == 0)
-  374   2          {
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 7   
+  309   2      ////      sprintf(g_TxData, "right_ki:%f\n", RightPID.ki);
+  310   2      ////      uart_putstr(UART_4, g_TxData);
+  311   2      //    }
+  312   2      //    else if (strncmp(g_RxData, "right_kd", 8) == 0)
+  313   2      //    {
+  314   2      //      sscanf(g_RxData, "right_kd:%f", &RightPID.kd);
+  315   2      //      
+  316   2      ////      sprintf(g_TxData, "right_kd:%f\n", RightPID.kd);
+  317   2      ////      uart_putstr(UART_4, g_TxData);
+  318   2      //    }
+  319   2      //    else if (strncmp(g_RxData, "right_kf", 8) == 0)
+  320   2      //    {
+  321   2      //      sscanf(g_RxData, "right_kf:%f", &RightPID.kf);
+  322   2      //      
+  323   2      ////      sprintf(g_TxData, "right_kd:%f\n", RightPID.kf);
+  324   2      ////      uart_putstr(UART_4, g_TxData);
+  325   2      //    }
+  326   2      
+  327   2          if (strncmp(g_RxData, "speed_kp", 8) == 0)
+  328   2          {
+  329   3            sscanf(g_RxData, "speed_kp:%f", &SpeedPID.kp);
+  330   3            
+  331   3      //      sprintf(g_TxData, "speed_kp:%f\n", SpeedPID.kp);
+  332   3      //      uart_putstr(UART_4, g_TxData);
+  333   3          }
+  334   2          else if (strncmp(g_RxData, "speed_ki", 8) == 0)
+  335   2          {
+  336   3            sscanf(g_RxData, "speed_ki:%f", &SpeedPID.ki);
+  337   3            
+  338   3      //      sprintf(g_TxData, "speed_ki:%f\n", SpeedPID.ki);
+  339   3      //      uart_putstr(UART_4, g_TxData);
+  340   3          }
+  341   2          else if (strncmp(g_RxData, "speed_kd", 8) == 0)
+  342   2          {
+  343   3            sscanf(g_RxData, "speed_kd:%f", &SpeedPID.kd);
+  344   3            
+  345   3      //      sprintf(g_TxData, "speed_kd:%f\n", SpeedPID.kd);
+  346   3      //      uart_putstr(UART_4, g_TxData);
+  347   3          }
+  348   2          else if (strncmp(g_RxData, "turn_kp", 7) == 0)
+  349   2          {
+  350   3            sscanf(g_RxData, "turn_kp:%f", &TurnPID.kp);
+  351   3            
+  352   3      //      sprintf(g_TxData, "turn_kp:%f\n", TurnPID.kp);
+  353   3      //      uart_putstr(UART_4, g_TxData);
+  354   3          }
+  355   2          else if (strncmp(g_RxData, "turn_ki", 7) == 0)
+  356   2          {
+  357   3            sscanf(g_RxData, "turn_ki:%f", &TurnPID.ki);
+  358   3            
+  359   3      //      sprintf(g_TxData, "turn_ki:%f\n", TurnPID.ki);
+  360   3      //      uart_putstr(UART_4, g_TxData);
+  361   3          }
+  362   2          else if (strncmp(g_RxData, "turn_kd", 7) == 0)
+  363   2          {
+  364   3            sscanf(g_RxData, "turn_kd:%f", &TurnPID.kd);
+  365   3            
+  366   3      //      sprintf(g_TxData, "turn_kd:%f\n", TurnPID.kd);
+  367   3      //      uart_putstr(UART_4, g_TxData);
+  368   3          }
+  369   2          else if (strncmp(g_RxData, "type", 4) == 0)
+  370   2          {
+  371   3            sscanf(g_RxData, "type:%f", &temp);
+  372   3            type_track = (uint8_t)temp;
+  373   3            sprintf(g_TxData, "type=%d\n", type_track);
+  374   3            uart_putstr(UART_4, g_TxData);
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 7   
 
-  375   3            sscanf(g_RxData, "outer:%f", &weight_value);
-  376   3      //      track_weights[type_track].weight_outer = weight_value;
-  377   3            //WEIGHT_STRAIGHT
-  378   3            //WEIGHT_RIGHT_ANGLE
-  379   3            //WEIGHT_CROSS
-  380   3            //WEIGHT_ROUNDABOUT
-  381   3            sprintf(g_TxData, "outer[%d]:%f\n",type_track , track_weights[type_track].weight_outer);
-  382   3            uart_putstr(UART_4, g_TxData);
-  383   3          }
-  384   2          else if (strncmp(g_RxData, "middle", 6) == 0)
-  385   2          {
-  386   3            sscanf(g_RxData, "middle:%f", &weight_value);
-  387   3            track_weights[type_track].weight_middle = weight_value;
-  388   3            
-  389   3            // sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
-  390   3            // uart_putstr(UART_4, g_TxData);
-  391   3          }
-  392   2          else if (strncmp(g_RxData, "vertical", 8) == 0)
-  393   2          {
-  394   3            sscanf(g_RxData, "vertical:%f", &weight_value);
-  395   3            track_weights[type_track].weight_vertical = weight_value;
-  396   3            
-  397   3            // sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
-  398   3            // uart_putstr(UART_4, g_TxData);
-  399   3          }
-  400   2          else if (strncmp(g_RxData, "stop", 4) == 0)
-  401   2          {
-  402   3            set_motor_pwm(0, 0);
-  403   3            
-  404   3            pid_clean(&SpeedPID);
-  405   3            pid_clean(&TurnPID);
-  406   3            
-  407   3            uartSendFlag = startKeyFlag = 0;
-  408   3          }
-  409   2          // else if (strncmp(g_RxData, "center", 6) == 0)
-  410   2          // {
-  411   2          //  sscanf(g_RxData, "center:%f", &weight_value);
-  412   2          //  track_weights[WEIGHT_CROSS].weight_center = weight_value;
-  413   2            
-  414   2          //  // sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
-  415   2          //  // uart_putstr(UART_4, g_TxData);
-  416   2          // }
-  417   2      
-  418   2          else if (strncmp(g_RxData, "filter", 6) == 0)
-  419   2          {
-  420   3            sscanf(g_RxData, "filter:%f", &filter_value);
-  421   3            track_weights[type_track].filter_param = filter_value;
-  422   3            
-  423   3            // sprintf(g_TxData, "filter:%f\n", track_weights[WEIGHT_CROSS].filter_param);
-  424   3            // uart_putstr(UART_4, g_TxData);
-  425   3          }
-  426   2          else if (strncmp(g_RxData, "rate", 4) == 0)
-  427   2          {
-  428   3            sscanf(g_RxData, "rate:%hd", &rate_value);
-  429   3            track_weights[type_track].max_change_rate = rate_value;
+  375   3          }
+  376   2          else if (strncmp(g_RxData, "outer", 5) == 0)
+  377   2          {
+  378   3            sscanf(g_RxData, "outer:%f", &weight_value);
+  379   3      //      track_weights[type_track].weight_outer = weight_value;
+  380   3            //WEIGHT_STRAIGHT
+  381   3            //WEIGHT_RIGHT_ANGLE
+  382   3            //WEIGHT_CROSS
+  383   3            //WEIGHT_ROUNDABOUT
+  384   3            sprintf(g_TxData, "outer[%d]:%f\n",type_track , track_weights[type_track].weight_outer);
+  385   3            uart_putstr(UART_4, g_TxData);
+  386   3          }
+  387   2          else if (strncmp(g_RxData, "middle", 6) == 0)
+  388   2          {
+  389   3            sscanf(g_RxData, "middle:%f", &weight_value);
+  390   3            track_weights[type_track].weight_middle = weight_value;
+  391   3            
+  392   3            // sprintf(g_TxData, "middle:%f\n", track_weights[WEIGHT_CROSS].weight_middle);
+  393   3            // uart_putstr(UART_4, g_TxData);
+  394   3          }
+  395   2          else if (strncmp(g_RxData, "vertical", 8) == 0)
+  396   2          {
+  397   3            sscanf(g_RxData, "vertical:%f", &weight_value);
+  398   3            track_weights[type_track].weight_vertical = weight_value;
+  399   3            
+  400   3            // sprintf(g_TxData, "vertical:%f\n", track_weights[WEIGHT_CROSS].weight_vertical);
+  401   3            // uart_putstr(UART_4, g_TxData);
+  402   3          }
+  403   2          else if (strncmp(g_RxData, "r_p", 3) == 0)
+  404   2          {
+  405   3            sscanf(g_RxData, "r_p:%f", &temp);
+  406   3            r_position = (uint8_t)temp;
+  407   3            // sprintf(g_TxData, "r_p:%d\n", r_position);
+  408   3            // uart_putstr(UART_4, g_TxData);
+  409   3          }
+  410   2          else if (strncmp(g_RxData, "r_d", 3) == 0)
+  411   2          {
+  412   3            sscanf(g_RxData, "r_d:%f", &temp);
+  413   3            r_distance = (uint16_t)temp;
+  414   3            // sprintf(g_TxData, "r_d:%d\n", r_distance);
+  415   3            // uart_putstr(UART_4, g_TxData);
+  416   3          }
+  417   2          else if (strncmp(g_RxData, "s_d", 3) == 0)
+  418   2          {
+  419   3            sscanf(g_RxData, "s_d:%f", &temp);
+  420   3            s_distance = (uint16_t)temp;
+  421   3            // sprintf(g_TxData, "r_d:%d\n", r_distance);
+  422   3            // uart_putstr(UART_4, g_TxData);
+  423   3          }   
+  424   2          else if (strncmp(g_RxData, "stop", 4) == 0)
+  425   2          {
+  426   3            set_motor_pwm(0, 0);
+  427   3            
+  428   3            pid_clean(&SpeedPID);
+  429   3            pid_clean(&TurnPID);
   430   3            
-  431   3             sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
-  432   3             uart_putstr(UART_4, g_TxData);
-  433   3          }
-  434   2          // else if (strncmp(g_RxData, "query", 5) == 0)
-  435   2          // {
-  436   2          //  // 查询所有十字圆环参数
-  437   2          //  sprintf(g_TxData, "CROSS: o:%0.2f m:%0.2f c:%0.2f v:%0.2f f:%0.2f r:%d\n", 
-  438   2          //    track_weights[type_track].weight_outer,
-  439   2          //    track_weights[type_track].weight_middle,
-  440   2          //    track_weights[type_track].weight_center,
-C251 COMPILER V5.60.0,  zf_uart                                                            02/06/25  21:54:43  PAGE 8   
+  431   3            uartSendFlag = startKeyFlag = 0;
+  432   3          }
+  433   2          // else if (strncmp(g_RxData, "center", 6) == 0)
+  434   2          // {
+  435   2          //  sscanf(g_RxData, "center:%f", &weight_value);
+  436   2          //  track_weights[WEIGHT_CROSS].weight_center = weight_value;
+  437   2            
+  438   2          //  // sprintf(g_TxData, "center:%f\n", track_weights[WEIGHT_CROSS].weight_center);
+  439   2          //  // uart_putstr(UART_4, g_TxData);
+  440   2          // }
+C251 COMPILER V5.60.0,  zf_uart                                                            05/06/25  23:24:28  PAGE 8   
 
-  441   2          //    track_weights[type_track].weight_vertical,
-  442   2          //    track_weights[type_track].filter_param,
-  443   2          //    track_weights[type_track].max_change_rate);
-  444   2          //  uart_putstr(UART_4, g_TxData);
-  445   2          // }
-  446   2        
-  447   2        }
-  448   1        
-  449   1        g_RxPointer = 0;
-  450   1        memset(g_RxData, 0, UART_RX_LENGTH);
-  451   1        memset(g_TxData, 0, UART_TX_LENGTH);
-  452   1      }
+  441   2      
+  442   2          else if (strncmp(g_RxData, "filter", 6) == 0)
+  443   2          {
+  444   3            sscanf(g_RxData, "filter:%f", &filter_value);
+  445   3            track_weights[type_track].filter_param = filter_value;
+  446   3            
+  447   3            // sprintf(g_TxData, "filter:%f\n", track_weights[WEIGHT_CROSS].filter_param);
+  448   3            // uart_putstr(UART_4, g_TxData);
+  449   3          }
+  450   2          else if (strncmp(g_RxData, "rate", 4) == 0)
+  451   2          {
+  452   3            sscanf(g_RxData, "rate:%hd", &rate_value);
+  453   3            track_weights[type_track].max_change_rate = rate_value;
+  454   3            
+  455   3             sprintf(g_TxData, "rate:%d\n", track_weights[WEIGHT_CROSS].max_change_rate);
+  456   3             uart_putstr(UART_4, g_TxData);
+  457   3          }
+  458   2          // else if (strncmp(g_RxData, "query", 5) == 0)
+  459   2          // {
+  460   2          //  // 查询所有十字圆环参数
+  461   2          //  sprintf(g_TxData, "CROSS: o:%0.2f m:%0.2f c:%0.2f v:%0.2f f:%0.2f r:%d\n", 
+  462   2          //    track_weights[type_track].weight_outer,
+  463   2          //    track_weights[type_track].weight_middle,
+  464   2          //    track_weights[type_track].weight_center,
+  465   2          //    track_weights[type_track].weight_vertical,
+  466   2          //    track_weights[type_track].filter_param,
+  467   2          //    track_weights[type_track].max_change_rate);
+  468   2          //  uart_putstr(UART_4, g_TxData);
+  469   2          // }
+  470   2        
+  471   2        }
+  472   1        
+  473   1        g_RxPointer = 0;
+  474   1        memset(g_RxData, 0, UART_RX_LENGTH);
+  475   1        memset(g_TxData, 0, UART_TX_LENGTH);
+  476   1      }
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =      1906     ------
+  code size            =      2101     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -507,7 +531,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =       685     ------
+  hconst size          =       718     ------
 End of Module Information.
 
 

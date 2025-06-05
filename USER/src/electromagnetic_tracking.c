@@ -30,7 +30,7 @@ TrackWeights track_weights[4] = {
     {0.35f, 0.25f, 0.20f, 0.15f, 0.90f, 40, "十字圆环"},
     
     // 环岛
-    {0.31f, 0.43f, 0.10f, 0.21f, 1.00f, 40, "环岛"}
+    {0.35f, 0.38f, 0.10f, 0.25f, 1.00f, 50, "环岛"}
 };
 
 uint16 adc_fliter_data[SENSOR_COUNT][HISTORY_COUNT] = {0}; //滤波后的值
@@ -48,7 +48,7 @@ float normalized_data[SENSOR_COUNT] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}
 // uint16 min_value[SENSOR_COUNT] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};  // 每个电感的最小值
 // uint16 max_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最大值
 uint16 min_value[SENSOR_COUNT] = {0, 0, 0, 0, 0, 0, 0};  // 每个电感的最小值
-uint16 max_value[SENSOR_COUNT] = {910, 930, 920, 730, 920, 930, 910};  // 每个电感的最大值
+uint16 max_value[SENSOR_COUNT] = {950, 960, 940, 750, 940, 960, 940};  // 每个电感的最大值
 
 // 电感位置计算相关变量
 float signal_strength_value = 0;   // 信号强度指标
@@ -482,17 +482,17 @@ int16 calculate_position_improved(void)
         {
             track_type = WEIGHT_RIGHT_ANGLE; // 直角弯道
         }
-				else if (((normalized_data[SENSOR_HC] > 60.0f && normalized_data[SENSOR_HMR] > 88.0f && normalized_data[SENSOR_VL] > 50.0f && normalized_data[SENSOR_VR] > 75.0f) ||  //逆时针
-                (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] < 45.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_VR] > 45.0f)) && 
-                track_ten_flag == 1 && signal_strength > 50.0f ) 
-				{
-					track_type = 2; //十字圆环
-					track_ten_flag = 0; 
-					ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
-					
-				}
-        else if((normalized_data[SENSOR_HR] > 70.0f && normalized_data[SENSOR_HC] > 95.0f && ((normalized_data[SENSOR_HR] + normalized_data[SENSOR_VR]) - (normalized_data[SENSOR_HL] + normalized_data[SENSOR_VL]) > 90.0f))  //右环岛
-                 && signal_strength > 50.0f )    
+        // else if (((normalized_data[SENSOR_HC] > 60.0f && normalized_data[SENSOR_HMR] > 88.0f && normalized_data[SENSOR_VL] > 50.0f && normalized_data[SENSOR_VR] > 75.0f) ||  //逆时针
+        // (normalized_data[SENSOR_HC] > 80.0f && normalized_data[SENSOR_HML] > 80.0f && normalized_data[SENSOR_HMR] < 45.0f && normalized_data[SENSOR_VL] > 75.0f && normalized_data[SENSOR_VR] > 45.0f)) && 
+        // track_ten_flag == 1 && signal_strength > 50.0f ) 
+        // {
+        //     track_type = 2; //十字圆环
+        //     track_ten_flag = 0; 
+        //     ten_change_flag = 1;//感应到入环，延时2s再让track_ten_flag=1
+            
+        // }
+        else if((normalized_data[SENSOR_HR] > 70.0f && normalized_data[SENSOR_HC] > 90.0f && ((normalized_data[SENSOR_HR] + normalized_data[SENSOR_VR]) - (normalized_data[SENSOR_HL] + normalized_data[SENSOR_VL]) > 80.0f))  //右环岛
+                 && signal_strength > 48.0f )    
         {
             track_type = 3;// 环岛
         }
@@ -543,19 +543,19 @@ int16 calculate_position_improved(void)
 	}
     else if (track_type == WEIGHT_ROUNDABOUT) // 3. 环岛   
     {
-        if(normalized_data[SENSOR_HR] > 70.0f && normalized_data[SENSOR_HL] < 35.0f && track_route == 0)
+        if(normalized_data[SENSOR_HR] > 80.0f && normalized_data[SENSOR_HL] < 40.0f && track_route == 0)
         {
             // 右环岛
             track_route = 1;
-		    track_route_status = 1;
+						track_route_status = 1;
         }
-        else if(normalized_data[SENSOR_HR] < 30.0f && normalized_data[SENSOR_HL] > 70.0f && track_route == 0)
-        {
-            // 左环岛
-            track_route = 2;
-			track_route_status = 1;
-        }
-		if(track_route_status == 2 &&(normalized_data[SENSOR_HC] < 70.0f && normalized_data[SENSOR_HML] < 30.0f && normalized_data[SENSOR_HMR] > 80.0f && normalized_data[SENSOR_VR] > 75.0f &&normalized_data[SENSOR_HL] > 20.0f && signal_strength > 40.0f)) //右环
+        // else if(normalized_data[SENSOR_HR] < 30.0f && normalized_data[SENSOR_HL] > 70.0f && track_route == 0)
+        // {
+        //     // 左环岛
+        //     track_route = 2;
+		// 	track_route_status = 1;
+        // }
+		if(track_route_status == 2 &&(normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HC] < 75.0f && normalized_data[SENSOR_HML] < 45.0f && normalized_data[SENSOR_HMR] > 70.0f && normalized_data[SENSOR_VR] > 70.0f)) //右环
 		{
 //			track_route = 0;
 			track_route_status = 3;
@@ -758,7 +758,7 @@ uint8 check_electromagnetic_protection(void)
 			out_of_track_count++;
 			in_track_count = 0;  // 重置在轨道上的计数
 			
-			if(out_of_track_count >= 30 && !protection_triggered)  // 连续5次检测到脱离赛道才触发保护
+			if(out_of_track_count >= 50 && !protection_triggered)  // 连续5次检测到脱离赛道才触发保护
 			{
 				protection_triggered = 1;
 				// 这里可以输出触发保护的信息，用于调试

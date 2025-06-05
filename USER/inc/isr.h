@@ -21,10 +21,10 @@
 #define __ISR_H_
 
 
-#define SPEED_STRAIGHT     80
+#define SPEED_STRAIGHT     70
 #define SPEED_ANGLE        50
-#define SPEED_CROSS        80
-#define SPEED_ROUNDABOUT   60
+#define SPEED_CROSS        50
+#define SPEED_ROUNDABOUT   50
 #define SPEED_SPEED        80
 
 
