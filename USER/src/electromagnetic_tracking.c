@@ -24,7 +24,7 @@ TrackWeights track_weights[4] = {
     {0.20f, 0.35f, 0.30f, 0.20f, 0.70f, 30, "直道"},
     
     // 直角弯道
-    {0.25f, 0.30f, 0.35f, 0.35f, 1.00f, 50, "直角弯道"},
+    {0.25f, 0.30f, 0.35f, 0.40f, 1.00f, 50, "直角弯道"},
     
     // 十字圆环
     {0.35f, 0.25f, 0.20f, 0.15f, 0.90f, 40, "十字圆环"},
@@ -554,7 +554,7 @@ int16 calculate_position_improved(void)
         //     track_route = 2;
 		// 	track_route_status = 1;
         // }
-		if(track_route_status == 2 &&(normalized_data[SENSOR_VL] > 30.0f && normalized_data[SENSOR_HL] < 30.0f && normalized_data[SENSOR_HC] < 65.0f && normalized_data[SENSOR_HML] < 35.0f && normalized_data[SENSOR_HMR] > 70.0f && normalized_data[SENSOR_VR] > 75.0f)) //右环
+		if(track_route_status == 2 &&(normalized_data[SENSOR_VL] > 30.0f && normalized_data[SENSOR_HL] < 55.0f && normalized_data[SENSOR_HC] < 65.0f && normalized_data[SENSOR_HML] < 35.0f && normalized_data[SENSOR_HMR] > 70.0f && normalized_data[SENSOR_VR] > 75.0f)) //右环
 		{
 //			track_route = 0;
 			track_route_status = 3;
