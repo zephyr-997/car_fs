@@ -1,4 +1,4 @@
-C251 COMPILER V5.60.0,  main                                                               05/06/25  20:36:50  PAGE 1   
+C251 COMPILER V5.60.0,  main                                                               06/06/25  12:26:13  PAGE 1   
 
 
 C251 COMPILER V5.60.0, COMPILATION OF MODULE main
@@ -66,7 +66,7 @@ stmt  level    source
    55   2          if (flag == 1)
    56   2          {
    57   3      //      if (g_SpeedPoint == 20)
-C251 COMPILER V5.60.0,  main                                                               05/06/25  20:36:50  PAGE 2   
+C251 COMPILER V5.60.0,  main                                                               06/06/25  12:26:13  PAGE 2   
 
    58   3      //      {
    59   3      //        g_SpeedPoint = 70;
@@ -134,7 +134,7 @@ stmt  level    source
   121   3      //          LeftPID.lasterror,
   122   3      //          LeftPID.p_out,
   123   3      //          LeftPID.output
-C251 COMPILER V5.60.0,  main                                                               05/06/25  20:36:50  PAGE 3   
+C251 COMPILER V5.60.0,  main                                                               06/06/25  12:26:13  PAGE 3   
 
   124   3      //      );
   125   3      //      uart_putstr(UART_4, g_TxData);
@@ -145,66 +145,65 @@ stmt  level    source
   130   3      //      sprintf(g_TxData, "%f,%f\n",Gyro_Z,filtered_GyroZ);
   131   3      //      uart_putstr(UART_4, g_TxData);
   132   3      
-  133   3      #if 1
-  134   3            // 通过串口输出七电感数据
-  135   3            sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-  136   3             (uint16)normalized_data[SENSOR_HL], 
-  137   3             (uint16)normalized_data[SENSOR_VL], 
-  138   3             (uint16)normalized_data[SENSOR_HML], 
-  139   3             (uint16)normalized_data[SENSOR_HC],
-  140   3             (uint16)normalized_data[SENSOR_HMR], 
-  141   3             (uint16)normalized_data[SENSOR_VR], 
-  142   3             (uint16)normalized_data[SENSOR_HR], 
-  143   3              position,
-  144   3             (uint16)signal_strength_value,
-  145   3              track_type,
-  146   3              track_route,
-  147   3              track_route_status,
-  148   3              g_intencoderL,
-  149   3              g_intencoderR);
-  150   3             uart_putstr(UART_4, g_TxData);
-  151   3      #endif
-  152   3          }
-  153   2          
-  154   2          // 获取滤波后的ADC数据    
-  155   2          mid_filter();      // 使用中位值滤波获取电感数据
-  156   2      
-  157   2          // 归一化电感数组·
-  158   2          normalize_sensors();
-  159   2          
-  160   2          // 计算位置偏差
-  161   2          position = calculate_position_improved();
-  162   2          
-  163   2          //检查电磁保护
-  164   2          protection_flag = check_electromagnetic_protection();
-  165   2      
-  166   2          // if(protection_flag)
-  167   2          // {
-  168   2          //  // 触发保护，停车
-  169   2          //  // 这里需要添加控制电机停止的代码
-  170   2            
-  171   2          //  // 显示保护触发信息
-  172   2          //  ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
-  173   2            
-  174   2          //  // 永久停车或等待重置
-  175   2          //  while(1)                                                               
-  176   2          //  {
-  177   2          //    delay_ms(100);
-  178   2          //  }
-  179   2          // }
-  180   2          
-  181   2          // 显示电磁传感器数据
-  182   2      //    display_electromagnetic_data();
-  183   2      
-  184   2          /*调试功能*/
-  185   2      #if 0
+  133   3      #if 0
+                     // 通过串口输出七电感数据
+                     sprintf(g_TxData, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+                      (uint16)normalized_data[SENSOR_HL], 
+                      (uint16)normalized_data[SENSOR_VL], 
+                      (uint16)normalized_data[SENSOR_HML], 
+                      (uint16)normalized_data[SENSOR_HC],
+                      (uint16)normalized_data[SENSOR_HMR], 
+                      (uint16)normalized_data[SENSOR_VR], 
+                      (uint16)normalized_data[SENSOR_HR], 
+                       position,
+                      (uint16)signal_strength_value,
+                       track_type,
+                       track_route,
+                       track_route_status,
+                       track_type_zj);
+                      uart_putstr(UART_4, g_TxData);
+               #endif
+  151   3          }
+  152   2          
+  153   2          // 获取滤波后的ADC数据    
+  154   2          mid_filter();      // 使用中位值滤波获取电感数据
+  155   2      
+  156   2          // 归一化电感数组·
+  157   2          normalize_sensors();
+  158   2          
+  159   2          // 计算位置偏差
+  160   2          position = calculate_position_improved();
+  161   2          
+  162   2          //检查电磁保护
+  163   2          protection_flag = check_electromagnetic_protection();
+  164   2      
+  165   2          // if(protection_flag)
+  166   2          // {
+  167   2          //  // 触发保护，停车
+  168   2          //  // 这里需要添加控制电机停止的代码
+  169   2            
+  170   2          //  // 显示保护触发信息
+  171   2          //  ips114_showstr_simspi(0, 7, "Protection: Out of Track!");
+  172   2            
+  173   2          //  // 永久停车或等待重置
+  174   2          //  while(1)                                                               
+  175   2          //  {
+  176   2          //    delay_ms(100);
+  177   2          //  }
+  178   2          // }
+  179   2          
+  180   2          // 显示电磁传感器数据
+  181   2      //    display_electromagnetic_data();
+  182   2      
+  183   2          /*调试功能*/
+  184   2      #if 0
                     //读取七电感ADC值（用于调试）
                    value[0] = adc_once(ADC_HL,  ADC_10BIT);
                    value[1] = adc_once(ADC_VL,  ADC_10BIT);
                    value[2] = adc_once(ADC_HML, ADC_10BIT);
-C251 COMPILER V5.60.0,  main                                                               05/06/25  20:36:50  PAGE 4   
-
                    value[3] = adc_once(ADC_HC,  ADC_10BIT); 
+C251 COMPILER V5.60.0,  main                                                               06/06/25  12:26:13  PAGE 4   
+
                    value[4] = adc_once(ADC_HMR, ADC_10BIT);
                    value[5] = adc_once(ADC_VR,  ADC_10BIT);
                    value[6] = adc_once(ADC_HR,  ADC_10BIT);  
@@ -229,17 +228,17 @@ stmt  level    source
                
                      delay_ms(5);
                #endif  
-  215   2      
-  216   2        } 
-  217   1      }
+  214   2      
+  215   2        } 
+  216   1      }
+  217          
   218          
   219          
-  220          
 
 
 Module Information          Static   Overlayable
 ------------------------------------------------
-  code size            =       589     ------
+  code size            =       408     ------
   ecode size           =    ------     ------
   data size            =    ------     ------
   idata size           =    ------     ------
@@ -254,7 +253,7 @@ Module Information          Static   Overlayable
   far data size        =    ------     ------
   huge data size       =    ------     ------
   const size           =    ------     ------
-  hconst size          =        57     ------
+  hconst size          =        14     ------
 End of Module Information.
 
 
