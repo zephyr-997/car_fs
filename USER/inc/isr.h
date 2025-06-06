@@ -21,7 +21,7 @@
 #define __ISR_H_
 
 
-#define SPEED_STRAIGHT     88
+#define SPEED_STRAIGHT     90
 #define SPEED_ANGLE        52
 #define SPEED_CROSS        50
 #define SPEED_ROUNDABOUT   63

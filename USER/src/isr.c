@@ -75,9 +75,9 @@ uint8_t beep_flag = 0;          // 蜂鸣器开启标志，1表示开启
 uint16_t beep_count = 0;        // 蜂鸣器计时计数器
 uint8_t track_ten_cnt = 0;    //出入环重复判定计时器
 
-volatile uint8_t r_position = 45;
-volatile uint16_t r_distance = 5400;
-volatile uint16_t s_distance = 4300;
+volatile uint8_t r_position = 55;
+volatile uint16_t r_distance = 6400;
+volatile uint16_t s_distance = 5000;
 
 extern uint8 track_ten_flag;
 extern uint8 ten_change_flag;
@@ -357,7 +357,7 @@ void TM2_Isr() interrupt 12
 	}
 	else if (track_type == 3 && track_route_status == 1)//圆环入环
 	{
-		g_SpeedPoint = 40;
+		g_SpeedPoint = 60;
 		g_intencoderALL += ((g_EncoderLeft + g_EncoderRight) / 2);
 		
 		if(g_intencoderALL <= (int)s_distance)//第一阶段先直行
